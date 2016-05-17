@@ -29,6 +29,14 @@ $factory->define(App\Course::class, function (Faker\Generator $faker) {
 $factory->define(App\Lesson::class, function (Faker\Generator $faker) {
     return [
         'title' => $faker->sentence(5),
-        'body'  => $faker->text(rand(100, 200))
+        'body'  => $faker->text()
+    ];
+});
+
+$factory->define(App\LessonFile::class, function (Faker\Generator $faker) {
+    return [
+        'name' => $faker->sentence(3),
+        'url'  => $faker->sentence(12),
+        'description' => $faker->text()
     ];
 });
