@@ -11,11 +11,24 @@
 |
 */
 
-$factory->define(App\User::class, function (Faker\Generator $faker) {
+// $factory->define(App\User::class, function (Faker\Generator $faker) {
+//     return [
+//         'name' => $faker->name,
+//         'email' => $faker->safeEmail,
+//         'password' => bcrypt(str_random(10)),
+//         'remember_token' => str_random(10),
+//     ];
+// });
+
+$factory->define(App\Course::class, function (Faker\Generator $faker) {
     return [
-        'name' => $faker->name,
-        'email' => $faker->safeEmail,
-        'password' => bcrypt(str_random(10)),
-        'remember_token' => str_random(10),
+        'title' => $faker->sentence(5)
+    ];
+});
+
+$factory->define(App\Lesson::class, function (Faker\Generator $faker) {
+    return [
+        'title' => $faker->sentence(5),
+        'body'  => $faker->text(rand(100, 200))
     ];
 });
