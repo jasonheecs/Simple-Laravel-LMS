@@ -1,4 +1,8 @@
 var elixir = require('laravel-elixir');
+var requireDir = require('require-dir');
+
+// load in extra gulp tasks in gulp folder
+requireDir('./gulp/tasks', {recurse:true});
 
 /*
  |--------------------------------------------------------------------------
@@ -12,6 +16,8 @@ var elixir = require('laravel-elixir');
  */
 
 elixir(function(mix) {
+    mix.task('scsslint', 'resources/assets/sass/**/*.{sass,scss}');
+    mix.task('jshint', 'resources/assets/js/*.js');
     mix.sass('app.scss');
     mix.browserify('main.js', 'public/js/app.js');
 

@@ -1,0 +1,83 @@
+.login {
+  @extend %flex;
+  @extend %flex-center;
+  @extend %flex-middle;
+  background: $color-primary;
+  min-height: 100vh;
+}
+
+.login__container {
+  //scss-lint:disable ColorVariable
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 5px 30px rgba(0, 0, 0, .52);
+  padding: 30px 35px;
+  position: relative;
+  text-align: center;
+
+  &::before {
+    bottom: 0;
+    box-shadow: 0 5px 80px rgba(255, 255, 255, .32);
+    content: '';
+    left: 0;
+    pointer-events: none;
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
+}
+
+.login__site-name {
+  @include font-size(20px);
+  font-weight: 700;
+}
+
+.login-form__input {
+  //scss-lint:disable ColorVariable
+  background: #ededed;
+  border: 1px solid #ccc;
+  display: block;
+  padding: 10px 0 10px 40px;
+  width: calc(100% - 40px);
+}
+
+.login-form__input--name {
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+
+.login-form__input--password {
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+
+.login-remember {
+  //scss-lint:disable ColorVariable
+  @include font-size(13px);
+  color: #999;
+  margin: 15px 0;
+  text-align: left;
+}
+
+.btn--login {
+  //scss-lint:disable ColorVariable
+  background: #43c86f;
+  border-color: #4cae4c;
+  border-radius: 6px;
+  color: #fff;
+  height: 55px;
+  width: 100%;
+}
+
+.login-footer {
+  //scss-lint:disable ColorVariable
+  @include font-size(13px);
+  margin: 25px 0 10px;
+}
+
+.login-footer__link {
+  //scss-lint:disable ColorVariable
+  border-bottom: 1px solid #818b99;
+  color: #fff;
+  text-decoration: none;
+}

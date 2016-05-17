@@ -1,0 +1,30 @@
+---
+linters:
+  ColorKeyword:
+    enabled: true
+  ColorVariable:
+    enabled: true
+  EmptyRule:
+    enabled: true
+  FinalNewline:
+    enabled: true
+  IdSelector:
+    enabled: true
+  ImportPath:
+    enabled: true
+  Indentation:
+    enabled: false
+  LeadingZero:
+    enabled: true
+  PropertySortOrder:
+    enabled: true
+  SpaceAfterComma:
+    enabled: true
+  SelectorFormat:
+    convention: hyphenated_BEM  
+  StringQuotes:
+    enabled: true
+  TrailingSemicolon:
+    enabled: true
+  UnnecessaryMantissa:
+    enabled: true
