@@ -13,4 +13,13 @@ var elixir = require('laravel-elixir');
 
 elixir(function(mix) {
     mix.sass('app.scss');
+    mix.browserify('main.js', 'public/js/app.js');
+
+    if(elixir.config.production) { // only run this tasks when production flag is present
+        mix.version(['css/app.css', 'js/app.js']);
+    }
+    
+    mix.browserSync({
+        proxy: '192.168.10.10'
+    });
 });
