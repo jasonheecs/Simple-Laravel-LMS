@@ -12,8 +12,8 @@
 }
 
 .avatar {
-  background: darken($color-primary, 25%);
-  color: lighten($color-secondary, 2%);
+  background: $color-secondary;
+  color: lighten($color-white, 2%);
   text-align: center;
 }
 
@@ -41,7 +41,7 @@
 }
 
 .sidebar-nav__link {
-  color: $color-secondary;
+  color: $color-white;
   display: inline-block;
   margin: 5px 0;
   text-decoration: none;
@@ -49,7 +49,7 @@
 
 .sidebar-icon {
   margin-right: 10px;
-  vertical-align: text-top;
+  vertical-align: middle;
 }
 
 

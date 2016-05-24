@@ -3,3 +3,9 @@
   flex-wrap: wrap;
   min-height: 100vh;
 }
+
+.container--centered {
+  @extend %flex--center;
+  @extend %flex--middle;
+  background: $color-primary;
+}

@@ -16,11 +16,11 @@ body {
   display: -ms-flexbox;
   display: flex; }
 
-.login {
+.container--centered {
   -ms-flex-pack: center;
   justify-content: center; }
 
-.login {
+.container--centered {
   -ms-flex-align: center;
   align-items: center; }
 
@@ -54,6 +54,9 @@ button:focus {
   -ms-flex-wrap: wrap;
   flex-wrap: wrap;
   min-height: 100vh; }
+
+.container--centered {
+  background: #d60080; }
 
 .sidebar {
   background: #d60080;
@@ -99,7 +102,7 @@ button:focus {
 
 .sidebar-icon {
   margin-right: 10px;
-  vertical-align: text-top; }
+  vertical-align: middle; }
 
 @media screen and (min-width: 768px) {
   .dashboard {
@@ -110,9 +113,6 @@ button:focus {
   .dashboard {
     -ms-flex: 6;
     flex: 6; } }
-
-.login {
-  background: #d60080; }
 
 .login__container {
   background: #fff;

@@ -40,4 +40,24 @@ class User extends Authenticatable
 
         return false;
     }
+
+    /**
+     * Get a Collection of Instructor models which corresponds to this user
+     * @return Collection [Collection of Instructors]
+     */
+    public function isInstructorIn()
+    {
+        $lecturers = Lecturer::where('user_id', $this->id)->get();
+        return $lecturers->load('courses');
+    }
+
+    /**
+     * Get a Collection of Student models which corresponds to this user
+     * @return Collection [Collection of Students]
+     */
+    public function isStudentIn()
+    {
+        $students = Student::where('user_id', $this->id)->get();
+        return $students->load('courses');
+    }
 }

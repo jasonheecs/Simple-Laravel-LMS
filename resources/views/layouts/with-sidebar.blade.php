@@ -1,7 +1,9 @@
 @extends('layouts.master')
 
 @section('layout')
-    @include('layouts.sidebar')
-    
-    @yield('content')
+    <main class="container">
+        @include('layouts.sidebar')
+        
+        @yield('content')
+    </main>
 @stop

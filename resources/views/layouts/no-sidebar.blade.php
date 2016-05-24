@@ -1,5 +1,7 @@
 @extends('layouts.master')
 
 @section('layout')
-    @yield('content')
+    <main class="container container--centered">
+        @yield('content')
+    </main>
 @stop
