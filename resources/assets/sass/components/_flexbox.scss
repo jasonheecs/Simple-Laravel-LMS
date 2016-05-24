@@ -2,10 +2,25 @@
   display: flex;
 }
 
-%flex-center {
+%flex--center {
   justify-content: center;
 }
 
-%flex-middle {
+%flex--middle {
   align-items: center;
+}
+
+//flex items
+%flex__item--none {
+  flex: none;
+}
+
+%flex__item--auto {
+  flex: auto;
+}
+
+@for $i from 1 through 6 {
+  %flex__item--#{$i} {
+    flex: $i;
+  }
 }

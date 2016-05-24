@@ -1,0 +1,5 @@
+.container {
+  @extend %flex;
+  flex-wrap: wrap;
+  min-height: 100vh;
+}

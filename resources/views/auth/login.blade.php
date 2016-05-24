@@ -1,10 +1,10 @@
 @extends('layouts.no-sidebar')
 
 @section('content')
-<main class="login">
+<div class="login">
     <div id="login-box" class="login-box">
         <div class="login__container">
-            <img src="{{ asset('img/efusion-logo.png') }}" alt="" />
+            <img src="{{ asset('img/efusion-logo.png') }}" alt="Efusion Technology" />
             <h1 class="login__site-name">Learning Management System</h1>
             <form class="login-form" role="form" method="POST" action="{{ url('/login') }}">
                 <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
@@ -43,5 +43,5 @@
             </a>
         </div>
     </div>
-</main>
+</div>
 @endsection

@@ -1,0 +1,12 @@
+.dashboard {
+  @extend %flex;
+  @extend %flex__item--1;
+
+  @media screen and (min-width: $mq-medium) {
+    flex: 4;
+  }
+
+  @media screen and (min-width: $mq-large) {
+    flex: 6;
+  }
+}

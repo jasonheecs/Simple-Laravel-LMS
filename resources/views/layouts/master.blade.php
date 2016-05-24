@@ -17,7 +17,9 @@
 </head>
 <body id="app-layout">
 
-    @yield('layout')
+    <main class="container">
+        @yield('layout')
+    </main>
 
     <!-- JavaScripts -->
     <script src="{{ asset('js/app.js') }}"></script>

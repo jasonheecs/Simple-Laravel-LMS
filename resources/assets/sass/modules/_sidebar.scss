@@ -1,0 +1,55 @@
+.sidebar {
+  @extend %flex__item--1;
+  background: $color-primary;
+  position: fixed;
+  width: 100%;
+  z-index: 1;
+
+  @media screen and (min-width: $mq-small) {
+    position: static;
+    width: auto;
+  }
+}
+
+.avatar {
+  background: darken($color-primary, 25%);
+  color: lighten($color-secondary, 2%);
+  text-align: center;
+}
+
+.avatar-figure {
+  margin: 0;
+  padding: 40px 20px 10px;
+}
+
+.avatar__name {
+  @include font-size(23px);
+  font-weight: 600;
+}
+
+.avatar__status {
+  @include font-size(12px);
+  background: $color-highlight;
+  border-radius: 15px;
+  display: inline-block;
+  margin-bottom: 40px;
+  padding: 10px 20px;
+}
+
+.sidebar-nav__links {
+  list-style: none;
+}
+
+.sidebar-nav__link {
+  color: $color-secondary;
+  display: inline-block;
+  margin: 5px 0;
+  text-decoration: none;
+}
+
+.sidebar-icon {
+  margin-right: 10px;
+  vertical-align: text-top;
+}
+
+

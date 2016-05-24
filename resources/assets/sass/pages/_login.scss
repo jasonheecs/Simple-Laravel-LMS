@@ -1,9 +1,7 @@
 .login {
-  @extend %flex;
-  @extend %flex-center;
-  @extend %flex-middle;
+  @extend %flex--center;
+  @extend %flex--middle;
   background: $color-primary;
-  min-height: 100vh;
 }
 
 .login__container {

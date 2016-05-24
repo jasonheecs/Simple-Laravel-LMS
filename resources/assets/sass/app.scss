@@ -3,9 +3,12 @@
 
 @import 'base';
 
-@import 'modules/form',
-        'modules/button';
-
 @import 'components/flexbox';
+
+@import 'modules/form',
+        'modules/button',
+        'modules/container',
+        'modules/sidebar',
+        'modules/dashboard';
 
 @import 'pages/login';
