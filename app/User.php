@@ -29,8 +29,15 @@ class User extends Authenticatable
         return $this->belongsToMany(Role::class, 'user_role');
     }
 
-    public function courses()
+    // check user role
+    public function is($roleName)
     {
-        return $this->belongsToMany(Course::class, 'course_user');
+        foreach ($this->roles()->get() as $role) {
+            if ($role->name == $roleName) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
