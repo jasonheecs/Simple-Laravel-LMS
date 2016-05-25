@@ -5,7 +5,7 @@
         <div class="panel panel--default">
             <h1 class="panel__heading">Courses you are instructing</h1>
             <div class="panel__content">
-                <ul class="list--plain">
+                <ul class="list list--plain">
                     @foreach ($instructing as $lecturer)
                         @foreach ($lecturer->courses as $course)
                             <li><a href="{{ url('/courses', $course->id) }}">{{ $course->title }}</a></li>
@@ -20,7 +20,7 @@
         <div class="panel panel--default">
             <h1 class="panel__heading">Courses you are enrolled in</h1>
             <div class="panel__content">
-                <ul class="courses-list">
+                <ul class="list list--plain">
                     @foreach ($studying as $student)
                         @foreach ($student->courses as $course)
                             <li><a href="{{ url('/courses', $course->id) }}">{{ $course->title }}</a></li>

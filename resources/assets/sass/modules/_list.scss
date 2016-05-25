@@ -15,8 +15,11 @@ $list-icon-width: 1.5em;
   }
 }
 
-.list--plain {
+.list {
   list-style: none;
+}
+
+.list--plain {
   padding-left: 10px;
 
   li {
@@ -25,7 +28,6 @@ $list-icon-width: 1.5em;
 }
 
 .list--files {
-  list-style: none;
   padding-left: 12px;
 
   li {
@@ -35,4 +37,8 @@ $list-icon-width: 1.5em;
       margin-top: .1em;
     }
   }
+}
+
+.list--inline li {
+  display: inline-block;
 }

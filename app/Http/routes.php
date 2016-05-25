@@ -11,10 +11,6 @@
 |
 */
 
-// Route::get('/', function () {
-//     return view('welcome');
-// });
-
 Route::auth();
 
 Route::get('/', function () {
@@ -25,5 +21,8 @@ Route::get('/home', 'HomeController@index');
 
 Route::get('/courses', 'CoursesController@index');
 Route::get('/courses/{course}', 'CoursesController@show');
+Route::post('/courses', 'CoursesController@store');
 
 Route::get('/lessons/{lesson}', 'LessonsController@show');
+
+Route::post('/lessons/{lesson}/files', 'LessonFilesController@store');

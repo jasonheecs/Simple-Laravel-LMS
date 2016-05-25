@@ -44,11 +44,13 @@ button:focus {
 
 .btn {
   border: 1px solid transparent;
+  border-radius: 5px;
   cursor: pointer;
   display: inline-block;
   font-family: "Roboto", sans-serif;
   font-weight: normal;
   margin-bottom: 0;
+  padding: 10px 15px;
   text-align: center;
   vertical-align: middle;
   white-space: nowrap; }
@@ -56,8 +58,25 @@ button:focus {
 .btn--lg {
   font-size: 18px;
   font-size: 1.125rem;
+  border-radius: 0;
   line-height: 1.33;
   padding: 10px 16px; }
+
+.btn--primary {
+  background: #4a9800;
+  color: #fafafa; }
+
+.btn--secondary {
+  background: #83d67d;
+  color: #fafafa; }
+
+.btn--alert {
+  background: red;
+  color: #fafafa; }
+
+.btn--muted {
+  background: #ccc;
+  color: #333; }
 
 .container {
   -ms-flex-wrap: wrap;
@@ -181,17 +200,21 @@ button:focus {
     position: absolute;
     width: 1.5em; }
 
+.list {
+  list-style: none; }
+
 .list--plain {
-  list-style: none;
   padding-left: 10px; }
   .list--plain li {
     margin-bottom: 30px; }
 
 .list--files {
-  list-style: none;
   padding-left: 12px; }
   .list--files li::before {
     margin-top: .1em; }
+
+.list--inline li {
+  display: inline-block; }
 
 .login__container {
   background: #fff;

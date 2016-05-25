@@ -30,4 +30,13 @@ class CoursesController extends Controller
             'course' => $course
         ]);
     }
+
+    /**
+     * Create a new course
+     * @param  Request $request
+     */
+    public function store(Request $request)
+    {
+        
+    }
 }

@@ -9,7 +9,7 @@
             @if (count($lesson->files))
                 <div class="lesson-files">
                     <h3 class="lesson-files__header">Lesson Files</h3>
-                    <ul class="list--files">
+                    <ul class="list list--files">
                         @foreach ($lesson->files as $file)
                             <li>
                                 <h4 class="lesson-file-name"><a href="{{ $file->url }}">{{ $file->name }}</a></h4>
@@ -19,6 +19,18 @@
                     </ul>
                 </div>
             @endif
+
+            <ul class="admin-actions list list--inline">
+                <li>
+                    <a class="btn btn--primary">Edit Lesson</a>
+                </li>
+                <li>
+                    <a class="btn btn--alert">Delete Lesson</a>
+                </li>
+                <li>
+                    <a class="btn btn--secondary">Add Lesson File</a>
+                </li>
+            </ul>
         </div>
     </div>
 @stop
