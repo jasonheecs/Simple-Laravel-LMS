@@ -10,9 +10,14 @@ html {
 body {
   font-size: 16px;
   font-size: 1rem;
+  background: #ededed;
   font-family: "Roboto", sans-serif; }
 
-.container, .dashboard {
+a {
+  color: #d60080;
+  text-decoration: none; }
+
+.container, .content {
   display: -ms-flexbox;
   display: flex; }
 
@@ -24,7 +29,11 @@ body {
   -ms-flex-align: center;
   align-items: center; }
 
-.sidebar, .dashboard {
+.content__wrapper, .topbar {
+  -ms-flex: 1 100%;
+  flex: 1 100%; }
+
+.sidebar, .content {
   -ms-flex: 1;
   flex: 1; }
 
@@ -104,15 +113,85 @@ button:focus {
   margin-right: 10px;
   vertical-align: middle; }
 
-@media screen and (min-width: 768px) {
-  .dashboard {
-    -ms-flex: 4;
-    flex: 4; } }
+.content {
+  -ms-flex-line-pack: start;
+  align-content: flex-start;
+  -ms-flex-align: start;
+  align-items: flex-start;
+  -ms-flex-flow: row wrap;
+  flex-flow: row wrap; }
+  @media screen and (min-width: 768px) {
+    .content {
+      -ms-flex: 4;
+      flex: 4; } }
+  @media screen and (min-width: 992px) {
+    .content {
+      -ms-flex: 6;
+      flex: 6; } }
 
-@media screen and (min-width: 992px) {
-  .dashboard {
-    -ms-flex: 6;
-    flex: 6; } }
+.content__wrapper {
+  padding: 20px; }
+
+.topbar {
+  background: #fafafa;
+  border-bottom: 1px solid #ffccea;
+  padding: 8px 20px; }
+
+.topbar__logo {
+  vertical-align: middle; }
+
+.topbar__subtitle {
+  font-size: 14px;
+  font-size: 0.875rem;
+  display: inline-block;
+  margin-left: 20px; }
+
+.panel {
+  padding: 20px; }
+  .panel + .panel {
+    margin-top: 30px; }
+
+.panel--default {
+  background: #fafafa;
+  box-shadow: 0 3px 7px 0 rgba(0, 0, 0, 0.12), 0 2px 5px 0 rgba(0, 0, 0, 0.15); }
+
+.panel__heading {
+  font-size: 20px;
+  font-size: 1.25rem;
+  border-bottom: 1px solid rgba(87, 0, 52, 0.2);
+  color: #290018;
+  margin-bottom: 30px;
+  padding-bottom: 15px; }
+
+.panel__subheading {
+  font-size: 16px;
+  font-size: 1rem;
+  margin-bottom: 20px;
+  padding-left: 5px; }
+
+.list--files li {
+  padding-left: 1.5em; }
+  .list--files li::before {
+    background: url("../img/icons/file.svg") no-repeat;
+    color: #d60080;
+    content: '';
+    display: inline-block;
+    height: 1.5em;
+    margin-left: -1.5em;
+    position: absolute;
+    width: 1.5em; }
+
+.list--plain {
+  list-style: none;
+  padding-left: 10px; }
+  .list--plain li {
+    margin-bottom: 30px; }
+
+.list--files {
+  list-style: none;
+  padding-left: 12px; }
+  .list--files li::before {
+    margin-top: .1em; }
 
 .login__container {
   background: #fff;
@@ -175,5 +254,22 @@ button:focus {
   border-bottom: 1px solid #818b99;
   color: #fff;
   text-decoration: none; }
+
+.lesson-files {
+  margin-top: 50px; }
+
+.lesson-files__header {
+  font-size: 16px;
+  font-size: 1rem; }
+
+.lesson-file-name {
+  font-size: 14px;
+  font-size: 0.875rem;
+  margin-bottom: 5px; }
+
+.lesson-file-desc {
+  font-size: 14px;
+  font-size: 0.875rem;
+  margin-top: 0; }
 
 /*# sourceMappingURL=app.css.map */

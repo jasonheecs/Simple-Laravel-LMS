@@ -1,9 +1,15 @@
 @extends('layouts.master')
 
 @section('layout')
-    <main class="container">
+    <div class="container">
         @include('layouts.sidebar')
-        
-        @yield('content')
-    </main>
+
+        <main class="content">
+            @include('layouts.topbar')
+            
+            <div class="content__wrapper">
+                @yield('content')
+            </div>      
+        </main>
+    </div>
 @stop

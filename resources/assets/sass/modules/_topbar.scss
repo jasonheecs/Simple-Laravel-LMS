@@ -1,0 +1,16 @@
+.topbar {
+  @extend %flex__item--full-width;
+  background: $color-white;
+  border-bottom: 1px solid lighten($color-primary, 48%);
+  padding: 8px 20px;
+}
+
+.topbar__logo {
+  vertical-align: middle;
+}
+
+.topbar__subtitle {
+  @include font-size(14px);
+  display: inline-block;
+  margin-left: 20px;
+}

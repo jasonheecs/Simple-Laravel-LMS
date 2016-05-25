@@ -12,5 +12,11 @@ html {
 
 body {
   @include font-size(16px);
+  background: darken($color-white, 5%);
   font-family: $roboto;
+}
+
+a {
+  color: $color-primary;
+  text-decoration: none;
 }

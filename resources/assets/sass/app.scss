@@ -9,6 +9,10 @@
         'modules/button',
         'modules/container',
         'modules/sidebar',
-        'modules/dashboard';
+        'modules/main',
+        'modules/topbar',
+        'modules/panel',
+        'modules/list';
 
-@import 'pages/login';
+@import 'pages/login',
+        'pages/lesson';

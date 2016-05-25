@@ -17,12 +17,14 @@
             <li>
                 <a class="sidebar-nav__link" href="#"><object type="image/svg+xml" data="{{ asset('img/icons/settings.svg') }}" class="sidebar-icon"></object>Settings</a>
             </li>
-            <li>
-                <a class="sidebar-nav__link" href="#"><object type="image/svg+xml" data="{{ asset('img/icons/lecturers.svg') }}" class="sidebar-icon"></object>Lecturers</a>
-            </li>
-            <li>
-                <a class="sidebar-nav__link" href="#"><object type="image/svg+xml" data="{{ asset('img/icons/students.svg') }}" class="sidebar-icon"></object>Students</a>
-            </li>
+            @if (Auth::user()->is('admin'))
+                <li>
+                    <a class="sidebar-nav__link" href="#"><object type="image/svg+xml" data="{{ asset('img/icons/lecturers.svg') }}" class="sidebar-icon"></object>Lecturers</a>
+                </li>
+                <li>
+                    <a class="sidebar-nav__link" href="#"><object type="image/svg+xml" data="{{ asset('img/icons/students.svg') }}" class="sidebar-icon"></object>Students</a>
+                </li>
+            @endif
         </ul>
     </nav>
 </section>

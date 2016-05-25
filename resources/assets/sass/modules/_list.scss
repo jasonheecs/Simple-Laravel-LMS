@@ -1,0 +1,38 @@
+$list-icon-width: 1.5em;
+
+%list-icon {
+  padding-left: $list-icon-width;
+
+  &::before {
+    background: url('../img/icons/file.svg') no-repeat;
+    color: $color-primary;
+    content: '';
+    display: inline-block;
+    height: $list-icon-width;
+    margin-left: -$list-icon-width;
+    position: absolute;
+    width: $list-icon-width;
+  }
+}
+
+.list--plain {
+  list-style: none;
+  padding-left: 10px;
+
+  li {
+    margin-bottom: 30px;
+  }
+}
+
+.list--files {
+  list-style: none;
+  padding-left: 12px;
+
+  li {
+    @extend %list-icon;
+
+    &::before {
+      margin-top: .1em;
+    }
+  }
+}

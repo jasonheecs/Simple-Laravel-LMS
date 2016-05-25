@@ -14,6 +14,8 @@ class LessonsController extends Controller
      */
     public function show(Lesson $lesson)
     {
+        $lesson->load('files');
+        
         return view('lessons.show', [
             'lesson' => $lesson
         ]);

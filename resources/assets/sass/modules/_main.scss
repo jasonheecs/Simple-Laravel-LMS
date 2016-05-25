@@ -1,6 +1,9 @@
-.dashboard {
+.content {
   @extend %flex;
   @extend %flex__item--1;
+  align-content: flex-start;
+  align-items: flex-start;
+  flex-flow: row wrap;
 
   @media screen and (min-width: $mq-medium) {
     flex: 4;
@@ -9,4 +12,9 @@
   @media screen and (min-width: $mq-large) {
     flex: 6;
   }
+}
+
+.content__wrapper {
+  @extend %flex__item--full-width;
+  padding: 20px;
 }

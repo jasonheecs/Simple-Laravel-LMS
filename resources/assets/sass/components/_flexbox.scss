@@ -19,6 +19,10 @@
   flex: auto;
 }
 
+%flex__item--full-width {
+  flex: 1 100%;
+}
+
 @for $i from 1 through 6 {
   %flex__item--#{$i} {
     flex: $i;

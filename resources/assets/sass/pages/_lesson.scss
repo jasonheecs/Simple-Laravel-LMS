@@ -1,0 +1,17 @@
+.lesson-files {
+  margin-top: 50px;
+}
+
+.lesson-files__header {
+  @include font-size(16px);
+}
+
+.lesson-file-name {
+  @include font-size(14px);
+  margin-bottom: 5px;
+}
+
+.lesson-file-desc {
+  @include font-size(14px);
+  margin-top: 0;
+}
