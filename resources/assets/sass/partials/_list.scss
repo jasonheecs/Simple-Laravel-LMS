@@ -30,15 +30,20 @@ $list-icon-width: 1.5em;
 .list--files {
   padding-left: 12px;
 
-  li {
+  > li {
     @extend %list-icon;
 
     &::before {
-      margin-top: .1em;
+      margin-top: .2em;
     }
   }
 }
 
 .list--inline li {
   display: inline-block;
+  margin-right: 8px;
+
+  &:last-child {
+    margin-right: 0;
+  }
 }

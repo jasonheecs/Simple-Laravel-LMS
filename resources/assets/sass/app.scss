@@ -1,18 +1,17 @@
 @import 'variables';
 @import 'mixins';
 
-@import 'base';
+@import 'modules/flexbox';
 
-@import 'components/flexbox';
-
-@import 'modules/form',
-        'modules/button',
-        'modules/container',
-        'modules/sidebar',
-        'modules/main',
-        'modules/topbar',
-        'modules/panel',
-        'modules/list';
+@import 'partials/base',
+        'partials/forms',
+        'partials/button',
+        'partials/container',
+        'partials/sidebar',
+        'partials/main',
+        'partials/topbar',
+        'partials/panel',
+        'partials/list';
 
 @import 'pages/login',
         'pages/lesson';

@@ -45,7 +45,7 @@ class User extends Authenticatable
      * Get a Collection of Instructor models which corresponds to this user
      * @return Collection [Collection of Instructors]
      */
-    public function isInstructorIn()
+    public function getAllInstructors()
     {
         $lecturers = Lecturer::where('user_id', $this->id)->get();
         return $lecturers->load('courses');
@@ -55,9 +55,33 @@ class User extends Authenticatable
      * Get a Collection of Student models which corresponds to this user
      * @return Collection [Collection of Students]
      */
-    public function isStudentIn()
+    public function getAllStudents()
     {
         $students = Student::where('user_id', $this->id)->get();
         return $students->load('courses');
+    }
+
+    /**
+     * Check if user is lecturer in a course
+     * @param  Course  $course
+     */
+    public function isLecturerIn(Course $course)
+    {
+        foreach ($course->lecturers()->get() as $lecturer) {
+            if ($this->id == $lecturer->user_id) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Check if user can edit a course
+     * @param  Course $course
+     */
+    public function canEdit(Course $course)
+    {
+        return $this->is('admin') || $this->isLecturerIn($course);
     }
 }

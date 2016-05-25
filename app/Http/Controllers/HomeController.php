@@ -28,8 +28,8 @@ class HomeController extends Controller
         $user = \Auth::user();
 
         return view('home', [
-            'instructing' => $user->isInstructorIn(),
-            'studying' => $user->isStudentIn()
+            'instructing' => $user->getAllInstructors(),
+            'studying' => $user->getAllStudents()
         ]);
     }
 }

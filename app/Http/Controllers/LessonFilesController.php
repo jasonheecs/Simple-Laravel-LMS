@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
+use App\Lesson;
+use App\LessonFile;
 
 class LessonFilesController extends Controller
 {
@@ -15,6 +17,28 @@ class LessonFilesController extends Controller
      */
     public function store(Request $request, Lesson $lesson)
     {
-        return 'test';
+        $this->validate($request, [
+            'filename' => 'required',
+            'url'      => 'required'
+        ]);
+
+        $file = new LessonFile;
+        $file->name = $request->filename;
+        $file->url = $request->url;
+
+        if ($request->has('description')) {
+            $file->description = $request->description;
+        }
+
+        $lesson->addFile($file);
+
+        return back();
+    }
+
+    public function delete(Request $request, LessonFile $file)
+    {
+        $file->delete();
+
+        return back();
     }
 }

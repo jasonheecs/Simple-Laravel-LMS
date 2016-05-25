@@ -15,4 +15,9 @@ class Lesson extends Model
     {
         return $this->hasMany(LessonFile::class);
     }
+
+    public function addFile(LessonFile $file)
+    {
+        return $this->files()->save($file);
+    }
 }

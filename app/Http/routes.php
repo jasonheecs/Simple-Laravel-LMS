@@ -26,3 +26,4 @@ Route::post('/courses', 'CoursesController@store');
 Route::get('/lessons/{lesson}', 'LessonsController@show');
 
 Route::post('/lessons/{lesson}/files', 'LessonFilesController@store');
+Route::delete('/files/{file}', 'LessonFilesController@delete');
