@@ -35,6 +35,36 @@ class LessonFilesController extends Controller
         return back();
     }
 
+    public function edit(LessonFile $file)
+    {
+        return view('lessonfiles.edit', [
+            'file' => $file
+        ]);
+    }
+
+    public function update(Request $request, LessonFile $file)
+    {
+        $this->validate($request, [
+            'filename' => 'required',
+            'url'      => 'required'
+        ]);
+        
+        if ($request->has('description')) {
+            $file->update([
+              'name' => $request->filename,
+              'url' => $request->url,
+              'description' => $request->description
+            ]);
+        } else {
+            $file->update([
+              'name' => $request->filename,
+              'url' => $request->url
+            ]);
+        }
+
+        return redirect()->route('lesson', [$file->lesson]);
+    }
+
     public function delete(Request $request, LessonFile $file)
     {
         $file->delete();

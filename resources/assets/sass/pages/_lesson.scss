@@ -16,9 +16,15 @@
   margin-top: 0;
 }
 
-.admin-actions {
+.lesson-admin-actions {
+  height: auto;
   margin-top: 80px;
   text-align: right;
+
+  &.hidden {
+    height: 0;
+    margin: 0;
+  }
 }
 
 .add-file-form {

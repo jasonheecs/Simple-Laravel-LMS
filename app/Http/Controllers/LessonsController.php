@@ -21,4 +21,21 @@ class LessonsController extends Controller
             'lesson' => $lesson
         ]);
     }
+
+    public function update(Request $request, Lesson $lesson)
+    {
+        // $this->validate($request, [
+        //     'filename' => 'required',
+        //     'url'      => 'required'
+        // ]);
+
+        return $request;
+    }
+
+    public function delete(Request $request, Lesson $lesson)
+    {
+        $lesson->delete();
+
+        return redirect()->route('course', [$lesson->course]);
+    }
 }

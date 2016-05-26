@@ -1,10 +1,20 @@
 @extends('layouts.with-sidebar')
 
+@section('head')
+    <meta name="csrf-token" content="{{ csrf_token() }}" />
+@stop
+
 @section('content')
-    <div class="panel panel--default">
-        <h1 class="panel__heading">{{ $lesson->title }}</h1>
+    <div id="lesson-panel" class="panel panel--default">
+        <h1 id="lesson-title-content" class="panel__heading title-editable">{{ $lesson->title }}</h1>
         <div class="panel__content">
-            {{ $lesson->body }}
+            @if (Auth::user()->canEdit($lesson->course))
+                <input type="hidden" name="lesson-id" id="lesson-id" value="{{ $lesson->id }}">
+            @endif
+
+            <article id="lesson-body-content" class="body-editable">
+                {{ $lesson->body }}
+            </article>
 
             @if (count($lesson->files))
                 <div class="lesson-files">
@@ -18,7 +28,7 @@
                                     @if (Auth::user()->canEdit($lesson->course))
                                         <div>
                                             <ul class="list list--inline">
-                                                <li><a href="#">Edit</a></li>
+                                                <li><a href="/files/{{ $file->id }}/edit">Edit</a></li>
                                                 <li>
                                                     <form method="POST" action="{{ url('/files', $file->id) }}">
                                                         {{ method_field('DELETE') }}
@@ -39,15 +49,27 @@
             @endif
 
             @if (Auth::user()->canEdit($lesson->course))
-                <ul class="admin-actions list list--inline">
+                <ul id="lesson-admin-actions" class="lesson-admin-actions list list--inline">
                     <li>
-                        <a class="btn btn--primary">Edit Lesson</a>
+                        <a id="edit-lesson-btn" class="btn btn--primary">Edit Lesson</a>
                     </li>
                     <li>
-                        <a class="btn btn--alert">Delete Lesson</a>
+                        <form method="POST" action="{{ url('/lessons', $lesson->id) }}">
+                            {{ method_field('DELETE') }}
+                            <button type="submit" class="btn btn--alert">Delete</button>
+                            {!! csrf_field() !!}
+                        </form>
                     </li>
                     <li>
                         <a class="btn btn--secondary">Add Lesson File</a>
+                    </li>
+                </ul>
+                <ul id="lesson-content-actions" class="hidden lesson-admin-actions list list--inline">
+                    <li>
+                        <a id="save-changes-btn" class="btn btn--primary">Save Changes</a>
+                    </li>
+                    <li>
+                        <a id="cancel-changes-btn" class="btn btn--muted">Cancel</a>
                     </li>
                 </ul>
             @endif

@@ -20,10 +20,15 @@ Route::get('/', function () {
 Route::get('/home', 'HomeController@index');
 
 Route::get('/courses', 'CoursesController@index');
-Route::get('/courses/{course}', 'CoursesController@show');
 Route::post('/courses', 'CoursesController@store');
+Route::get('/courses/{course}', ['as' => 'course', 'uses' => 'CoursesController@show']);
 
-Route::get('/lessons/{lesson}', 'LessonsController@show');
+Route::get('/lessons/{lesson}', ['as' => 'lesson', 'uses' => 'LessonsController@show']);
+Route::patch('/lessons/{lesson}', 'LessonsController@update');
+Route::delete('/lessons/{lesson}', 'LessonsController@delete');
 
 Route::post('/lessons/{lesson}/files', 'LessonFilesController@store');
+Route::patch('/files/{file}', 'LessonFilesController@update');
 Route::delete('/files/{file}', 'LessonFilesController@delete');
+Route::get('/files/{file}/edit', 'LessonFilesController@edit');
+
