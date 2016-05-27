@@ -3,16 +3,17 @@
 /* globals XMLHttpRequest */
 
 var Editor = require('./editor');
-var titleEditor;
-var bodyEditor;
+var helper = require('./helper');
+var titleEditor; //editor for the title
+var bodyEditor; //editor for the body content
 
-var adminActionsEl;
-var contentActionsEl;
-var lessonPanelEl;
-var titleEl;
-var articleEl;
-var initialTitle;
-var initialBody;
+var adminActionsEl; //parent element containing the buttons of the admin actions
+var contentActionsEl; //parent element containing the buttons of the content actions
+var lessonPanelEl; //wrapper element for the lesson title and content
+var titleEl; //lesson title element
+var articleEl; //lesson body content element
+var initialTitle; //variable used to store initial title (for reverting changes made)
+var initialBody; //variable used to store initial body content (for reverting changes made)
 
 function init() {
     adminActionsEl = document.getElementById('lesson-admin-actions');
@@ -43,6 +44,11 @@ function changeButtons() {
     }
 }
 
+function revertChanges() {
+    titleEl.innerHTML = initialTitle;
+    articleEl.innerHTML = initialBody;
+}
+
 function attachEventListeners() {
     lessonPanelEl.addEventListener('click', function(evt){
         if (evt.target && (evt.target.id === 'edit-lesson-btn' || evt.target.id === 'cancel-changes-btn' || evt.target.id === 'save-changes-btn')) {
@@ -53,7 +59,7 @@ function attachEventListeners() {
             } else if(evt.target.id === 'cancel-changes-btn') {
                 cancelChangesListener();
             } else if(evt.target.id === 'save-changes-btn') {
-                saveChangesListener();
+                saveChangesListener(evt.target);
             }
         }
     });
@@ -62,38 +68,64 @@ function attachEventListeners() {
         titleEditor = new Editor();
         bodyEditor = new Editor();
         titleEditor.init(document.querySelector('.title-editable'), {toolbar:false});
-        bodyEditor.init(document.querySelector('.body-editable'));
+        bodyEditor.init(document.querySelector('.body-editable'), {}, true);
 
         bodyEditor.setFocus();
     }
 
     function cancelChangesListener() {
-        titleEl.innerHTML = initialTitle;
-        articleEl.innerHTML = initialBody;
+        revertChanges();
         titleEditor.destroy();
         bodyEditor.destroy();
     }
 
-    function saveChangesListener() {
+    function saveChangesListener(saveBtnEl) {
+        helper.disableButton(saveBtnEl);
+
         var newTitle = titleEditor.getContent()[titleEl.id].value;
-        var newContent = bodyEditor.getContent()[articleEl.id].value;
+        var newBody = bodyEditor.getContent()[articleEl.id].value;
+        var updateData = {title: newTitle, body: newBody};
 
-        console.log(newTitle);
-        console.log(newContent);
+        // Send ajax request to update lesson
+        var xhr = new XMLHttpRequest();
+        xhr.open('PATCH', '/lessons/'+ document.getElementById('lesson-id').value);
+        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+        xhr.setRequestHeader('X-CSRF-TOKEN', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
+        xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        xhr.addEventListener('load', function(evt){
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                initialTitle = newTitle;
+                initialBody = newBody;
 
-        // var xhr = new XMLHttpRequest();
-        // xhr.open('PATCH', '/lessons/'+ document.getElementById('lesson-id').value);
-        // console.log('lessons/'+ document.getElementById('lesson-id').value);
-        // xhr.setRequestHeader('X-CSRF-TOKEN', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
-        // xhr.addEventListener('load', function(evt){
-        //     console.log(xhr.responseText);
-        // });
+                setAlert(JSON.parse(xhr.responseText).response, 'alert--success');
+            } else {
+                revertChanges();
 
-        // xhr.send(newContent);
+                //display errors to alert element
+                var errors = JSON.parse(xhr.responseText);
+                var errorMsg = '';
 
-        // initialLessonContent = newContent;
+                for (var error in errors) {
+                    errorMsg = errors[error].reduce(function(previousMsg, currentMsg) {
+                        return previousMsg + currentMsg;
+                    });
+                }
+                setAlert(errorMsg, 'alert--failure');
+            }
+
+            helper.enableButton(saveBtnEl);
+        });
+
+        xhr.send(JSON.stringify(updateData));
+
         titleEditor.destroy();
         bodyEditor.destroy();
+    }
+
+    function setAlert(message, classList) {
+        var alertEl = document.getElementById('alert');
+        alertEl.textContent = message;
+        alertEl.classList.add(classList);
     }
 }
 

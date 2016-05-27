@@ -1,10 +1,14 @@
 @extends('layouts.with-sidebar')
 
 @section('head')
-    <meta name="csrf-token" content="{{ csrf_token() }}" />
+    @if (Auth::user()->canEdit($lesson->course))
+        <meta name="csrf-token" content="{{ csrf_token() }}" />
+    @endif
 @stop
 
 @section('content')
+    <div id="alert" class="alert"></div>
+
     <div id="lesson-panel" class="panel panel--default">
         <h1 id="lesson-title-content" class="panel__heading title-editable">{{ $lesson->title }}</h1>
         <div class="panel__content">
@@ -13,7 +17,7 @@
             @endif
 
             <article id="lesson-body-content" class="body-editable">
-                {{ $lesson->body }}
+                {!! $lesson->body !!}
             </article>
 
             @if (count($lesson->files))

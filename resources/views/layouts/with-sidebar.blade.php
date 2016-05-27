@@ -8,6 +8,8 @@
             @include('layouts.topbar')
             
             <div class="content__wrapper">
+                @include('flash')
+
                 @yield('content')
             </div>      
         </main>

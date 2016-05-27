@@ -65,7 +65,7 @@ class LessonFilesController extends Controller
         return redirect()->route('lesson', [$file->lesson]);
     }
 
-    public function delete(Request $request, LessonFile $file)
+    public function destroy(Request $request, LessonFile $file)
     {
         $file->delete();
 

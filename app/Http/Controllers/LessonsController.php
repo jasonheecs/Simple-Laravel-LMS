@@ -24,12 +24,20 @@ class LessonsController extends Controller
 
     public function update(Request $request, Lesson $lesson)
     {
-        // $this->validate($request, [
-        //     'filename' => 'required',
-        //     'url'      => 'required'
-        // ]);
+        $this->validate($request, [
+            'title' => 'required',
+            'body'  => 'required'
+        ]);
 
-        return $request;
+        $lesson->title = $request->title;
+        $lesson->body = $request->body;
+        $lesson->save();
+
+        if ($request->ajax()) {
+            return response()->json(['response' => 'Lesson Updated']); 
+        }
+
+        return back();
     }
 
     public function delete(Request $request, Lesson $lesson)
@@ -37,5 +45,26 @@ class LessonsController extends Controller
         $lesson->delete();
 
         return redirect()->route('course', [$lesson->course]);
+    }
+
+    /**
+     * Upload images inserted via Medium WYSIWYG editor
+     */
+    public function upload(Request $request)
+    {
+        $file = $request->file('files')[0];
+
+        if ($file->isValid()) {
+            $fileName = time().'-'.$file->getClientOriginalName();
+            $destination = public_path() . '/uploads/lessons/';
+            $file->move($destination, $fileName);
+
+            $response = ['files' => [['url' => url('/uploads/lessons/'. $fileName)]]];
+        } else {
+            echo 'Image Upload Error!';
+            $response = ['files' => [['url' => url('/uploads/lessons/error.png')]]];
+        }
+
+        return json_encode($response);
     }
 }

@@ -28,7 +28,14 @@ Route::patch('/lessons/{lesson}', 'LessonsController@update');
 Route::delete('/lessons/{lesson}', 'LessonsController@delete');
 
 Route::post('/lessons/{lesson}/files', 'LessonFilesController@store');
+// Route::resource('files', 'LessonFilesController', ['except' => [
+//     'index', 'create', 'show', 'store'
+// ]]);
+
 Route::patch('/files/{file}', 'LessonFilesController@update');
-Route::delete('/files/{file}', 'LessonFilesController@delete');
+Route::delete('/files/{file}', 'LessonFilesController@destroy');
 Route::get('/files/{file}/edit', 'LessonFilesController@edit');
+
+// Medium editor image upload path
+Route::any('upload', 'LessonsController@upload');
 
