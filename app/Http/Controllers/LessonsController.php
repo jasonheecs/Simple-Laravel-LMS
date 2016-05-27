@@ -9,6 +9,29 @@ use App\Lesson;
 
 class LessonsController extends Controller
 {
+    private $validationRules = [
+        'title' => 'required',
+        'body'  => 'required'
+    ];
+
+    public function create()
+    {
+        return view('lessons.create');
+    }
+
+    public function store(Request $request, Course $course)
+    {
+        $this->validate($request, $this->validationRules);
+
+        $lesson = new Lesson;
+        $lesson->title = $request->title;
+        $lesson->body = $request->body;
+
+        $course->addLesson($lesson);
+
+        return back();
+    }
+
     /**
      * Show details for one lesson
      */
@@ -24,10 +47,7 @@ class LessonsController extends Controller
 
     public function update(Request $request, Lesson $lesson)
     {
-        $this->validate($request, [
-            'title' => 'required',
-            'body'  => 'required'
-        ]);
+        $this->validate($request, $this->validationRules);
 
         $lesson->title = $request->title;
         $lesson->body = $request->body;

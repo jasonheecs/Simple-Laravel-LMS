@@ -20,4 +20,9 @@ class Course extends Model
     {
         return $this->belongsToMany(Lecturer::class, 'course_lecturer');
     }
+
+    public function addLesson(Lesson $lesson)
+    {
+        return $this->lessons()->save($lesson);
+    }
 }

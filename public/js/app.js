@@ -23570,6 +23570,11 @@ function init() {
         initialBody = articleEl.innerHTML;
 
         attachEventListeners();
+
+        if (document.getElementById('create-lesson')) {
+            // if we are creating a lesson (i.e.: not in editing page), start the editors.
+            initEditors();
+        }
     }
 }
 
@@ -23591,6 +23596,15 @@ function revertChanges() {
     articleEl.innerHTML = initialBody;
 }
 
+function initEditors() {
+    titleEditor = new Editor();
+    bodyEditor = new Editor();
+    titleEditor.init(document.querySelector('.title-editable'), { toolbar: false });
+    bodyEditor.init(document.querySelector('.body-editable'), {}, true);
+
+    bodyEditor.setFocus();
+}
+
 function attachEventListeners() {
     lessonPanelEl.addEventListener('click', function (evt) {
         if (evt.target && (evt.target.id === 'edit-lesson-btn' || evt.target.id === 'cancel-changes-btn' || evt.target.id === 'save-changes-btn')) {
@@ -23605,64 +23619,59 @@ function attachEventListeners() {
             }
         }
     });
+}
 
-    function editLessonListener() {
-        titleEditor = new Editor();
-        bodyEditor = new Editor();
-        titleEditor.init(document.querySelector('.title-editable'), { toolbar: false });
-        bodyEditor.init(document.querySelector('.body-editable'), {}, true);
+function editLessonListener() {
+    initEditors();
+}
 
-        bodyEditor.setFocus();
-    }
+function cancelChangesListener() {
+    revertChanges();
+    titleEditor.destroy();
+    bodyEditor.destroy();
+}
 
-    function cancelChangesListener() {
-        revertChanges();
-        titleEditor.destroy();
-        bodyEditor.destroy();
-    }
+function saveChangesListener(saveBtnEl) {
+    helper.disableButton(saveBtnEl);
 
-    function saveChangesListener(saveBtnEl) {
-        helper.disableButton(saveBtnEl);
+    var newTitle = titleEditor.getContent()[titleEl.id].value;
+    var newBody = bodyEditor.getContent()[articleEl.id].value;
+    var updateData = { title: newTitle, body: newBody };
 
-        var newTitle = titleEditor.getContent()[titleEl.id].value;
-        var newBody = bodyEditor.getContent()[articleEl.id].value;
-        var updateData = { title: newTitle, body: newBody };
+    // Send ajax request to update lesson
+    var xhr = new XMLHttpRequest();
+    xhr.open('PATCH', '/lessons/' + document.getElementById('lesson-id').value);
+    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+    xhr.setRequestHeader('X-CSRF-TOKEN', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
+    xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    xhr.addEventListener('load', function (evt) {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            initialTitle = newTitle;
+            initialBody = newBody;
 
-        // Send ajax request to update lesson
-        var xhr = new XMLHttpRequest();
-        xhr.open('PATCH', '/lessons/' + document.getElementById('lesson-id').value);
-        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-        xhr.setRequestHeader('X-CSRF-TOKEN', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
-        xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-        xhr.addEventListener('load', function (evt) {
-            if (xhr.readyState === 4 && xhr.status === 200) {
-                initialTitle = newTitle;
-                initialBody = newBody;
+            setAlert(JSON.parse(xhr.responseText).response, 'alert--success');
+        } else {
+            revertChanges();
 
-                setAlert(JSON.parse(xhr.responseText).response, 'alert--success');
-            } else {
-                revertChanges();
+            //display errors to alert element
+            var errors = JSON.parse(xhr.responseText);
+            var errorMsg = '';
 
-                //display errors to alert element
-                var errors = JSON.parse(xhr.responseText);
-                var errorMsg = '';
-
-                for (var error in errors) {
-                    errorMsg = errors[error].reduce(function (previousMsg, currentMsg) {
-                        return previousMsg + currentMsg;
-                    });
-                }
-                setAlert(errorMsg, 'alert--failure');
+            for (var error in errors) {
+                errorMsg = errors[error].reduce(function (previousMsg, currentMsg) {
+                    return previousMsg + currentMsg;
+                });
             }
+            setAlert(errorMsg, 'alert--failure');
+        }
 
-            helper.enableButton(saveBtnEl);
-        });
+        helper.enableButton(saveBtnEl);
+    });
 
-        xhr.send(JSON.stringify(updateData));
+    xhr.send(JSON.stringify(updateData));
 
-        titleEditor.destroy();
-        bodyEditor.destroy();
-    }
+    titleEditor.destroy();
+    bodyEditor.destroy();
 
     function setAlert(message, classList) {
         var alertEl = document.getElementById('alert');

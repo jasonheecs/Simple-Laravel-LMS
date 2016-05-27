@@ -1,3 +1,5 @@
+$btn-alert-bg: #910808;
+
 .btn {
   border: 1px solid transparent;
   border-radius: 5px;
@@ -29,8 +31,14 @@
   color: $color-white;
 }
 
+.btn--outline {
+  background: transparent;
+  border: 2px solid $color-highlight;
+  color: $color-highlight;
+}
+
 .btn--alert {
-  background: red;
+  background: $btn-alert-bg;
   color: $color-white;
 }
 

@@ -493,8 +493,13 @@ button:focus {
   background: #83d67d;
   color: #fafafa; }
 
+.btn--outline {
+  background: transparent;
+  border: 2px solid #4a9800;
+  color: #4a9800; }
+
 .btn--alert {
-  background: red;
+  background: #910808;
   color: #fafafa; }
 
 .btn--muted {

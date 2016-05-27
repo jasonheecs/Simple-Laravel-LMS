@@ -39,4 +39,11 @@ class CoursesController extends Controller
     {
         
     }
+
+    public function destroy(Request $request, Course $course)
+    {
+        $course->delete();
+
+        return redirect()->route('home');
+    }
 }

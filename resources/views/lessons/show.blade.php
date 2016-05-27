@@ -65,7 +65,7 @@
                         </form>
                     </li>
                     <li>
-                        <a class="btn btn--secondary">Add Lesson File</a>
+                        <a class="btn btn--outline">Add Lesson File</a>
                     </li>
                 </ul>
                 <ul id="lesson-content-actions" class="hidden lesson-admin-actions list list--inline">
