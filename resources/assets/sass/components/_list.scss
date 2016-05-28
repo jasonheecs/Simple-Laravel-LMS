@@ -11,10 +11,13 @@
 }
 
 .list--files {
-  padding-left: 12px;
+  padding-left: 0;
 
   > li {
     @extend %list-icon;
+    padding-bottom: 8px;
+    padding-left: calc(1.5em + 12px);
+    padding-top: 8px;
 
     &::before {
       margin-top: .2em;
@@ -28,5 +31,11 @@
 
   &:last-child {
     margin-right: 0;
+  }
+}
+
+.list--striped {
+  > li:nth-child(odd) {
+    background: shade($color-white, 3%);
   }
 }

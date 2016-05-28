@@ -7,7 +7,7 @@
             <img src="{{ asset('img/efusion-logo.png') }}" alt="Efusion Technology" />
             <h1 class="login__site-name">Learning Management System</h1>
             <form class="login-form" role="form" method="POST" action="{{ url('/login') }}">
-                <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
+                <div class="{{ $errors->has('email') ? ' has-error' : '' }}">
                     <input type="email" class="login-form__input login-form__input--name" name="email" id="email" placeholder="Enter your email" value="{{ old('email') }}"/>
 
                     @if ($errors->has('email'))
@@ -16,7 +16,7 @@
                         </span>
                     @endif
                 </div>
-                <div class="form-group{{ $errors->has('password') ? ' has-error' : '' }}">
+                <div class="{{ $errors->has('password') ? ' has-error' : '' }}">
                     <input type="password" class="login-form__input login-form__input--password" name="password" id="password" placeholder="Password" />
 
                     @if ($errors->has('password'))

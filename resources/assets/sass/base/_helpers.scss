@@ -1,5 +1,37 @@
+$helper-margin-size: 30px;
+
 //  Visibility Helper classes
 .hidden {
+  //scss-lint:disable ImportantRule
+  height: 0;
+  margin: 0 !important;
   opacity: 0;
+  padding: 0 !important;
   visibility: hidden;
+
+  > * {
+    display: none !important;
+  }
+}
+
+// Margins Helper classes
+.margin--top {
+  margin-top: $helper-margin-size;
+}
+
+.margin--bottom {
+  margin-bottom: $helper-margin-size;
+}
+
+.margin--top-lg {
+  margin-top: $helper-margin-size * 2;
+}
+
+.margin--bottom-lg {
+  margin-bottom: $helper-margin-size * 2;
+}
+
+// Float Helper classes
+.float--right {
+  float: right;
 }

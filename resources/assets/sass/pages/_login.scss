@@ -30,7 +30,7 @@
   border: 1px solid #ccc;
   display: block;
   padding: 10px 0 10px 40px;
-  width: calc(100% - 40px);
+  width: 100%;
 }
 
 .login-form__input--name {
@@ -49,6 +49,10 @@
   color: #999;
   margin: 15px 0;
   text-align: left;
+}
+
+.login-remember__label {
+  font-weight: 400;
 }
 
 .btn--login {

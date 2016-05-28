@@ -19,14 +19,14 @@
             </ul>
 
             @if (Auth::user()->canEdit($course))
-                <ul id="course-admin-actions" class="course-admin-actions list list--inline">
+                <ul id="course-admin-actions" class="list list--inline button-group button-group--right margin--top admin-actions-group">
                     <li>
                         <a id="edit-course-btn" class="btn btn--primary">Edit Course</a>
                     </li>
                     <li>
                         <form method="POST" action="{{ url('/courses', $course->id) }}">
                             {{ method_field('DELETE') }}
-                            <button type="submit" class="btn btn--alert">Delete Course</button>
+                            <button type="submit" class="btn btn--danger">Delete Course</button>
                             {!! csrf_field() !!}
                         </form>
                     </li>
@@ -37,7 +37,7 @@
                         </form>
                     </li>
                 </ul>
-                <ul id="course-content-actions" class="hidden course-admin-actions list list--inline">
+                <ul id="course-content-actions" class="hidden list list--inline button-group button-group--right margin--top admin-actions-group">
                     <li>
                         <a id="save-changes-btn" class="btn btn--primary">Save Changes</a>
                     </li>

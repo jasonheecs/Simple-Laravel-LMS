@@ -31,6 +31,7 @@ class LessonFilesController extends Controller
         }
 
         $lesson->addFile($file);
+        flash('File(s) added', 'success');
 
         return back();
     }
@@ -68,6 +69,8 @@ class LessonFilesController extends Controller
     public function destroy(Request $request, LessonFile $file)
     {
         $file->delete();
+
+        flash('File deleted', 'success');
 
         return back();
     }

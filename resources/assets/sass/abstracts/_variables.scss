@@ -5,6 +5,23 @@ $color-highlight: #4a9800; //lime-green
 $color-highlight-darker: #0cb200; //darker-green
 $color-white: #fafafa; //white
 
+/// Feedback states
+$state-success-color: #3c763d;
+$state-success-bg: #dff0d8;
+$state-success-border: shade($state-success-bg, 5%);
+
+$state-info-color: #31708f;
+$state-info-bg: #d9edf7;
+$state-info-border: shade($state-info-bg, 7%);
+
+$state-warning-color: #8a6d3b;
+$state-warning-bg: #fcf8e3;
+$state-warning-border: shade($state-warning-bg, 5%);
+
+$state-danger-color: #a94442;
+$state-danger-bg: #f2dede;
+$state-danger-border: shade($state-danger-bg, 5%);
+
 /// fonts
 $roboto: 'Roboto', sans-serif;
 $base-font-size: 16px;

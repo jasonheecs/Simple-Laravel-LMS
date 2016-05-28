@@ -9,24 +9,20 @@
 .lesson-file-name {
   @include font-size(14px);
   margin-bottom: 5px;
+  margin-top: 0;
 }
 
 .lesson-file-desc {
   @include font-size(14px);
-  margin-top: 0;
+  margin: 0 0 5px;
 }
 
-.lesson-admin-actions {
-  height: auto;
-  margin-top: 80px;
+.lesson-files-actions {
+  margin-top: 30px;
+  padding-right: 30px;
   text-align: right;
-
-  &.hidden {
-    height: 0;
-    margin: 0;
-  }
 }
 
 .add-file-form {
-  margin-top: 30px;
+  margin: 30px 0;
 }

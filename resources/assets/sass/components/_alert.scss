@@ -1,0 +1,30 @@
+.alert:not(.hidden) {
+  border: 1px solid transparent;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  padding: 15px;
+}
+
+.alert--success {
+  background: $state-success-bg;
+  border-color: $state-success-border;
+  color: $state-success-color;
+}
+
+.alert--info {
+  background: $state-info-bg;
+  border-color: $state-info-border;
+  color: $state-info-color;
+}
+
+.alert--warning {
+  background: $state-warning-bg;
+  border-color: $state-warning-border;
+  color: $state-warning-color;
+}
+
+.alert--danger {
+  background: $state-danger-bg;
+  border-color: $state-danger-border;
+  color: $state-danger-color;
+}

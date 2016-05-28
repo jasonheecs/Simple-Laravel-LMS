@@ -14,3 +14,15 @@ $list-icon-width: 1.5em;
     width: $list-icon-width;
   }
 }
+
+%clearfix {
+  &::before,
+  &::after {
+    content: '';
+    display: table;
+  }
+
+  &::after {
+    clear: both;
+  }
+}

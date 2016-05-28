@@ -23562,15 +23562,16 @@ var initialTitle; //variable used to store initial title (for reverting changes 
 var initialBody; //variable used to store initial body content (for reverting changes made)
 
 function init() {
-    adminActionsEl = document.getElementById('lesson-admin-actions');
-    contentActionsEl = document.getElementById('lesson-content-actions');
     lessonPanelEl = document.getElementById('lesson-panel');
 
     if (lessonPanelEl) {
+        contentActionsEl = document.getElementById('lesson-content-actions');
+
         if (document.getElementById('create-lesson')) {
             // if we are creating a lesson (i.e.: not in editing page), start the editors.
             initEditors();
         } else {
+            adminActionsEl = document.getElementById('lesson-admin-actions');
             titleEl = lessonPanelEl.querySelector('#lesson-title-content');
             initialTitle = titleEl.innerHTML;
 
@@ -23609,18 +23610,32 @@ function initEditors() {
 
 function attachEventListeners() {
     lessonPanelEl.addEventListener('click', function (evt) {
-        if (evt.target && (evt.target.id === 'edit-lesson-btn' || evt.target.id === 'cancel-changes-btn' || evt.target.id === 'save-changes-btn')) {
-            changeButtons();
-
+        if (evt.target && (contentActionsEl.contains(evt.target) || adminActionsEl.contains(evt.target))) {
             if (evt.target.id === 'edit-lesson-btn') {
+                changeButtons();
                 editLessonListener();
             } else if (evt.target.id === 'cancel-changes-btn') {
+                changeButtons();
                 cancelChangesListener();
             } else if (evt.target.id === 'save-changes-btn') {
+                changeButtons();
                 saveChangesListener(evt.target);
+            } else if (evt.target.id === 'add-lesson-file-btn') {
+                addLessonFileListener();
             }
         }
     });
+}
+
+function addLessonFileListener() {
+    var htmlTemplate = document.getElementById('lesson-hidden-template');
+    var addFileFormEl = document.getElementById('add-lesson-file-form');
+
+    if (htmlTemplate && addFileFormEl) {
+        var template = htmlTemplate.cloneNode(true).innerHTML;
+        addFileFormEl.insertAdjacentHTML('beforeend', template);
+        addFileFormEl.classList.remove('hidden');
+    }
 }
 
 function editLessonListener() {
@@ -23680,6 +23695,10 @@ function saveChangesListener(saveBtnEl) {
         var alertEl = document.getElementById('alert');
         alertEl.textContent = message;
         alertEl.classList.add(classList);
+
+        if (alertEl.classList.contains('hidden')) {
+            alertEl.classList.remove('hidden');
+        }
     }
 }
 

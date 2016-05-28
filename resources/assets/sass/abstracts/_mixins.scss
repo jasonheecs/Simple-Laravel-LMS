@@ -12,7 +12,6 @@
 }
 
 /// Slightly lighten a color
-/// @access public
 /// @param {Color} $color - color to tint
 /// @param {Number} $percentage - percentage of `$color` in returned color
 /// @return {Color}
@@ -22,7 +21,6 @@
 }
 
 /// Slightly darken a color
-/// @access public
 /// @param {Color} $color - color to shade
 /// @param {Number} $percentage - percentage of `$color` in returned color
 /// @return {Color}
@@ -32,7 +30,6 @@
 }
 
 /// Responsive breakpoint manager
-/// @access public
 /// @param {String} $breakpoint - Breakpoint
 /// @requires $breakpoints
 @mixin respond-to($breakpoint) {
@@ -53,3 +50,11 @@
          + 'Please make sure it is defined in `$breakpoints` map.';
   }
 }
+
+/// Generate a box shadow color for the input field focus effect
+/// @param {String} $input-color - Color to generate from
+/// @return {Color}
+@function generate-input-shadow-color($input-color) {
+  @return lighten(saturate(adjust-hue($input-color, -.2273), 23.6585), 14.9020)
+}
+

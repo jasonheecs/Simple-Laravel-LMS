@@ -1,4 +1,6 @@
-$btn-alert-bg: #910808;
+$btn-danger-bg: #910808;
+$btn-muted-bg: #ccc;
+$btn-muted-color: #333;
 
 .btn {
   border: 1px solid transparent;
@@ -21,6 +23,12 @@ $btn-alert-bg: #910808;
   padding: 10px 16px;
 }
 
+.btn--sm {
+  @include font-size(13px);
+  border-radius: 2px;
+  padding: 4px 9px;
+}
+
 .btn--primary {
   background: $color-highlight;
   color: $color-white;
@@ -31,18 +39,43 @@ $btn-alert-bg: #910808;
   color: $color-white;
 }
 
-.btn--outline {
-  background: transparent;
-  border: 2px solid $color-highlight;
-  color: $color-highlight;
-}
-
-.btn--alert {
-  background: $btn-alert-bg;
+.btn--danger {
+  background: $btn-danger-bg;
   color: $color-white;
 }
 
 .btn--muted {
-  background: #ccc;
-  color: #333;
+  background: $btn-muted-bg;
+  color: $btn-muted-color;
+}
+
+%btn--outline {
+  background: transparent;
+}
+
+.btn--outline {
+  @extend %btn--outline;
+  border: 2px solid $color-highlight;
+  color: $color-highlight;
+}
+
+.btn--outline-danger {
+  @extend %btn--outline;
+  border: 2px solid $btn-danger-bg;
+  color: $btn-danger-bg;
+}
+
+%btn--flat {
+  background: transparent;
+  border: 0;
+}
+
+.btn--flat {
+  @extend %btn--flat;
+  color: tint(desaturate($color-highlight, 60%), 10%);
+}
+
+.btn--flat-danger {
+  @extend %btn--flat;
+  color: tint(desaturate($btn-danger-bg, 60%), 10%);
 }
