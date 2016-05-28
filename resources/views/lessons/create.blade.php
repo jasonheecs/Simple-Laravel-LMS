@@ -1,21 +1,26 @@
 @extends('layouts.with-sidebar')
 
 @section('content')
+<form method="POST" action="{{ url('/lessons') }}">
     <div id="lesson-panel" class="panel panel--default">
-        <h1 id="lesson-title-content" class="panel__heading title-editable">{{ old('title') }}</h1>
+        <input type="hidden" id="create-lesson" value="true" />
+        <input type="text" id="lesson-title" name="title" class="form-control create-lesson__title" placeholder="Lesson Title" value="{{ old('title') }}" required autofocus />
         <div class="panel__content">
-            <article id="lesson-body-content" class="body-editable">
+            <textarea id="lesson-body-content" name="body" class="body-editable" required>
                 {{ old('body') }}
-            </article>
-
+            </textarea>
+        
             <ul id="lesson-content-actions" class="lesson-admin-actions list list--inline">
+                <input type="hidden" name="course_id" value="{{ $course_id }}">
                 <li>
-                    <a id="save-changes-btn" class="btn btn--primary">Save Changes</a>
+                    <button type="submit" class="btn btn--primary" name="save" value="true">Save</button>
                 </li>
                 <li>
-                    <a id="cancel-changes-btn" class="btn btn--muted">Cancel</a>
+                    <button type="submit" class="btn btn--muted" name="cancel" value="true">Cancel</button>
                 </li>
+                {!! csrf_field() !!}
             </ul>
         </div>
     </div>
+</form>
 @stop

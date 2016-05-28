@@ -5,11 +5,11 @@
   align-items: flex-start;
   flex-flow: row wrap;
 
-  @media screen and (min-width: $mq-medium) {
+  @include respond-to('medium') {
     flex: 4;
   }
 
-  @media screen and (min-width: $mq-large) {
+  @include respond-to('large') {
     flex: 6;
   }
 }

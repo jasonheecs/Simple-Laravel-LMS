@@ -57,7 +57,11 @@ Editor.prototype.init = function(editableElement, options, useImagePlugin) {
 };
 
 Editor.prototype.setFocus = function() {
-    this.editor.selectElement(this.editableElement.firstChild);
+    if (this.editableElement.firstChild) {
+        this.editor.selectElement(this.editableElement.firstChild);
+    } else {
+        this.editor.selectElement(this.editableElement);
+    }
 };
 
 Editor.prototype.getContent = function() {

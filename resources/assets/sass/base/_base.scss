@@ -1,11 +1,11 @@
 html {
   font-size: 90%;
 
-  @media screen and (min-width: $mq-medium) {
+  @include respond-to('medium') {
     font-size: 95%;
   }
 
-  @media screen and (min-width: $mq-large) {
+  @include respond-to('large') {
     font-size: 100%;
   }
 }

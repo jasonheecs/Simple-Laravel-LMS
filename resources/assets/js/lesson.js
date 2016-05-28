@@ -21,17 +21,17 @@ function init() {
     lessonPanelEl = document.getElementById('lesson-panel');
 
     if (lessonPanelEl) {
-        titleEl = lessonPanelEl.querySelector('#lesson-title-content');
-        initialTitle = titleEl.innerHTML;
-
-        articleEl = lessonPanelEl.querySelector('#lesson-body-content');
-        initialBody = articleEl.innerHTML;
-
-        attachEventListeners();
-
         if (document.getElementById('create-lesson')) {
             // if we are creating a lesson (i.e.: not in editing page), start the editors.
             initEditors();
+        } else {
+            titleEl = lessonPanelEl.querySelector('#lesson-title-content');
+            initialTitle = titleEl.innerHTML;
+
+            articleEl = lessonPanelEl.querySelector('#lesson-body-content');
+            initialBody = articleEl.innerHTML;
+
+            attachEventListeners();
         }
     }
 }
@@ -59,8 +59,6 @@ function initEditors() {
     bodyEditor = new Editor();
     titleEditor.init(document.querySelector('.title-editable'), {toolbar:false});
     bodyEditor.init(document.querySelector('.body-editable'), {}, true);
-
-    bodyEditor.setFocus();
 }
 
 function attachEventListeners() {
@@ -81,6 +79,7 @@ function attachEventListeners() {
 
 function editLessonListener() {
     initEditors();
+    bodyEditor.setFocus();
 }
 
 function cancelChangesListener() {

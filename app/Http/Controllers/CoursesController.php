@@ -40,6 +40,11 @@ class CoursesController extends Controller
         
     }
 
+    public function update(Request $request, Course $course)
+    {
+        # code...
+    }
+
     public function destroy(Request $request, Course $course)
     {
         $course->delete();

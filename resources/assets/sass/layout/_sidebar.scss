@@ -5,7 +5,7 @@
   width: 100%;
   z-index: 1;
 
-  @media screen and (min-width: $mq-small) {
+  @include respond-to('small') {
     position: static;
     width: auto;
   }
@@ -13,7 +13,7 @@
 
 .avatar {
   background: $color-secondary;
-  color: lighten($color-white, 2%);
+  color: tint($color-white, 2%);
   text-align: center;
 }
 

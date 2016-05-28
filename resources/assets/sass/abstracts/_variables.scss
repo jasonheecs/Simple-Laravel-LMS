@@ -1,0 +1,22 @@
+///  Colors
+$color-primary: #d60080; //pink
+$color-secondary: darken($color-primary, 25%);
+$color-highlight: #4a9800; //lime-green
+$color-highlight-darker: #0cb200; //darker-green
+$color-white: #fafafa; //white
+
+/// fonts
+$roboto: 'Roboto', sans-serif;
+$base-font-size: 16px;
+
+/// Media Queries breakpoints
+$breakpoints: (
+  'x-small': (min-width: 320px),
+  'small': (min-width: 480px),
+  'medium': (min-width: 768px),
+  'large': (min-width: 992px),
+  'x-large': (min-width: 1200px)
+);
+
+/// Project Directories
+$img-dir: '../img/';

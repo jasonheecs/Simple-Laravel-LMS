@@ -1,5 +1,5 @@
 // scss-lint:disable all
-$medium-editor-theme-color: darken($color-secondary, 9%);
+$medium-editor-theme-color: shade($color-secondary, 9%);
 
 .medium-toolbar-arrow-under:after {
   border-color: $medium-editor-theme-color transparent transparent transparent;

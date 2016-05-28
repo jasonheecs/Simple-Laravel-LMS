@@ -1,0 +1,16 @@
+$list-icon-width: 1.5em;
+
+%list-icon {
+  padding-left: $list-icon-width;
+
+  &::before {
+    background: url($img-dir + 'icons/file.svg') no-repeat;
+    color: $color-primary;
+    content: '';
+    display: inline-block;
+    height: $list-icon-width;
+    margin-left: -$list-icon-width;
+    position: absolute;
+    width: $list-icon-width;
+  }
+}

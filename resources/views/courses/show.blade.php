@@ -31,7 +31,10 @@
                         </form>
                     </li>
                     <li>
-                        <a class="btn btn--secondary" href="{{ url('/lessons/create') }}">Add Lesson</a>
+                        <form method="GET" action="{{ url('/lessons/create') }}">
+                            <button class="btn btn--outline" type="submit">Add Lesson</button>
+                            <input name="course_id" type="hidden" value="{{ $course->id }}" />
+                        </form>
                     </li>
                 </ul>
                 <ul id="course-content-actions" class="hidden course-admin-actions list list--inline">

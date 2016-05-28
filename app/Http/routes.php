@@ -22,16 +22,17 @@ Route::get('/home', ['as' => 'home', 'uses' => 'HomeController@index']);
 Route::get('/courses', 'CoursesController@index');
 Route::post('/courses', 'CoursesController@store');
 Route::get('/courses/{course}', ['as' => 'course', 'uses' => 'CoursesController@show']);
+Route::patch('/courses/{course}', 'CoursesController@update');
 Route::delete('/courses/{course}', 'CoursesController@destroy');
 
 // Route::resource('courses', 'CoursesController', ['names' => [
 //     'show' => 'course'
 // ]]);
-Route::post('/lessons', 'LessonController@store');
+Route::post('/lessons', 'LessonsController@store');
 Route::get('/lessons/create', 'LessonsController@create');
 Route::get('/lessons/{lesson}', ['as' => 'lesson', 'uses' => 'LessonsController@show']);
 Route::patch('/lessons/{lesson}', 'LessonsController@update');
-Route::delete('/lessons/{lesson}', 'LessonsController@delete');
+Route::delete('/lessons/{lesson}', 'LessonsController@destroy');
 
 Route::post('/lessons/{lesson}/files', 'LessonFilesController@store');
 // Route::resource('files', 'LessonFilesController', ['except' => [
@@ -44,4 +45,3 @@ Route::get('/files/{file}/edit', 'LessonFilesController@edit');
 
 // Medium editor image upload path
 Route::any('upload', 'LessonsController@upload');
-

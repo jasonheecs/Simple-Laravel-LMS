@@ -1,5 +1,5 @@
 ---
-exclude: 'resources/assets/sass/vendor/**'
+exclude: 'resources/assets/sass/vendors/**'
 
 linters:
   ColorKeyword:

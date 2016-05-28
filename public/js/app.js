@@ -13680,9 +13680,9 @@ return jQuery;
                 throw new Error("medium-editor-insert-plugin runs only in a browser.")
             }
 
-            // if (jQuery === undefined) {
-            //     jQuery = require('jquery');
-            // }
+            if (jQuery === undefined) {
+                jQuery = require('jquery');
+            }
             window.jQuery = jQuery;
 
             Handlebars = require('handlebars/runtime');
@@ -15900,7 +15900,7 @@ this["MediumInsert"]["Templates"]["src/js/templates/images-toolbar.hbs"] = Handl
 
 }));
 
-},{"blueimp-file-upload":1,"handlebars/runtime":21,"jquery-sortable":22,"medium-editor":25}],25:[function(require,module,exports){
+},{"blueimp-file-upload":1,"handlebars/runtime":21,"jquery":23,"jquery-sortable":22,"medium-editor":25}],25:[function(require,module,exports){
 /*global self, document, DOMException */
 
 /*! @source http://purl.eligrey.com/github/classList.js/blob/master/classList.js */
@@ -23499,7 +23499,11 @@ Editor.prototype.init = function (editableElement, options, useImagePlugin) {
 
 // (string) A relative path to an upload script
 Editor.prototype.setFocus = function () {
-    this.editor.selectElement(this.editableElement.firstChild);
+    if (this.editableElement.firstChild) {
+        this.editor.selectElement(this.editableElement.firstChild);
+    } else {
+        this.editor.selectElement(this.editableElement);
+    }
 };
 
 Editor.prototype.getContent = function () {
@@ -23563,17 +23567,17 @@ function init() {
     lessonPanelEl = document.getElementById('lesson-panel');
 
     if (lessonPanelEl) {
-        titleEl = lessonPanelEl.querySelector('#lesson-title-content');
-        initialTitle = titleEl.innerHTML;
-
-        articleEl = lessonPanelEl.querySelector('#lesson-body-content');
-        initialBody = articleEl.innerHTML;
-
-        attachEventListeners();
-
         if (document.getElementById('create-lesson')) {
             // if we are creating a lesson (i.e.: not in editing page), start the editors.
             initEditors();
+        } else {
+            titleEl = lessonPanelEl.querySelector('#lesson-title-content');
+            initialTitle = titleEl.innerHTML;
+
+            articleEl = lessonPanelEl.querySelector('#lesson-body-content');
+            initialBody = articleEl.innerHTML;
+
+            attachEventListeners();
         }
     }
 }
@@ -23601,8 +23605,6 @@ function initEditors() {
     bodyEditor = new Editor();
     titleEditor.init(document.querySelector('.title-editable'), { toolbar: false });
     bodyEditor.init(document.querySelector('.body-editable'), {}, true);
-
-    bodyEditor.setFocus();
 }
 
 function attachEventListeners() {
@@ -23623,6 +23625,7 @@ function attachEventListeners() {
 
 function editLessonListener() {
     initEditors();
+    bodyEditor.setFocus();
 }
 
 function cancelChangesListener() {

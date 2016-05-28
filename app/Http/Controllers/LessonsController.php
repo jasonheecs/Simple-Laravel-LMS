@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\Lesson;
+use App\Course;
 
 class LessonsController extends Controller
 {
@@ -14,22 +15,34 @@ class LessonsController extends Controller
         'body'  => 'required'
     ];
 
-    public function create()
+    public function create(Request $request)
     {
-        return view('lessons.create');
+        if (!$request->course_id) {
+            flash('Course id not found. Please try again.');
+            return back();
+        }
+
+        return view('lessons.create', [
+            'course_id' => $request->course_id
+        ]);
     }
 
-    public function store(Request $request, Course $course)
+    public function store(Request $request)
     {
-        $this->validate($request, $this->validationRules);
+        if ($request->save) {
+            $this->validate($request, $this->validationRules);
 
-        $lesson = new Lesson;
-        $lesson->title = $request->title;
-        $lesson->body = $request->body;
+            $lesson = new Lesson;
+            $lesson->title = $request->title;
+            $lesson->body = $request->body;
 
-        $course->addLesson($lesson);
+            $course = Course::findOrFail($request->course_id);
+            $course->addLesson($lesson);
 
-        return back();
+            flash('Lesson added');
+        }
+
+        return redirect()->route('course', [$request->course_id]);
     }
 
     /**
@@ -54,13 +67,13 @@ class LessonsController extends Controller
         $lesson->save();
 
         if ($request->ajax()) {
-            return response()->json(['response' => 'Lesson Updated']); 
+            return response()->json(['response' => 'Lesson Updated']);
         }
 
         return back();
     }
 
-    public function delete(Request $request, Lesson $lesson)
+    public function destroy(Request $request, Lesson $lesson)
     {
         $lesson->delete();
 

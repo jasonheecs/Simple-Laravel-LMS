@@ -1,0 +1,11 @@
+.medium-editor-insert-plugin {
+  min-height: 0;
+}
+
+[data-medium-editor-element],
+.medium-editor-insert-plugin {
+  &:focus {
+    background: rgba($color-secondary, .04);
+    outline: 0 solid transparent;
+  }
+}
