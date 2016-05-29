@@ -19,6 +19,11 @@ class CoursesController extends Controller
         ]);
     }
 
+    public function create()
+    {
+        return view('courses.create');
+    }
+
     /**
      * Show course details and lessons
      * @param  Course $course
@@ -37,7 +42,17 @@ class CoursesController extends Controller
      */
     public function store(Request $request)
     {
-        
+        $this->validate($request, [
+            'title' => 'required'
+        ]);
+
+        $course = new Course;
+        $course->title = $request->title;
+        $course->save();
+
+        flash('Course added', 'success');
+
+        return redirect()->route('courses');
     }
 
     public function update(Request $request, Course $course)

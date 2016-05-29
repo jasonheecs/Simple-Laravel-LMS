@@ -82,6 +82,15 @@ class User extends Authenticatable
      */
     public function canEdit(Course $course)
     {
-        return $this->is('admin') || $this->isLecturerIn($course);
+        return $this->is('superadmin') || $this->is('admin') || $this->isLecturerIn($course);
+    }
+
+    /**
+     * Check if user can create a course
+     * @param  Course $course
+     */
+    public function canCreateCourse()
+    {
+        return $this->is('superadmin') || $this->is('admin');
     }
 }

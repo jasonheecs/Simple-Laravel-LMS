@@ -27,7 +27,7 @@ class UsersTableSeeder extends Seeder
         $user = User::create(['name' => 'Jason Hee',
                                  'email' => 'jason@jason.com',
                                  'password' => bcrypt('password')]);
-        $user->roles()->save(App\Role::where('name', 'admin')->first());
+        $user->roles()->save(App\Role::where('name', 'superadmin')->first());
         $this->setUserToLecturer($user, Course::first());
 
         $user = User::create(['name' => 'Demo Student',

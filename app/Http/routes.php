@@ -19,8 +19,9 @@ Route::get('/', function () {
 
 Route::get('/home', ['as' => 'home', 'uses' => 'HomeController@index']);
 
-Route::get('/courses', 'CoursesController@index');
+Route::get('/courses', ['as' => 'courses', 'uses' => 'CoursesController@index']);
 Route::post('/courses', 'CoursesController@store');
+Route::get('/courses/create', 'CoursesController@create');
 Route::get('/courses/{course}', ['as' => 'course', 'uses' => 'CoursesController@show']);
 Route::patch('/courses/{course}', 'CoursesController@update');
 Route::delete('/courses/{course}', 'CoursesController@destroy');
