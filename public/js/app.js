@@ -23519,14 +23519,15 @@ module.exports = Editor;
 },{"jquery":23,"medium-editor":25,"medium-editor-insert-plugin":24}],27:[function(require,module,exports){
 'use strict';
 
+var Xhr = require('./xhr');
+
 /**
  * Set a button/link to disabled state
  * @param  {DOM Node} btnEl
  */
-
 function disableButton(btnEl) {
     btnEl.setAttribute('disabled', 'true');
-    btnEl.classList.add('disabled');
+    btnEl.classList.add('btn--disabled');
 }
 
 /**
@@ -23535,15 +23536,52 @@ function disableButton(btnEl) {
  */
 function enableButton(btnEl) {
     btnEl.removeAttribute('disabled');
-    btnEl.classList.remove('disabled');
+    btnEl.classList.remove('btn--disabled');
+}
+
+/**
+ * Element.matches polyfill for older browsers
+ * @param  {DOM Node} elm      
+ * @param  {String} selector
+ * @return {[boolean]}
+ */
+function matches(elm, selector) {
+    var matches = (elm.document || elm.ownerDocument).querySelectorAll(selector),
+        i = matches.length;
+    while (--i >= 0 && matches.item(i) !== elm) {}
+    return i > -1;
+}
+
+/**
+ * Helper function to send an ajax request
+ * @param  {String} method - method to use (GET, POST, PATCH, DELETE)
+ * @param  {String} path - URL to send the request to
+ * @param  {Function} success - callback function on load success
+ * @param  {Function} failure - callback function on load failure
+ * @param  {Function} always - callback function to always trigger [optional]
+ * @param  {JSON} data - data to send via Ajax [optional]
+ */
+function sendAjaxRequest(method, path, success, failure, always, data) {
+    always = always || function () {};
+    var xhr = new Xhr();
+    xhr.open(method, path);
+    xhr.onLoad(success, failure, always);
+
+    if (typeof data !== 'undefined') {
+        xhr.send(data);
+    } else {
+        xhr.send();
+    }
 }
 
 module.exports = {
     disableButton: disableButton,
-    enableButton: enableButton
+    enableButton: enableButton,
+    matches: matches,
+    sendAjaxRequest: sendAjaxRequest
 };
 
-},{}],28:[function(require,module,exports){
+},{"./xhr":30}],28:[function(require,module,exports){
 'use strict';
 
 /* globals XMLHttpRequest */
@@ -23614,6 +23652,8 @@ function attachEventListeners() {
             if (evt.target.id === 'edit-lesson-btn') {
                 changeButtons();
                 editLessonListener();
+            } else if (evt.target.id === 'delete-lesson-btn') {
+                deleteLessonListener(evt);
             } else if (evt.target.id === 'cancel-changes-btn') {
                 changeButtons();
                 cancelChangesListener();
@@ -23622,6 +23662,8 @@ function attachEventListeners() {
                 saveChangesListener(evt.target);
             } else if (evt.target.id === 'add-lesson-file-btn') {
                 addLessonFileListener();
+            } else if (helper.matches(evt.target, '.btn-lesson-publish')) {
+                addPublishListener(evt.target);
             }
         }
     });
@@ -23638,9 +23680,61 @@ function addLessonFileListener() {
     }
 }
 
+function addPublishListener(btnEl) {
+    helper.disableButton(btnEl);
+
+    // Send ajax request to update publishing state
+    var success = function success(response) {
+        togglePublishButton();
+        setAlert(JSON.parse(response).response, 'alert--success');
+    };
+    var failure = function failure(response) {
+        //display errors to alert element
+        var errors = JSON.parse(response);
+        var errorMsg = '';
+
+        for (var error in errors) {
+            errorMsg = errors[error].reduce(function (previousMsg, currentMsg) {
+                return previousMsg + currentMsg;
+            });
+        }
+        setAlert(errorMsg, 'alert--danger');
+    };
+    var always = function always() {
+        helper.enableButton(btnEl);
+    };
+
+    helper.sendAjaxRequest('PATCH', '/lessons/' + document.getElementById('lesson-id').value + '/publish', success, failure, always);
+
+    /**
+     * Toggle between 'Publish' and 'Unpublish' button
+     */
+    function togglePublishButton() {
+        if (btnEl.id === 'publish-lesson-btn') {
+            btnEl.id = 'unpublish-lesson-btn';
+            btnEl.textContent = 'Unpublish';
+            btnEl.classList.remove('btn--muted-inverse');
+            btnEl.classList.add('btn--muted');
+        } else if (btnEl.id === 'unpublish-lesson-btn') {
+            btnEl.id = 'publish-lesson-btn';
+            btnEl.textContent = 'Publish';
+            btnEl.classList.remove('btn--muted');
+            btnEl.classList.add('btn--muted-inverse');
+        }
+    }
+}
+
 function editLessonListener() {
     initEditors();
     bodyEditor.setFocus();
+}
+
+function deleteLessonListener(evt) {
+    var check = window.confirm('Are you sure?');
+
+    if (!check) evt.preventDefault();
+
+    return check;
 }
 
 function cancelChangesListener() {
@@ -23657,48 +23751,43 @@ function saveChangesListener(saveBtnEl) {
     var updateData = { title: newTitle, body: newBody };
 
     // Send ajax request to update lesson
-    var xhr = new XMLHttpRequest();
-    xhr.open('PATCH', '/lessons/' + document.getElementById('lesson-id').value);
-    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-    xhr.setRequestHeader('X-CSRF-TOKEN', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
-    xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-    xhr.addEventListener('load', function (evt) {
-        if (xhr.readyState === 4 && xhr.status === 200) {
-            initialTitle = newTitle;
-            initialBody = newBody;
+    var success = function success(response) {
+        initialTitle = newTitle;
+        initialBody = newBody;
 
-            setAlert(JSON.parse(xhr.responseText).response, 'alert--success');
-        } else {
-            revertChanges();
+        setAlert(JSON.parse(response).response, 'alert--success');
+    };
+    var failure = function failure(response) {
+        revertChanges();
 
-            //display errors to alert element
-            var errors = JSON.parse(xhr.responseText);
-            var errorMsg = '';
+        //display errors to alert element
+        var errors = JSON.parse(response);
+        var errorMsg = '';
 
-            for (var error in errors) {
-                errorMsg = errors[error].reduce(function (previousMsg, currentMsg) {
-                    return previousMsg + currentMsg;
-                });
-            }
-            setAlert(errorMsg, 'alert--failure');
+        for (var error in errors) {
+            errorMsg = errors[error].reduce(function (previousMsg, currentMsg) {
+                return previousMsg + currentMsg;
+            });
         }
-
+        setAlert(errorMsg, 'alert--danger');
+    };
+    var always = function always() {
         helper.enableButton(saveBtnEl);
-    });
-
-    xhr.send(JSON.stringify(updateData));
+    };
+    helper.sendAjaxRequest('PATCH', '/lessons/' + document.getElementById('lesson-id').value, success, failure, always, JSON.stringify(updateData));
 
     titleEditor.destroy();
     bodyEditor.destroy();
+}
 
-    function setAlert(message, classList) {
-        var alertEl = document.getElementById('alert');
-        alertEl.textContent = message;
-        alertEl.classList.add(classList);
+//TODO: move into alert.js
+function setAlert(message, classList) {
+    var alertEl = document.getElementById('alert');
+    alertEl.textContent = message;
+    alertEl.classList.add(classList);
 
-        if (alertEl.classList.contains('hidden')) {
-            alertEl.classList.remove('hidden');
-        }
+    if (alertEl.classList.contains('hidden')) {
+        alertEl.classList.remove('hidden');
     }
 }
 
@@ -23715,6 +23804,80 @@ document.addEventListener('DOMContentLoaded', function () {
     lesson.init();
 });
 
-},{"./lesson":28}]},{},[29]);
+},{"./lesson":28}],30:[function(require,module,exports){
+'use strict';
+
+/**
+ * Helper / Wrapper Object for XMLHttpRequests
+ */
+/* globals XMLHttpRequest */
+
+function Xhr() {
+    this.xhr = new XMLHttpRequest();
+}
+
+Xhr.prototype.setCSRF = function (token) {
+    token = token || document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    this.xhr.setRequestHeader('X-CSRF-TOKEN', token);
+};
+
+/**
+ * Calls the open method of the XMLHttpRequest Object and also sets request headers common to this app.
+ * @param  {String} method - method to use (GET, POST, PATCH, DELETE)
+ * @param  {String} path - URL to send the request to
+ * @param  {boolean} setCSRF - if true, set the CRSF token request header (default: true) [optional]
+ */
+Xhr.prototype.open = function (method, path, setCSRF) {
+    setCSRF = setCSRF || true;
+
+    this.xhr.open(method, path);
+    this.xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+    this.xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+
+    if (setCSRF) {
+        this.setCSRF();
+    }
+};
+
+/**
+ * Function to handle callbacks after xhr load.
+ * @param  {Function} success - callback function on load success
+ * @param  {Function} failure - callback function on load failure
+ * @param  {Function} always - callback function to always trigger [optional]
+ */
+Xhr.prototype.onLoad = function (success, failure, always) {
+    var xhr = this.xhr;
+    xhr.addEventListener('load', function (evt) {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            success.call(this, xhr.responseText);
+        } else {
+            failure.call(this, xhr.responseText);
+        }
+
+        if (typeof always !== 'undefined') {
+            always.call();
+        }
+    });
+};
+
+Xhr.prototype.send = function (data) {
+    if (data) {
+        this.xhr.send(data);
+    } else {
+        this.xhr.send();
+    }
+};
+
+/**
+ * Get native XMLHttpRequest object
+ * @return {XMLHttpRequest}
+ */
+Xhr.prototype.getXMLHttpRequest = function () {
+    return this.xhr;
+};
+
+module.exports = Xhr;
+
+},{}]},{},[29]);
 
 //# sourceMappingURL=app.js.map

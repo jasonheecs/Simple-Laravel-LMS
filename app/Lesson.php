@@ -20,4 +20,16 @@ class Lesson extends Model
     {
         return $this->files()->save($file);
     }
+
+    public function publish()
+    {
+        $this->published = true;
+        $this->save();
+    }
+
+    public function unpublish()
+    {
+        $this->published = false;
+        $this->save();
+    }
 }

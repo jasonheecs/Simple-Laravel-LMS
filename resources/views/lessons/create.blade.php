@@ -16,7 +16,7 @@
                     <button type="submit" class="btn btn--primary" name="save" value="true">Save</button>
                 </li>
                 <li>
-                    <button type="submit" class="btn btn--muted" name="cancel" value="true">Cancel</button>
+                    <button type="submit" class="btn btn--default" name="cancel" value="true">Cancel</button>
                 </li>
                 {!! csrf_field() !!}
             </ul>

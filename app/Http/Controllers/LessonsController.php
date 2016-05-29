@@ -77,6 +77,8 @@ class LessonsController extends Controller
     {
         $lesson->delete();
 
+        flash('Lesson deleted', 'success');
+
         return redirect()->route('course', [$lesson->course]);
     }
 
@@ -99,5 +101,24 @@ class LessonsController extends Controller
         }
 
         return json_encode($response);
+    }
+
+    public function setPublishedStatus(Request $request, Lesson $lesson)
+    {
+        $status = '';
+
+        if ($lesson->published) {
+            $lesson->unpublish();
+            $status = 'Unpublished';
+        } elseif (!$lesson->published) {
+            $lesson->publish();
+            $status = 'Published';
+        }
+
+        if ($request->ajax()) {
+            return response()->json(['response' => 'Lesson ' . $status]);
+        }
+
+        return back();
     }
 }

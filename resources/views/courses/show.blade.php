@@ -13,7 +13,11 @@
             <ul class="list list--plain">
                 @foreach ($course->lessons as $key=>$lesson)
                     <li>
-                        <a href="{{ url('/lessons', $lesson->id ) }}">Lesson {{ $key + 1 }} - {{ $lesson->title }}</a>
+                        @if ($lesson->published || Auth::user()->canEdit($course))
+                            <a href="{{ url('/lessons', $lesson->id ) }}">Lesson {{ $key + 1 }} - {{ $lesson->title }}</a>
+                        @else
+                            Lesson {{ $key + 1 }} - {{ $lesson->title }}
+                        @endif
                     </li>
                 @endforeach
             </ul>
@@ -42,7 +46,7 @@
                         <a id="save-changes-btn" class="btn btn--primary">Save Changes</a>
                     </li>
                     <li>
-                        <a id="cancel-changes-btn" class="btn btn--muted">Cancel</a>
+                        <a id="cancel-changes-btn" class="btn btn--default">Cancel</a>
                     </li>
                 </ul>
             @endif

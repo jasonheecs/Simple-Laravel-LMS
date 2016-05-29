@@ -50,6 +50,15 @@
                 </div>
             @endif
 
+            <div class="panel__divider">
+                <a href="{{ url('/courses', $lesson->course->id) }}" class="lesson-nav lesson-nav--back">
+                    Back to all lessons
+                </a>
+                <a href="" class="lesson-nav lesson-nav--next">
+                    Next Lesson
+                </a>
+            </div>
+
             @if (Auth::user()->canEdit($lesson->course))
                 <ul id="lesson-admin-actions" class="list list--inline button-group button-group--right margin--top admin-actions-group">
                     <li>
@@ -58,9 +67,16 @@
                     <li>
                         <form method="POST" action="{{ url('/lessons', $lesson->id) }}">
                             {{ method_field('DELETE') }}
-                            <button type="submit" class="btn btn--danger">Delete</button>
+                            <button id="delete-lesson-btn" type="submit" class="btn btn--danger">Delete</button>
                             {!! csrf_field() !!}
                         </form>
+                    </li>
+                    <li>
+                        @if ($lesson->published)
+                            <a id="unpublish-lesson-btn" class="btn btn--muted btn-lesson-publish">Unpublish</a>
+                        @else
+                            <a id="publish-lesson-btn" class="btn btn--muted-inverse btn-lesson-publish">Publish</a>
+                        @endif
                     </li>
                     <li>
                         <a id="add-lesson-file-btn" class="btn btn--outline">Add Lesson File</a>
@@ -71,7 +87,7 @@
                         <a id="save-changes-btn" class="btn btn--primary">Save Changes</a>
                     </li>
                     <li>
-                        <a id="cancel-changes-btn" class="btn btn--muted">Cancel</a>
+                        <a id="cancel-changes-btn" class="btn btn--default">Cancel</a>
                     </li>
                 </ul>
             @endif
@@ -110,23 +126,6 @@
                 </ul>
             </div>
         @endif
-
-        <!-- <div class="panel panel--default ">
-            <h2 class="panel__heading">Add Lesson File</h2>
-            <div class="form-group">
-                <label for="filename">File Name</label>
-                <input type="text" id="filename" name="filename" class="form-control" placeholder="File Name" value="{{ old('filename') }}" required>
-            </div>
-            <div class="form-group">
-                <label for="description">File Description</label>
-                <textarea id="description" name="description" class="form-control form-control--textarea" rows="4" placeholder="File Description">{{ old('description') }}</textarea>
-            </div>
-            <div class="form-group">
-                <label for="url">File URL</label>
-                <input type="text" id="url" name="url" class="form-control" placeholder="File URL" value="{{ old('url') }}" required>
-            </div>
-            <button type="submit" class="btn btn--primary margin--top float--right">Save</button>
-        </div> -->
         {!! csrf_field() !!}
     </form>
     @endif

@@ -1,4 +1,4 @@
-.container, .content {
+.container, .content, .panel__divider {
   display: -ms-flexbox;
   display: flex; }
 
@@ -659,9 +659,17 @@ a {
   background: #910808;
   color: #fafafa; }
 
-.btn--muted {
+.btn--default {
   background: #ccc;
   color: #333; }
+
+.btn--muted {
+  background: #e6e6e6;
+  color: #666666; }
+
+.btn--muted-inverse {
+  background: #666666;
+  color: #e6e6e6; }
 
 .btn--outline, .btn--outline-danger {
   background: transparent; }
@@ -683,6 +691,10 @@ a {
 
 .btn--flat-danger {
   color: #734a4a; }
+
+.btn--disabled {
+  opacity: .6;
+  pointer-events: none; }
 
 .button-group:not(.hidden) {
   height: auto; }
@@ -785,6 +797,11 @@ label {
   font-size: 1rem;
   margin-bottom: 20px;
   padding-left: 5px; }
+
+.panel__divider {
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+  margin: 80px 0 60px; }
 
 .lesson-files {
   margin-top: 50px; }

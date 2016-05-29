@@ -32,6 +32,7 @@ Route::post('/lessons', 'LessonsController@store');
 Route::get('/lessons/create', 'LessonsController@create');
 Route::get('/lessons/{lesson}', ['as' => 'lesson', 'uses' => 'LessonsController@show']);
 Route::patch('/lessons/{lesson}', 'LessonsController@update');
+Route::patch('/lessons/{lesson}/publish', 'LessonsController@setPublishedStatus');
 Route::delete('/lessons/{lesson}', 'LessonsController@destroy');
 
 Route::post('/lessons/{lesson}/files', 'LessonFilesController@store');

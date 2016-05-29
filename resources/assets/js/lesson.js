@@ -68,6 +68,8 @@ function attachEventListeners() {
             if (evt.target.id === 'edit-lesson-btn') {
                 changeButtons();
                 editLessonListener();
+            } else if(evt.target.id === 'delete-lesson-btn') {
+                deleteLessonListener(evt);
             } else if(evt.target.id === 'cancel-changes-btn') {
                 changeButtons();
                 cancelChangesListener();
@@ -76,6 +78,8 @@ function attachEventListeners() {
                 saveChangesListener(evt.target);
             } else if(evt.target.id === 'add-lesson-file-btn') {
                 addLessonFileListener();
+            } else if(helper.matches(evt.target, '.btn-lesson-publish')) {
+                addPublishListener(evt.target);
             }
         }
     });
@@ -92,9 +96,62 @@ function addLessonFileListener() {
     }
 }
 
+function addPublishListener(btnEl) {
+    helper.disableButton(btnEl);
+
+    // Send ajax request to update publishing state
+    var success = function(response) {
+        togglePublishButton();
+        setAlert(JSON.parse(response).response, 'alert--success');
+    };
+    var failure = function(response) {
+        //display errors to alert element
+        var errors = JSON.parse(response);
+        var errorMsg = '';
+
+        for (var error in errors) {
+            errorMsg = errors[error].reduce(function(previousMsg, currentMsg) {
+                return previousMsg + currentMsg;
+            });
+        }
+        setAlert(errorMsg, 'alert--danger');
+    };
+    var always = function() {
+         helper.enableButton(btnEl);
+    };
+
+    helper.sendAjaxRequest('PATCH', '/lessons/'+ document.getElementById('lesson-id').value + '/publish', success, failure, always);
+
+    /**
+     * Toggle between 'Publish' and 'Unpublish' button
+     */
+    function togglePublishButton() {
+        if (btnEl.id === 'publish-lesson-btn') {
+            btnEl.id = 'unpublish-lesson-btn';
+            btnEl.textContent = 'Unpublish';
+            btnEl.classList.remove('btn--muted-inverse');
+            btnEl.classList.add('btn--muted');
+        } else if (btnEl.id === 'unpublish-lesson-btn') {
+            btnEl.id = 'publish-lesson-btn';
+            btnEl.textContent = 'Publish';
+            btnEl.classList.remove('btn--muted');
+            btnEl.classList.add('btn--muted-inverse');
+        }
+    }
+}
+
 function editLessonListener() {
     initEditors();
     bodyEditor.setFocus();
+}
+
+function deleteLessonListener(evt) {
+    var check = window.confirm('Are you sure?');
+
+    if (!check)
+        evt.preventDefault();
+
+    return check;
 }
 
 function cancelChangesListener() {
@@ -111,48 +168,43 @@ function saveChangesListener(saveBtnEl) {
     var updateData = {title: newTitle, body: newBody};
 
     // Send ajax request to update lesson
-    var xhr = new XMLHttpRequest();
-    xhr.open('PATCH', '/lessons/'+ document.getElementById('lesson-id').value);
-    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-    xhr.setRequestHeader('X-CSRF-TOKEN', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
-    xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-    xhr.addEventListener('load', function(evt){
-        if (xhr.readyState === 4 && xhr.status === 200) {
-            initialTitle = newTitle;
-            initialBody = newBody;
+    var success = function(response) {
+        initialTitle = newTitle;
+        initialBody = newBody;
 
-            setAlert(JSON.parse(xhr.responseText).response, 'alert--success');
-        } else {
-            revertChanges();
+        setAlert(JSON.parse(response).response, 'alert--success');
+    };
+    var failure = function(response) {
+        revertChanges();
 
-            //display errors to alert element
-            var errors = JSON.parse(xhr.responseText);
-            var errorMsg = '';
+        //display errors to alert element
+        var errors = JSON.parse(response);
+        var errorMsg = '';
 
-            for (var error in errors) {
-                errorMsg = errors[error].reduce(function(previousMsg, currentMsg) {
-                    return previousMsg + currentMsg;
-                });
-            }
-            setAlert(errorMsg, 'alert--failure');
+        for (var error in errors) {
+            errorMsg = errors[error].reduce(function(previousMsg, currentMsg) {
+                return previousMsg + currentMsg;
+            });
         }
-
-        helper.enableButton(saveBtnEl);
-    });
-
-    xhr.send(JSON.stringify(updateData));
+        setAlert(errorMsg, 'alert--danger');
+    };
+    var always = function() {
+         helper.enableButton(saveBtnEl);
+    };
+    helper.sendAjaxRequest('PATCH', '/lessons/'+ document.getElementById('lesson-id').value, success, failure, always, JSON.stringify(updateData));
 
     titleEditor.destroy();
     bodyEditor.destroy();
+}
 
-    function setAlert(message, classList) {
-        var alertEl = document.getElementById('alert');
-        alertEl.textContent = message;
-        alertEl.classList.add(classList);
+//TODO: move into alert.js
+function setAlert(message, classList) {
+    var alertEl = document.getElementById('alert');
+    alertEl.textContent = message;
+    alertEl.classList.add(classList);
 
-        if (alertEl.classList.contains('hidden')) {
-            alertEl.classList.remove('hidden');
-        }
+    if (alertEl.classList.contains('hidden')) {
+        alertEl.classList.remove('hidden');
     }
 }
 

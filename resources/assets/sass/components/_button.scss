@@ -1,6 +1,6 @@
 $btn-danger-bg: #910808;
-$btn-muted-bg: #ccc;
-$btn-muted-color: #333;
+$btn-default-bg: #ccc;
+$btn-default-color: #333;
 
 .btn {
   border: 1px solid transparent;
@@ -44,9 +44,19 @@ $btn-muted-color: #333;
   color: $color-white;
 }
 
+.btn--default {
+  background: $btn-default-bg;
+  color: $btn-default-color;
+}
+
 .btn--muted {
-  background: $btn-muted-bg;
-  color: $btn-muted-color;
+  background: tint($btn-default-bg, 50%);
+  color: tint($btn-default-color, 25%);
+}
+
+.btn--muted-inverse {
+  background: tint($btn-default-color, 25%);
+  color: tint($btn-default-bg, 50%);
 }
 
 %btn--outline {
@@ -78,4 +88,9 @@ $btn-muted-color: #333;
 .btn--flat-danger {
   @extend %btn--flat;
   color: tint(desaturate($btn-danger-bg, 60%), 10%);
+}
+
+.btn--disabled {
+  opacity: .6;
+  pointer-events: none;
 }
