@@ -25,4 +25,15 @@ class Course extends Model
     {
         return $this->lessons()->save($lesson);
     }
+
+    public function getLecturers()
+    {
+        $lecturers = [];
+        foreach ($this->lecturers as $lecturer) {
+            $user = User::find($lecturer->user_id);
+            $lecturers[] = $user;
+        }
+
+        return $lecturers;
+    }
 }

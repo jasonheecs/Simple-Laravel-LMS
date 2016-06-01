@@ -54,10 +54,36 @@
                     @endif
                 </div>
             </div>
-        </div>
-        <div class="flex__item flex__item--1">
+
             <div class="panel panel--default">
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Deleniti repudiandae dolores dolor ullam quae provident quas tempore, eos unde voluptatum, quisquam quidem vero odio animi! Deleniti ea quae quaerat, cum eos placeat inventore ipsum repudiandae, consectetur aliquam esse, voluptates neque ut. Enim perferendis facere, fugiat excepturi temporibus, quia iusto. Distinctio magnam, fuga, laudantium blanditiis enim fugiat ea veritatis. Sequi ipsam laboriosam distinctio ullam repellendus, libero, adipisci alias sed placeat tenetur tempora possimus iure explicabo aliquid sint inventore qui delectus asperiores nam at officiis nisi velit reprehenderit facere. Quam unde illum ipsum quisquam assumenda, consectetur iure fugit? Animi ipsa, itaque eos praesentium earum ipsam sunt! Dignissimos optio, suscipit fugit et saepe laudantium deleniti dicta omnis sequi neque ea accusantium eum blanditiis quos velit! Aliquam harum itaque et voluptate, tempora ad dolor laboriosam voluptas magnam, quae necessitatibus totam incidunt veniam aspernatur. Libero dolor non, maiores quis voluptatibus mollitia incidunt, esse eum repellendus nihil. Saepe aut architecto est nihil eius illum hic ullam eum quo ea, sunt cupiditate perspiciatis reprehenderit beatae quod, magnam labore unde perferendis alias voluptatum similique dignissimos incidunt nulla nostrum. Beatae, vero impedit numquam ipsa similique repudiandae. Voluptate unde dignissimos ea voluptatem natus veritatis amet. Nisi laudantium animi facilis deserunt.
+                <h1 class="panel__heading">Set the following users to be Lecturers in this course</h1>
+                <ul id="lecturers-list" class="list">
+                    @foreach ($users as $user)
+                        <li>
+                            @if ($user->isLecturerIn($course))
+                                <input type="checkbox" name="lecturer_{{ $user->id }}" id="lecturer_{{ $user->id }}" checked="true" />
+                            @else
+                                <input type="checkbox" name="lecturer_{{ $user->id }}" id="lecturer_{{ $user->id }}" />    
+                            @endif
+                            <label for="lecturer_{{ $user->id }}">{{ $user->name }}</label>
+                        </li>
+                    @endforeach
+                </ul>
+            </div>
+
+            <div class="panel panel--default">
+                <h1 class="panel__heading">Set the following users to be Students in this course</h1>
+                <ul id="students-list" class="list">
+                    @foreach ($users as $user)
+                        <li>{{ $user->name }}</li>   
+                    @endforeach
+                </ul>
             </div>
         </div>
+        <div class="flex__item flex__item--1 hidden">
+            <div class="panel panel--default">
+
+            </div>
+        </div>
+    </div>
 @stop

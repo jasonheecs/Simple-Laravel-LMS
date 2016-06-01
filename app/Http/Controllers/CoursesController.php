@@ -31,8 +31,10 @@ class CoursesController extends Controller
     public function show(Course $course)
     {
         $course->load('lessons');
+
         return view('courses.show', [
-            'course' => $course
+            'course' => $course,
+            'users' => \App\User::all()
         ]);
     }
 
