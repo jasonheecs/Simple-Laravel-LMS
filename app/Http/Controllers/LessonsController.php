@@ -39,7 +39,7 @@ class LessonsController extends Controller
             $course = Course::findOrFail($request->course_id);
             $course->addLesson($lesson);
 
-            flash('Lesson added');
+            flash('Lesson added', 'success');
         }
 
         return redirect()->route('course', [$request->course_id]);

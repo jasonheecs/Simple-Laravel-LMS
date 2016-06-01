@@ -1,14 +1,16 @@
 .sidebar {
-  @extend %flex__item--1;
+  // @extend %flex__item--1;
   background: $color-primary;
+  height: 100%;
   position: fixed;
-  width: 100%;
+  // width: 100%;
+  width: $sidebar-width;
   z-index: 1;
 
-  @include respond-to('small') {
-    position: static;
-    width: auto;
-  }
+  // @include respond-to('small') {
+  //   position: static;
+  //   width: auto;
+  // }
 }
 
 .avatar {

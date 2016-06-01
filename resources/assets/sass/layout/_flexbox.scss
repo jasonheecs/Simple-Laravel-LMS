@@ -1,0 +1,15 @@
+@for $i from 1 through 6 {
+  .flex__item--#{$i} {
+    @extend %flex__item--#{$i};
+
+    @include respond-to('large') {
+      flex: #{$i} 0;
+    }
+  }
+}
+
+.flex__item {
+  + .flex__item {
+    margin-left: 25px;
+  }
+}

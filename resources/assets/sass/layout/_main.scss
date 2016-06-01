@@ -4,14 +4,15 @@
   align-content: flex-start;
   align-items: flex-start;
   flex-flow: row wrap;
+  padding-left: $sidebar-width;
 
-  @include respond-to('medium') {
-    flex: 4;
-  }
+  // @include respond-to('medium') {
+  //   flex: 4;
+  // }
 
-  @include respond-to('large') {
-    flex: 6;
-  }
+  // @include respond-to('large') {
+  //   flex: 6;
+  // }
 }
 
 .content__wrapper {

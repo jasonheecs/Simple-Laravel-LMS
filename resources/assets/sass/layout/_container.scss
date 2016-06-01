@@ -1,11 +1,22 @@
-.container {
+ .container {
   @extend %flex;
   flex-wrap: wrap;
-  min-height: 100vh;
 }
 
 .container--centered {
   @extend %flex--center;
   @extend %flex--middle;
   background: $color-primary;
+}
+
+.container--full-height {
+  min-height: 100vh;
+}
+
+.container--nowrap {
+  flex-wrap: nowrap;
+}
+
+.container--f-start {
+  @extend %flex--top;
 }

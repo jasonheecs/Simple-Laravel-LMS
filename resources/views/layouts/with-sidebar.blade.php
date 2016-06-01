@@ -1,7 +1,7 @@
 @extends('layouts.master')
 
 @section('layout')
-    <div class="container">
+    <div class="container container--full-height container--nowrap">
         @include('layouts.sidebar')
 
         <main class="content">

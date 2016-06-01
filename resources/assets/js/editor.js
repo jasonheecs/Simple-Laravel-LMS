@@ -78,6 +78,10 @@ Editor.prototype.destroy = function() {
     return this.editor.destroy();
 };
 
+Editor.prototype.subscribe = function(event, callback) {
+    this.editor.subscribe(event, callback);
+};
+
 // var CodeButton = MediumEditor.extensions.button.extend({
 //     name: 'code',
 
