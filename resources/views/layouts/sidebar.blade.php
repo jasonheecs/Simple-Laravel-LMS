@@ -17,7 +17,7 @@
             <li>
                 <a class="sidebar-nav__link" href="#"><object type="image/svg+xml" data="{{ asset('img/icons/settings.svg') }}" class="sidebar-icon"></object>Settings</a>
             </li>
-            @if (Auth::user()->is('admin'))
+            @if (Auth::user()->is('superadmin'))
                 <li>
                     <a class="sidebar-nav__link" href="#"><object type="image/svg+xml" data="{{ asset('img/icons/lecturers.svg') }}" class="sidebar-icon"></object>Lecturers</a>
                 </li>

@@ -16,9 +16,9 @@
                 <input type="hidden" name="lesson-id" id="lesson-id" value="{{ $lesson->id }}">
             @endif
 
-            <article id="lesson-body-content" class="body-editable">
+            <div id="lesson-body-content" class="body-editable">
                 {!! $lesson->body !!}
-            </article>
+            </div>
 
             @if (count($lesson->files))
                 <div class="lesson-files">

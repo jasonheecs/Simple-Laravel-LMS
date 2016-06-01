@@ -13680,9 +13680,9 @@ return jQuery;
                 throw new Error("medium-editor-insert-plugin runs only in a browser.")
             }
 
-            if (jQuery === undefined) {
-                jQuery = require('jquery');
-            }
+            // if (jQuery === undefined) {
+            //     jQuery = require('jquery');
+            // }
             window.jQuery = jQuery;
 
             Handlebars = require('handlebars/runtime');
@@ -15900,7 +15900,7 @@ this["MediumInsert"]["Templates"]["src/js/templates/images-toolbar.hbs"] = Handl
 
 }));
 
-},{"blueimp-file-upload":1,"handlebars/runtime":21,"jquery":23,"jquery-sortable":22,"medium-editor":25}],25:[function(require,module,exports){
+},{"blueimp-file-upload":1,"handlebars/runtime":21,"jquery-sortable":22,"medium-editor":25}],25:[function(require,module,exports){
 /*global self, document, DOMException */
 
 /*! @source http://purl.eligrey.com/github/classList.js/blob/master/classList.js */
@@ -23455,6 +23455,10 @@ MediumEditor.version = MediumEditor.parseVersionString.call(this, ({
 var MediumEditor = require('medium-editor');
 var $ = require('jquery');
 require('medium-editor-insert-plugin')($);
+// var rangy = require('rangy');
+// require('rangy/lib/rangy-classapplier');
+
+// rangy.init();
 
 function Editor() {
     var editor;
@@ -23464,11 +23468,13 @@ function Editor() {
 Editor.prototype.init = function (editableElement, options, useImagePlugin) {
     this.editableElement = editableElement;
 
-    options = options || {
-        toolbar: {
-            buttons: ['bold', 'italic', 'underline', 'anchor', 'h2', 'h3', 'justifyLeft', 'justifyRight']
-        }
-    };
+    options = options || {};
+
+    if (!options.toolbar) {
+        options.toolbar = {
+            buttons: ['bold', 'italic', 'underline', 'anchor', 'h2', 'h3', 'justifyLeft', 'justifyRight', 'pre']
+        };
+    }
 
     useImagePlugin = useImagePlugin || false;
 
@@ -23513,6 +23519,35 @@ Editor.prototype.getContent = function () {
 Editor.prototype.destroy = function () {
     return this.editor.destroy();
 };
+
+// var CodeButton = MediumEditor.extensions.button.extend({
+//     name: 'code',
+
+//     tagNames: ['code'],
+//     contentDefault: '<b>code</b>',
+//     aria: 'Code',
+//     action: 'code',
+
+//     init: function() {
+//         MediumEditor.extensions.button.prototype.init.call(this);
+
+//         this.classApplier = rangy.createCssClassApplier('code', {
+//             elementTagName: 'code',
+//             normalize: true
+//         });
+//     },
+
+//     handleClick: function(event) {
+//         var sel = rangy.getSelection();
+//         sel.parentElement = document.createElement('pre');
+//         console.log(sel);
+//         this.classApplier.toggleSelection();
+
+//         // Ensure the editor knows about an html change so watchers are notified
+//         // ie: <textarea> elements depend on the editableInput event to stay synchronized
+//         this.base.checkContentChanged();
+//     }
+// });
 
 module.exports = Editor;
 
@@ -23642,7 +23677,11 @@ function revertChanges() {
 function initEditors() {
     titleEditor = new Editor();
     bodyEditor = new Editor();
-    titleEditor.init(document.querySelector('.title-editable'), { toolbar: false });
+    titleEditor.init(document.querySelector('.title-editable'), {
+        toolbar: false,
+        disableReturn: true,
+        disableExtraSpaces: true
+    });
     bodyEditor.init(document.querySelector('.body-editable'), {}, true);
 }
 

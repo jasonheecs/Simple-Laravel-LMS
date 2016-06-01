@@ -3,7 +3,10 @@
 var MediumEditor = require('medium-editor');
 var $ = require('jquery');
 require('medium-editor-insert-plugin')($);
+// var rangy = require('rangy');
+// require('rangy/lib/rangy-classapplier');
 
+// rangy.init();
 
 function Editor() {
     var editor;
@@ -13,8 +16,10 @@ function Editor() {
 Editor.prototype.init = function(editableElement, options, useImagePlugin) {
     this.editableElement = editableElement;
 
-    options = options || {
-        toolbar: {
+    options = options || {};
+
+    if (!options.toolbar) {
+        options.toolbar = {
             buttons: [
                 'bold',
                 'italic',
@@ -23,11 +28,12 @@ Editor.prototype.init = function(editableElement, options, useImagePlugin) {
                 'h2',
                 'h3',
                 'justifyLeft',
-                'justifyRight'
+                'justifyRight',
+                'pre'
             ]
-        }
-    };
-
+        };
+    }
+    
     useImagePlugin = useImagePlugin || false;
 
     if (this.editor) {
@@ -71,5 +77,34 @@ Editor.prototype.getContent = function() {
 Editor.prototype.destroy = function() {
     return this.editor.destroy();
 };
+
+// var CodeButton = MediumEditor.extensions.button.extend({
+//     name: 'code',
+
+//     tagNames: ['code'],
+//     contentDefault: '<b>code</b>',
+//     aria: 'Code',
+//     action: 'code',
+
+//     init: function() {
+//         MediumEditor.extensions.button.prototype.init.call(this);
+
+//         this.classApplier = rangy.createCssClassApplier('code', {
+//             elementTagName: 'code',
+//             normalize: true
+//         });
+//     },
+
+//     handleClick: function(event) {
+//         var sel = rangy.getSelection();
+//         sel.parentElement = document.createElement('pre');
+//         console.log(sel);
+//         this.classApplier.toggleSelection();
+
+//         // Ensure the editor knows about an html change so watchers are notified
+//         // ie: <textarea> elements depend on the editableInput event to stay synchronized
+//         this.base.checkContentChanged();
+//     }
+// });
 
 module.exports = Editor;

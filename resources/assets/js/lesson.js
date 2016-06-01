@@ -58,7 +58,11 @@ function revertChanges() {
 function initEditors() {
     titleEditor = new Editor();
     bodyEditor = new Editor();
-    titleEditor.init(document.querySelector('.title-editable'), {toolbar:false});
+    titleEditor.init(document.querySelector('.title-editable'), {
+        toolbar:false,
+        disableReturn: true,
+        disableExtraSpaces: true
+    });
     bodyEditor.init(document.querySelector('.body-editable'), {}, true);
 }
 
