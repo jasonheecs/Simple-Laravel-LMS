@@ -20,12 +20,19 @@ Xhr.prototype.setCSRF = function(token) {
  * @param  {String} path - URL to send the request to
  * @param  {boolean} setCSRF - if true, set the CRSF token request header (default: true) [optional]
  */
-Xhr.prototype.open = function(method, path, setCSRF) {
+Xhr.prototype.open = function(method, path, jsonPayload, setCSRF) {
     setCSRF = setCSRF || true;
+    jsonPayload = jsonPayload || false;
 
     this.xhr.open(method, path);
     this.xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-    this.xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+
+    if (jsonPayload) {
+        this.xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    } else {
+        this.xhr.setRequestHeader("Accept", "application/json, text/javascript, */*; q=0.01");
+        this.xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+    }
 
     if (setCSRF) {
         this.setCSRF();

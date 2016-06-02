@@ -24,6 +24,7 @@ Route::post('/courses', 'CoursesController@store');
 Route::get('/courses/create', 'CoursesController@create');
 Route::get('/courses/{course}', ['as' => 'course', 'uses' => 'CoursesController@show']);
 Route::patch('/courses/{course}', 'CoursesController@update');
+Route::patch('/courses/{course}/lecturers', 'CoursesController@updateLecturers');
 Route::delete('/courses/{course}', 'CoursesController@destroy');
 
 // Route::resource('courses', 'CoursesController', ['names' => [

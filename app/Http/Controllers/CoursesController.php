@@ -62,6 +62,16 @@ class CoursesController extends Controller
         # code...
     }
 
+    public function updateLecturers(Request $request, Course $course)
+    {
+        var_dump($request->all());
+        // if ($request->ajax()) {
+        //     return response()->json(['test' => 'yes']);
+        // }
+
+        // return back();
+    }
+
     public function destroy(Request $request, Course $course)
     {
         $course->delete();

@@ -36,4 +36,9 @@ class Course extends Model
 
         return $lecturers;
     }
+
+    public function addLecturer($user_id)
+    {
+        $lecturer = new Lecturer();
+    }
 }

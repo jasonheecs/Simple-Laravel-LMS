@@ -9,9 +9,13 @@
 @section('content')
     <div class="container container--f-start">
         <div class="flex__item flex__item--3">
-            <div class="panel panel--default">
-                <h1 class="panel__heading">{{ $course->title }}</h1>
+            <div id="course-panel" class="panel panel--default">
+                <h1 class="panel__heading title-editable">{{ $course->title }}</h1>
                 <div class="panel__content">
+                    @if (Auth::user()->canEdit($course))
+                        <input type="hidden" name="course-id" id="course-id" value="{{ $course->id }}">
+                    @endif
+
                     <ul class="list list--plain">
                         @foreach ($course->lessons as $key=>$lesson)
                             <li>
@@ -58,16 +62,18 @@
             <div class="panel panel--default">
                 <h1 class="panel__heading">Set the following users to be Lecturers in this course</h1>
                 <ul id="lecturers-list" class="list">
-                    @foreach ($users as $user)
-                        <li>
-                            @if ($user->isLecturerIn($course))
-                                <input type="checkbox" name="lecturer_{{ $user->id }}" id="lecturer_{{ $user->id }}" checked="true" />
-                            @else
-                                <input type="checkbox" name="lecturer_{{ $user->id }}" id="lecturer_{{ $user->id }}" />    
-                            @endif
-                            <label for="lecturer_{{ $user->id }}">{{ $user->name }}</label>
-                        </li>
-                    @endforeach
+                    <form id="lecturers-form">
+                        @foreach ($users as $user)
+                            <li>
+                                @if ($user->isLecturerIn($course))
+                                    <input type="checkbox" name="{{ $user->id }}" id="lecturer_{{ $user->id }}" checked="true" />
+                                @else
+                                    <input type="checkbox" name="{{ $user->id }}" id="lecturer_{{ $user->id }}" />    
+                                @endif
+                                <label for="lecturer_{{ $user->id }}">{{ $user->name }}</label>
+                            </li>
+                        @endforeach
+                    </form>
                 </ul>
             </div>
 
@@ -75,11 +81,19 @@
                 <h1 class="panel__heading">Set the following users to be Students in this course</h1>
                 <ul id="students-list" class="list">
                     @foreach ($users as $user)
-                        <li>{{ $user->name }}</li>   
+                        <li>
+                            @if ($user->isStudentIn($course))
+                                <input type="checkbox" name="{{ $user->id }}" id="student_{{ $user->id }}" checked="true" />
+                            @else
+                                <input type="checkbox" name="{{ $user->id }}" id="student_{{ $user->id }}" />    
+                            @endif
+                            <label for="student_{{ $user->id }}">{{ $user->name }}</label>
+                        </li>
                     @endforeach
                 </ul>
             </div>
         </div>
+
         <div class="flex__item flex__item--1 hidden">
             <div class="panel panel--default">
 

@@ -13680,9 +13680,9 @@ return jQuery;
                 throw new Error("medium-editor-insert-plugin runs only in a browser.")
             }
 
-            if (jQuery === undefined) {
-                jQuery = require('jquery');
-            }
+            // if (jQuery === undefined) {
+            //     jQuery = require('jquery');
+            // }
             window.jQuery = jQuery;
 
             Handlebars = require('handlebars/runtime');
@@ -15900,7 +15900,7 @@ this["MediumInsert"]["Templates"]["src/js/templates/images-toolbar.hbs"] = Handl
 
 }));
 
-},{"blueimp-file-upload":1,"handlebars/runtime":21,"jquery":23,"jquery-sortable":22,"medium-editor":25}],25:[function(require,module,exports){
+},{"blueimp-file-upload":1,"handlebars/runtime":21,"jquery-sortable":22,"medium-editor":25}],25:[function(require,module,exports){
 /*global self, document, DOMException */
 
 /*! @source http://purl.eligrey.com/github/classList.js/blob/master/classList.js */
@@ -23452,6 +23452,62 @@ MediumEditor.version = MediumEditor.parseVersionString.call(this, ({
 },{}],26:[function(require,module,exports){
 'use strict';
 
+var helper = require('./helper');
+
+var coursePanelEl;
+var lecturersEl;
+
+function init() {
+    coursePanelEl = document.getElementById('course-panel');
+
+    if (coursePanelEl) {
+        attachEventListeners();
+    }
+}
+
+function attachEventListeners() {
+    lecturersEl = document.getElementById('lecturers-list');
+
+    if (lecturersEl) {
+        lecturersEl.addEventListener('change', function (evt) {
+            if (evt.target && evt.target.matches('input[type="checkbox"]')) {
+                var data = helper.serialize(lecturersEl.querySelector('#lecturers-form'));
+
+                var success = function success(response) {
+                    // setAlert(JSON.parse(response).response, 'alert--success');
+                };
+
+                var failure = function failure(response) {
+                    // revertChanges();
+
+                    // //display errors to alert element
+                    // var errors = JSON.parse(response);
+                    // var errorMsg = '';
+
+                    // for (var error in errors) {
+                    //     errorMsg = errors[error].reduce(function(previousMsg, currentMsg) {
+                    //         return previousMsg + currentMsg;
+                    //     });
+                    // }
+                    // setAlert(errorMsg, 'alert--danger');
+                };
+                var always = function always() {
+                    // helper.enableButton(saveBtnEl);
+                };
+
+                helper.sendAjaxRequest('PATCH', '/courses/' + document.getElementById('course-id').value + '/lecturers', success, failure, always, data);
+            }
+        });
+    }
+}
+
+module.exports = {
+    init: init
+};
+
+},{"./helper":28}],27:[function(require,module,exports){
+'use strict';
+
 var MediumEditor = require('medium-editor');
 var $ = require('jquery');
 require('medium-editor-insert-plugin')($);
@@ -23555,7 +23611,7 @@ Editor.prototype.subscribe = function (event, callback) {
 
 module.exports = Editor;
 
-},{"jquery":23,"medium-editor":25,"medium-editor-insert-plugin":24}],27:[function(require,module,exports){
+},{"jquery":23,"medium-editor":25,"medium-editor-insert-plugin":24}],28:[function(require,module,exports){
 'use strict';
 
 var Xhr = require('./xhr');
@@ -23603,7 +23659,13 @@ function matches(elm, selector) {
 function sendAjaxRequest(method, path, success, failure, always, data) {
     always = always || function () {};
     var xhr = new Xhr();
-    xhr.open(method, path);
+
+    if (isJson(data)) {
+        xhr.open(method, path, true);
+    } else {
+        xhr.open(method, path);
+    }
+
     xhr.onLoad(success, failure, always);
 
     if (typeof data !== 'undefined') {
@@ -23611,16 +23673,94 @@ function sendAjaxRequest(method, path, success, failure, always, data) {
     } else {
         xhr.send();
     }
+
+    function isJson(str) {
+        try {
+            JSON.parse(str);
+        } catch (e) {
+            return false;
+        }
+        return true;
+    }
+}
+
+/**
+ * Serialize form values
+ * @param  {Node} form - form element to be serialized
+ * @return {String}  serialized values
+ */
+function serialize(form) {
+    if (!form || form.nodeName !== "FORM") {
+        return;
+    }
+    var i,
+        j,
+        q = [];
+    for (i = form.elements.length - 1; i >= 0; i = i - 1) {
+        if (form.elements[i].name === "") {
+            continue;
+        }
+        switch (form.elements[i].nodeName) {
+            case 'INPUT':
+                switch (form.elements[i].type) {
+                    case 'text':
+                    case 'hidden':
+                    case 'password':
+                    case 'button':
+                    case 'reset':
+                    case 'submit':
+                        q.push(form.elements[i].name + "=" + encodeURIComponent(form.elements[i].value));
+                        break;
+                    case 'checkbox':
+                    case 'radio':
+                        if (form.elements[i].checked) {
+                            q.push(form.elements[i].name + "=" + encodeURIComponent(form.elements[i].value));
+                        }
+                        break;
+                    case 'file':
+                        break;
+                }
+                break;
+            case 'TEXTAREA':
+                q.push(form.elements[i].name + "=" + encodeURIComponent(form.elements[i].value));
+                break;
+            case 'SELECT':
+                switch (form.elements[i].type) {
+                    case 'select-one':
+                        q.push(form.elements[i].name + "=" + encodeURIComponent(form.elements[i].value));
+                        break;
+                    case 'select-multiple':
+                        for (j = form.elements[i].options.length - 1; j >= 0; j = j - 1) {
+                            if (form.elements[i].options[j].selected) {
+                                q.push(form.elements[i].name + "=" + encodeURIComponent(form.elements[i].options[j].value));
+                            }
+                        }
+                        break;
+                }
+                break;
+            case 'BUTTON':
+                switch (form.elements[i].type) {
+                    case 'reset':
+                    case 'submit':
+                    case 'button':
+                        q.push(form.elements[i].name + "=" + encodeURIComponent(form.elements[i].value));
+                        break;
+                }
+                break;
+        }
+    }
+    return q.join("&");
 }
 
 module.exports = {
     disableButton: disableButton,
     enableButton: enableButton,
     matches: matches,
-    sendAjaxRequest: sendAjaxRequest
+    sendAjaxRequest: sendAjaxRequest,
+    serialize: serialize
 };
 
-},{"./xhr":32}],28:[function(require,module,exports){
+},{"./xhr":33}],29:[function(require,module,exports){
 'use strict';
 
 /* globals hljs */
@@ -23640,10 +23780,8 @@ module.exports = {
     init: init
 };
 
-},{"highlight":31,"jquery":23}],29:[function(require,module,exports){
+},{"highlight":32,"jquery":23}],30:[function(require,module,exports){
 'use strict';
-
-/* globals XMLHttpRequest */
 
 var Editor = require('./editor');
 var highlighter = require('./highlighter');
@@ -23896,16 +24034,18 @@ module.exports = {
     init: init
 };
 
-},{"./editor":26,"./helper":27,"./highlighter":28}],30:[function(require,module,exports){
+},{"./editor":27,"./helper":28,"./highlighter":29}],31:[function(require,module,exports){
 'use strict';
 
+var course = require('./course');
 var lesson = require('./lesson');
 
 document.addEventListener('DOMContentLoaded', function () {
+    course.init();
     lesson.init();
 });
 
-},{"./lesson":29}],31:[function(require,module,exports){
+},{"./course":26,"./lesson":30}],32:[function(require,module,exports){
 "use strict";
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
@@ -24113,7 +24253,7 @@ exports = undefined;
   return { aliases: ["js", "jsx"], k: { keyword: "in of if for while finally var new function do return void else break catch instanceof with throw case default try this switch continue typeof delete let yield const export super debugger as async await static import from as", literal: "true false null undefined NaN Infinity", built_in: "eval isFinite isNaN parseFloat parseInt decodeURI decodeURIComponent encodeURI encodeURIComponent escape unescape Object Function Boolean Error EvalError InternalError RangeError ReferenceError StopIteration SyntaxError TypeError URIError Number Math Date String RegExp Array Float32Array Float64Array Int16Array Int32Array Int8Array Uint16Array Uint32Array Uint8Array Uint8ClampedArray ArrayBuffer DataView JSON Intl arguments require module console window document Symbol Set Map WeakSet WeakMap Proxy Reflect Promise" }, c: [{ cN: "meta", r: 10, b: /^\s*['"]use (strict|asm)['"]/ }, { cN: "meta", b: /^#!/, e: /$/ }, e.ASM, e.QSM, { cN: "string", b: "`", e: "`", c: [e.BE, { cN: "subst", b: "\\$\\{", e: "\\}" }] }, e.CLCM, e.CBCM, { cN: "number", v: [{ b: "\\b(0[bB][01]+)" }, { b: "\\b(0[oO][0-7]+)" }, { b: e.CNR }], r: 0 }, { b: "(" + e.RSR + "|\\b(case|return|throw)\\b)\\s*", k: "return throw case", c: [e.CLCM, e.CBCM, e.RM, { b: /</, e: /(\/\w+|\w+\/)>/, sL: "xml", c: [{ b: /<\w+\s*\/>/, skip: !0 }, { b: /<\w+/, e: /(\/\w+|\w+\/)>/, skip: !0, c: ["self"] }] }], r: 0 }, { cN: "function", bK: "function", e: /\{/, eE: !0, c: [e.inherit(e.TM, { b: /[A-Za-z$_][0-9A-Za-z$_]*/ }), { cN: "params", b: /\(/, e: /\)/, eB: !0, eE: !0, c: [e.CLCM, e.CBCM] }], i: /\[|%/ }, { b: /\$[(.]/ }, e.METHOD_GUARD, { cN: "class", bK: "class", e: /[{;=]/, eE: !0, i: /[:"\[\]]/, c: [{ bK: "extends" }, e.UTM] }, { bK: "constructor", e: /\{/, eE: !0 }], i: /#(?!!)/ };
 });
 
-},{}],32:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 'use strict';
 
 /**
@@ -24136,12 +24276,19 @@ Xhr.prototype.setCSRF = function (token) {
  * @param  {String} path - URL to send the request to
  * @param  {boolean} setCSRF - if true, set the CRSF token request header (default: true) [optional]
  */
-Xhr.prototype.open = function (method, path, setCSRF) {
+Xhr.prototype.open = function (method, path, jsonPayload, setCSRF) {
     setCSRF = setCSRF || true;
+    jsonPayload = jsonPayload || false;
 
     this.xhr.open(method, path);
     this.xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-    this.xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+
+    if (jsonPayload) {
+        this.xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    } else {
+        this.xhr.setRequestHeader("Accept", "application/json, text/javascript, */*; q=0.01");
+        this.xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+    }
 
     if (setCSRF) {
         this.setCSRF();
@@ -24187,6 +24334,6 @@ Xhr.prototype.getXMLHttpRequest = function () {
 
 module.exports = Xhr;
 
-},{}]},{},[30]);
+},{}]},{},[31]);
 
 //# sourceMappingURL=app.js.map

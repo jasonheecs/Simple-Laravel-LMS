@@ -77,6 +77,21 @@ class User extends Authenticatable
     }
 
     /**
+     * Check if user is student in a course
+     * @param  Course  $course
+     */
+    public function isStudentIn(Course $course)
+    {
+        foreach ($course->students()->get() as $student) {
+            if ($this->id == $student->user_id) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Check if user can edit a course
      * @param  Course $course
      */

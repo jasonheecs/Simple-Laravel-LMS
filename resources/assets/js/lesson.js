@@ -1,7 +1,5 @@
 'use strict';
 
-/* globals XMLHttpRequest */
-
 var Editor = require('./editor');
 var highlighter = require('./highlighter');
 var helper = require('./helper');
