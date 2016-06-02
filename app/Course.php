@@ -40,5 +40,15 @@ class Course extends Model
     public function addLecturer($user_id)
     {
         $lecturer = new Lecturer();
+        $lecturer->user_id = $user_id;
+        $lecturer->course_id = $this->id;
+        $lecturer->save();
+        $lecturer->courses()->save($this);
+    }
+
+    public function removeLecturer($user_id)
+    {
+        $lecturer = Lecturer::where(['user_id' => $user_id, 'course_id' => $this->id])->first();
+        $lecturer->delete();
     }
 }

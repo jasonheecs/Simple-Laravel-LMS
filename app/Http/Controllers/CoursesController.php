@@ -65,8 +65,20 @@ class CoursesController extends Controller
     public function updateLecturers(Request $request, Course $course)
     {
         var_dump($request->all());
+        foreach ($request->all() as $user_id => $checked) {
+            echo $user_id;
+        }
         // if ($request->ajax()) {
         //     return response()->json(['test' => 'yes']);
+        // }
+
+        // return back();
+        // $user = \App\User::find($request->user_id);
+        // if ($user->isLecturerIn($course)) {
+        //     flash('User is already lecturer in this course', 'danger');
+        //     return redirect()->route('course', [$course]);
+        // } else {
+        //     $course->addLecturer($request->user_id);
         // }
 
         // return back();

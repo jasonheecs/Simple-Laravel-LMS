@@ -77,6 +77,13 @@
                 </ul>
             </div>
 
+            <form method="POST" action="/courses/{{ $course->id }}/lecturers">
+                {{ method_field('PATCH') }}
+                <input type="hidden" name="user_id" value="1" />
+                <button type="submit">Test</button>
+                {!! csrf_field() !!}
+            </form>
+
             <div class="panel panel--default">
                 <h1 class="panel__heading">Set the following users to be Students in this course</h1>
                 <ul id="students-list" class="list">
