@@ -10,7 +10,19 @@
             <div class="content__wrapper">
                 @include('flash')
 
-                @yield('content')
+                <div class="container container--f-start">
+                    <div class="flex__item flex__item--3">
+                        <div id="alert" class="alert hidden"></div>
+
+                        @yield('content')
+                    </div>
+
+                    <div class="flex__item flex__item--1 hidden">
+                        <div class="panel panel--default">
+
+                        </div>
+                    </div>
+                </div>
             </div>      
         </main>
     </div>

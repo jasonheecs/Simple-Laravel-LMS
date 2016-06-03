@@ -50,4 +50,6 @@ Route::get('/home', ['as' => 'home', 'uses' => 'HomeController@index']);
 
     // Medium editor image upload path
     Route::any('upload', 'LessonsController@upload');
+
+    Route::resource('users', 'UserController');
 });
