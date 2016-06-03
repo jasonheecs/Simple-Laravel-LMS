@@ -4,10 +4,10 @@ var Editor = require('./editor');
 var helper = require('./helper');
 var titleEditor; //editor for the title
 
-var coursePanelEl;
+var coursePanelEl; //wrapper element for the course title
 var titleEl; //course title element
-var lecturersEl;
-var studentsEl;
+var lecturersEl; //element containing list of lecturers
+var studentsEl; //element containing list of students
 var adminActionsEl; //parent element containing the buttons of the admin actions
 var contentActionsEl; //parent element containing the buttons of the content actions
 var initialTitle; //variable used to store initial title (for reverting changes made)

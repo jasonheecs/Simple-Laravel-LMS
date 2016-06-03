@@ -15,6 +15,11 @@ class AdminMiddleware
      */
     public function handle($request, Closure $next)
     {
-        return $next($request);
+        if ($request->user()->is('admin') || $request->user()->is('superadmin')) {
+            return $next($request);
+        }
+        
+        flash('You do not have access to this page!', 'danger');
+        return back();
     }
 }
