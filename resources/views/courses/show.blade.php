@@ -9,8 +9,10 @@
 @section('content')
     <div class="container container--f-start">
         <div class="flex__item flex__item--3">
+            <div id="alert" class="alert hidden"></div>
+
             <div id="course-panel" class="panel panel--default">
-                <h1 class="panel__heading title-editable">{{ $course->title }}</h1>
+                <h1 id="course-title-content" class="panel__heading title-editable">{{ $course->title }}</h1>
                 <div class="panel__content">
                     @if (Auth::user()->canEdit($course))
                         <input type="hidden" name="course-id" id="course-id" value="{{ $course->id }}">
@@ -58,47 +60,46 @@
                     @endif
                 </div>
             </div>
-
-            <div class="panel panel--default">
-                <h1 class="panel__heading">Set the following users to be Lecturers in this course</h1>
-                <ul id="lecturers-list" class="list">
-                    <form id="lecturers-form">
-                        @foreach ($users as $user)
-                            <li>
-                                @if ($user->isLecturerIn($course))
-                                    <input type="checkbox" name="{{ $user->id }}" id="lecturer_{{ $user->id }}" checked="true" />
-                                @else
-                                    <input type="checkbox" name="{{ $user->id }}" id="lecturer_{{ $user->id }}" />    
-                                @endif
-                                <label for="lecturer_{{ $user->id }}">{{ $user->name }}</label>
-                            </li>
-                        @endforeach
-                    </form>
-                </ul>
-            </div>
-
-            <form method="POST" action="/courses/{{ $course->id }}/lecturers">
-                {{ method_field('PATCH') }}
-                <input type="hidden" name="user_id" value="1" />
-                <button type="submit">Test</button>
-                {!! csrf_field() !!}
-            </form>
-
-            <div class="panel panel--default">
-                <h1 class="panel__heading">Set the following users to be Students in this course</h1>
-                <ul id="students-list" class="list">
-                    @foreach ($users as $user)
-                        <li>
-                            @if ($user->isStudentIn($course))
-                                <input type="checkbox" name="{{ $user->id }}" id="student_{{ $user->id }}" checked="true" />
-                            @else
-                                <input type="checkbox" name="{{ $user->id }}" id="student_{{ $user->id }}" />    
-                            @endif
-                            <label for="student_{{ $user->id }}">{{ $user->name }}</label>
-                        </li>
-                    @endforeach
-                </ul>
-            </div>
+            
+            @if (Auth::user()->canCreateCourse())
+                <div id="lecturers-list" class="panel panel--default hidden">
+                    <h1 class="panel__heading">Set the following users to be Lecturers in this course</h1>
+                    <ul class="list">
+                        <form id="lecturers-form">
+                            @foreach ($users as $user)
+                                <li>
+                                    @if ($user->isLecturerIn($course))
+                                        <input type="checkbox" name="{{ $user->id }}" id="lecturer_{{ $user->id }}" checked="true" />
+                                    @else
+                                        <input type="checkbox" name="{{ $user->id }}" id="lecturer_{{ $user->id }}" />    
+                                    @endif
+                                    <label for="lecturer_{{ $user->id }}">{{ $user->name }}</label>
+                                </li>
+                            @endforeach
+                        </form>
+                    </ul>
+                </div>
+            @endif
+            
+            @if (Auth::user()->canEdit($course))
+                <div id="students-list" class="panel panel--default hidden">
+                    <h1 class="panel__heading">Set the following users to be Students in this course</h1>
+                    <ul class="list">
+                        <form id="students-form">
+                            @foreach ($users as $user)
+                                <li>
+                                    @if ($user->isStudentIn($course))
+                                        <input type="checkbox" name="{{ $user->id }}" id="student_{{ $user->id }}" checked="true" />
+                                    @else
+                                        <input type="checkbox" name="{{ $user->id }}" id="student_{{ $user->id }}" />    
+                                    @endif
+                                    <label for="student_{{ $user->id }}">{{ $user->name }}</label>
+                                </li>
+                            @endforeach
+                        </form>
+                    </ul>
+                </div>
+            @endif
         </div>
 
         <div class="flex__item flex__item--1 hidden">

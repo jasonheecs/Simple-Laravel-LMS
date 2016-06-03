@@ -84,7 +84,7 @@ function editLessonInit() {
                 } else if(evt.target.id === 'add-lesson-file-btn') {
                     addLessonFileListener();
                 } else if(helper.matches(evt.target, '.btn-lesson-publish')) {
-                    addPublishListener(evt.target);
+                    publishLessonListener(evt.target);
                 }
             }
         });
@@ -104,13 +104,13 @@ function editLessonInit() {
         }
     }
 
-    function addPublishListener(btnEl) {
+    function publishLessonListener(btnEl) {
         helper.disableButton(btnEl);
 
         // Send ajax request to update publishing state
         var success = function(response) {
             togglePublishButton();
-            setAlert(JSON.parse(response).response, 'alert--success');
+            helper.setAlert(JSON.parse(response).response, 'alert--success');
         };
         var failure = function(response) {
             //display errors to alert element
@@ -122,7 +122,7 @@ function editLessonInit() {
                     return previousMsg + currentMsg;
                 });
             }
-            setAlert(errorMsg, 'alert--danger');
+            helper.setAlert(errorMsg, 'alert--danger');
         };
         var always = function() {
              helper.enableButton(btnEl);
@@ -180,7 +180,7 @@ function editLessonInit() {
             initialTitle = newTitle;
             initialBody = newBody;
 
-            setAlert(JSON.parse(response).response, 'alert--success');
+            helper.setAlert(JSON.parse(response).response, 'alert--success');
         };
         var failure = function(response) {
             revertChanges();
@@ -194,7 +194,7 @@ function editLessonInit() {
                     return previousMsg + currentMsg;
                 });
             }
-            setAlert(errorMsg, 'alert--danger');
+            helper.setAlert(errorMsg, 'alert--danger');
         };
         var always = function() {
              helper.enableButton(saveBtnEl);

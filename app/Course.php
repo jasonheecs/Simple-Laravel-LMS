@@ -28,13 +28,7 @@ class Course extends Model
 
     public function getLecturers()
     {
-        $lecturers = [];
-        foreach ($this->lecturers as $lecturer) {
-            $user = User::find($lecturer->user_id);
-            $lecturers[] = $user;
-        }
-
-        return $lecturers;
+        return $this->getUsersCollection($this->lecturers);
     }
 
     public function addLecturer($user_id)
@@ -50,5 +44,40 @@ class Course extends Model
     {
         $lecturer = Lecturer::where(['user_id' => $user_id, 'course_id' => $this->id])->first();
         $lecturer->delete();
+    }
+
+    public function getStudents()
+    {
+        return $this->getUsersCollection($this->students);
+    }
+
+    public function addStudent($user_id)
+    {
+        $student = new Student();
+        $student->user_id = $user_id;
+        $student->course_id = $this->id;
+        $student->save();
+        $student->courses()->save($this);
+    }
+
+    public function removeStudent($user_id)
+    {
+        $student = Student::where(['user_id' => $user_id, 'course_id' => $this->id])->first();
+        $student->delete();
+    }
+
+    /**
+     * Helper function to get a collection of User models (Lecturers/Students)
+     * @param  [Model] $collection - Collection of models with user_id attribute
+     * @return [Array] array of User models
+     */
+    private function getUsersCollection($collection) {
+        $users_collection = [];
+        foreach ($collection as $item) {
+            $user = User::find($item->user_id);
+            $users_collection[] = $user;
+        }
+
+        return $users_collection;
     }
 }

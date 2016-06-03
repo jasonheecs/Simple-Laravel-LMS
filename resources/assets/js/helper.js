@@ -2,6 +2,17 @@
 
 var Xhr = require('./xhr');
 
+//TODO: move into alert.js
+function setAlert(message, classList) {
+    var alertEl = document.getElementById('alert');
+    alertEl.textContent = message;
+    alertEl.classList.add(classList);
+
+    if (alertEl.classList.contains('hidden')) {
+        alertEl.classList.remove('hidden');
+    }
+}
+
 /**
  * Set a button/link to disabled state
  * @param  {DOM Node} btnEl
@@ -137,6 +148,7 @@ function serialize(form) {
 }
 
 module.exports = {
+    setAlert: setAlert,
     disableButton: disableButton,
     enableButton: enableButton,
     matches: matches,

@@ -13680,9 +13680,9 @@ return jQuery;
                 throw new Error("medium-editor-insert-plugin runs only in a browser.")
             }
 
-            if (jQuery === undefined) {
-                jQuery = require('jquery');
-            }
+            // if (jQuery === undefined) {
+            //     jQuery = require('jquery');
+            // }
             window.jQuery = jQuery;
 
             Handlebars = require('handlebars/runtime');
@@ -15900,7 +15900,7 @@ this["MediumInsert"]["Templates"]["src/js/templates/images-toolbar.hbs"] = Handl
 
 }));
 
-},{"blueimp-file-upload":1,"handlebars/runtime":21,"jquery":23,"jquery-sortable":22,"medium-editor":25}],25:[function(require,module,exports){
+},{"blueimp-file-upload":1,"handlebars/runtime":21,"jquery-sortable":22,"medium-editor":25}],25:[function(require,module,exports){
 /*global self, document, DOMException */
 
 /*! @source http://purl.eligrey.com/github/classList.js/blob/master/classList.js */
@@ -23452,52 +23452,179 @@ MediumEditor.version = MediumEditor.parseVersionString.call(this, ({
 },{}],26:[function(require,module,exports){
 'use strict';
 
+var Editor = require('./editor');
 var helper = require('./helper');
+var titleEditor; //editor for the title
 
 var coursePanelEl;
+var titleEl; //course title element
 var lecturersEl;
+var studentsEl;
+var adminActionsEl; //parent element containing the buttons of the admin actions
+var contentActionsEl; //parent element containing the buttons of the content actions
+var initialTitle; //variable used to store initial title (for reverting changes made)
 
 function init() {
     coursePanelEl = document.getElementById('course-panel');
+    titleEl = document.getElementById('course-title-content');
 
     if (coursePanelEl) {
+        initialTitle = titleEl.innerHTML;
         attachEventListeners();
     }
 }
 
 function attachEventListeners() {
     lecturersEl = document.getElementById('lecturers-list');
+    studentsEl = document.getElementById('students-list');
+
+    coursePanelEl.addEventListener('click', function (evt) {
+        adminActionsEl = document.getElementById('course-admin-actions');
+        contentActionsEl = document.getElementById('course-content-actions');
+
+        if (evt.target && (contentActionsEl.contains(evt.target) || adminActionsEl.contains(evt.target))) {
+            if (evt.target.id === 'edit-course-btn') {
+                editCourseListener();
+            } else if (evt.target.id === 'cancel-changes-btn') {
+                cancelChangesListener();
+            } else if (evt.target.id === 'save-changes-btn') {
+                saveChangesListener(evt.target);
+            }
+        }
+    });
 
     if (lecturersEl) {
         lecturersEl.addEventListener('change', function (evt) {
             if (evt.target && evt.target.matches('input[type="checkbox"]')) {
-                var data = helper.serialize(lecturersEl.querySelector('#lecturers-form'));
-
-                var success = function success(response) {
-                    // setAlert(JSON.parse(response).response, 'alert--success');
-                };
-
-                var failure = function failure(response) {
-                    // revertChanges();
-
-                    // //display errors to alert element
-                    // var errors = JSON.parse(response);
-                    // var errorMsg = '';
-
-                    // for (var error in errors) {
-                    //     errorMsg = errors[error].reduce(function(previousMsg, currentMsg) {
-                    //         return previousMsg + currentMsg;
-                    //     });
-                    // }
-                    // setAlert(errorMsg, 'alert--danger');
-                };
-                var always = function always() {
-                    // helper.enableButton(saveBtnEl);
-                };
-
-                helper.sendAjaxRequest('PATCH', '/courses/' + document.getElementById('course-id').value + '/lecturers', success, failure, always, data);
+                setLecturersListener();
             }
         });
+    }
+
+    if (studentsEl) {
+        studentsEl.addEventListener('change', function (evt) {
+            if (evt.target && evt.target.matches('input[type="checkbox"]')) {
+                setStudentsListener();
+            }
+        });
+    }
+
+    function editCourseListener() {
+        changeButtons();
+        initEditors();
+        titleEditor.setFocus();
+        toggleCheckboxlists();
+    }
+
+    function cancelChangesListener() {
+        revertChanges();
+        titleEditor.destroy();
+        toggleCheckboxlists();
+        changeButtons();
+    }
+
+    function saveChangesListener(saveBtnEl) {
+        helper.disableButton(saveBtnEl);
+
+        var newTitle = titleEditor.getContent()[titleEl.id].value;
+        var updateData = { title: newTitle };
+
+        // Send ajax request to update lesson
+        var success = function success(response) {
+            initialTitle = newTitle;
+
+            helper.setAlert(JSON.parse(response).response, 'alert--success');
+        };
+        var failure = function failure(response) {
+            revertChanges();
+
+            //display errors to alert element
+            var errors = JSON.parse(response);
+            var errorMsg = '';
+
+            for (var error in errors) {
+                errorMsg = errors[error].reduce(function (previousMsg, currentMsg) {
+                    return previousMsg + currentMsg;
+                });
+            }
+            helper.setAlert(errorMsg, 'alert--danger');
+        };
+        var always = function always() {
+            helper.enableButton(saveBtnEl);
+        };
+
+        helper.sendAjaxRequest('PATCH', '/courses/' + document.getElementById('course-id').value, success, failure, always, JSON.stringify(updateData));
+
+        titleEditor.destroy();
+        toggleCheckboxlists();
+        changeButtons();
+    }
+
+    function setLecturersListener() {
+        setCheckboxlistListener(helper.serialize(lecturersEl.querySelector('#lecturers-form')), '/courses/' + document.getElementById('course-id').value + '/lecturers');
+    }
+
+    function setStudentsListener() {
+        setCheckboxlistListener(helper.serialize(studentsEl.querySelector('#students-form')), '/courses/' + document.getElementById('course-id').value + '/students');
+    }
+
+    /**
+     * Sends ajax PATCH request to a specified url when checkbox is checked / unchecked
+     * @param {String} data - data to be sent via ajax
+     * @param {String} url - ajax url path
+     */
+    function setCheckboxlistListener(data, url) {
+        var success = function success(response) {
+            helper.setAlert(JSON.parse(response).response, 'alert--success');
+        };
+        var failure = function failure(response) {
+            //display errors to alert element
+            helper.setAlert(JSON.parse(response), 'alert--danger');
+        };
+        var always = function always() {};
+
+        helper.sendAjaxRequest('PATCH', url, success, failure, always, data);
+    }
+}
+
+/**
+ * Toggle between showing either the admin actions or the lesson content actions
+ */
+function changeButtons() {
+    if (contentActionsEl.classList.contains('hidden')) {
+        contentActionsEl.classList.remove('hidden');
+        adminActionsEl.classList.add('hidden');
+    } else if (adminActionsEl.classList.contains('hidden')) {
+        adminActionsEl.classList.remove('hidden');
+        contentActionsEl.classList.add('hidden');
+    }
+}
+
+/**
+ * Revert changes made when 'Cancel' button is clicked
+ */
+function revertChanges() {
+    titleEl.innerHTML = initialTitle;
+}
+
+/**
+ * Initialize all Medium editors
+ */
+function initEditors() {
+    titleEditor = new Editor();
+    titleEditor.init(document.querySelector('.title-editable'), {
+        toolbar: false,
+        disableReturn: true,
+        disableExtraSpaces: true
+    });
+}
+
+function toggleCheckboxlists() {
+    if (lecturersEl) {
+        lecturersEl.classList.toggle('hidden');
+    }
+    if (studentsEl) {
+        studentsEl.classList.toggle('hidden');
     }
 }
 
@@ -23505,7 +23632,7 @@ module.exports = {
     init: init
 };
 
-},{"./helper":28}],27:[function(require,module,exports){
+},{"./editor":27,"./helper":28}],27:[function(require,module,exports){
 'use strict';
 
 var MediumEditor = require('medium-editor');
@@ -23526,7 +23653,7 @@ Editor.prototype.init = function (editableElement, options, useImagePlugin) {
 
     options = options || {};
 
-    if (!options.toolbar) {
+    if (!options.hasOwnProperty('toolbar')) {
         options.toolbar = {
             buttons: ['bold', 'italic', 'underline', 'anchor', 'h2', 'h3', 'justifyLeft', 'justifyRight', 'pre']
         };
@@ -23615,6 +23742,17 @@ module.exports = Editor;
 'use strict';
 
 var Xhr = require('./xhr');
+
+//TODO: move into alert.js
+function setAlert(message, classList) {
+    var alertEl = document.getElementById('alert');
+    alertEl.textContent = message;
+    alertEl.classList.add(classList);
+
+    if (alertEl.classList.contains('hidden')) {
+        alertEl.classList.remove('hidden');
+    }
+}
 
 /**
  * Set a button/link to disabled state
@@ -23753,6 +23891,7 @@ function serialize(form) {
 }
 
 module.exports = {
+    setAlert: setAlert,
     disableButton: disableButton,
     enableButton: enableButton,
     matches: matches,
@@ -23867,7 +24006,7 @@ function editLessonInit() {
                 } else if (evt.target.id === 'add-lesson-file-btn') {
                     addLessonFileListener();
                 } else if (helper.matches(evt.target, '.btn-lesson-publish')) {
-                    addPublishListener(evt.target);
+                    publishLessonListener(evt.target);
                 }
             }
         });
@@ -23887,13 +24026,13 @@ function editLessonInit() {
         }
     }
 
-    function addPublishListener(btnEl) {
+    function publishLessonListener(btnEl) {
         helper.disableButton(btnEl);
 
         // Send ajax request to update publishing state
         var success = function success(response) {
             togglePublishButton();
-            setAlert(JSON.parse(response).response, 'alert--success');
+            helper.setAlert(JSON.parse(response).response, 'alert--success');
         };
         var failure = function failure(response) {
             //display errors to alert element
@@ -23905,7 +24044,7 @@ function editLessonInit() {
                     return previousMsg + currentMsg;
                 });
             }
-            setAlert(errorMsg, 'alert--danger');
+            helper.setAlert(errorMsg, 'alert--danger');
         };
         var always = function always() {
             helper.enableButton(btnEl);
@@ -23962,7 +24101,7 @@ function editLessonInit() {
             initialTitle = newTitle;
             initialBody = newBody;
 
-            setAlert(JSON.parse(response).response, 'alert--success');
+            helper.setAlert(JSON.parse(response).response, 'alert--success');
         };
         var failure = function failure(response) {
             revertChanges();
@@ -23976,7 +24115,7 @@ function editLessonInit() {
                     return previousMsg + currentMsg;
                 });
             }
-            setAlert(errorMsg, 'alert--danger');
+            helper.setAlert(errorMsg, 'alert--danger');
         };
         var always = function always() {
             helper.enableButton(saveBtnEl);

@@ -18,7 +18,7 @@ Editor.prototype.init = function(editableElement, options, useImagePlugin) {
 
     options = options || {};
 
-    if (!options.toolbar) {
+    if (!options.hasOwnProperty('toolbar')) {
         options.toolbar = {
             buttons: [
                 'bold',
