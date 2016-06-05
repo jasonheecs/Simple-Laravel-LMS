@@ -19,7 +19,7 @@ Route::get('/', function () {
 
 Route::get('/home', ['as' => 'home', 'uses' => 'HomeController@index']);
 
- Route::group(['middleware' => 'auth'], function () {
+Route::group(['middleware' => 'auth'], function () {
     Route::get('/courses', ['as' => 'courses', 'uses' => 'CoursesController@index']);
     Route::post('/courses', 'CoursesController@store');
     Route::get('/courses/create', 'CoursesController@create');

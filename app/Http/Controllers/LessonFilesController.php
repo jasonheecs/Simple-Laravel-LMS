@@ -10,6 +10,11 @@ use App\LessonFile;
 
 class LessonFilesController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('edit.course');
+    }
+
     /**
      * Adds a new LessonFile to the Lesson
      * @param  Request $request

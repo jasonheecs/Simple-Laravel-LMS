@@ -9,6 +9,12 @@ use App\Course;
 
 class CoursesController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('view.course', ['except' => 'index']);
+        $this->middleware('edit.course', ['except' => ['index', 'show']]);
+    }
+
     /**
      * Show all courses
      */

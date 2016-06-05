@@ -15,6 +15,12 @@ class LessonsController extends Controller
         'body'  => 'required'
     ];
 
+    public function __construct()
+    {
+        $this->middleware('view.course');
+        $this->middleware('edit.course', ['except' => 'show']);
+    }
+
     public function create(Request $request)
     {
         if (!$request->course_id) {
