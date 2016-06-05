@@ -17,12 +17,9 @@
             <li>
                 <a class="sidebar-nav__link" href="#"><object type="image/svg+xml" data="{{ asset('img/icons/settings.svg') }}" class="sidebar-icon"></object>Settings</a>
             </li>
-            @if (Auth::user()->is('superadmin'))
+            @if (Auth::user()->canManageUsers())
                 <li>
-                    <a class="sidebar-nav__link" href="#"><object type="image/svg+xml" data="{{ asset('img/icons/lecturers.svg') }}" class="sidebar-icon"></object>Lecturers</a>
-                </li>
-                <li>
-                    <a class="sidebar-nav__link" href="#"><object type="image/svg+xml" data="{{ asset('img/icons/students.svg') }}" class="sidebar-icon"></object>Students</a>
+                    <a class="sidebar-nav__link" href="{{ url('/users') }}"><object type="image/svg+xml" data="{{ asset('img/icons/lecturers.svg') }}" class="sidebar-icon"></object>Users</a>
                 </li>
             @endif
         </ul>

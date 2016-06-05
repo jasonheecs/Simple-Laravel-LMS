@@ -38,7 +38,7 @@ class UsersTableSeeder extends Seeder
 
     private function setUserToStudent(User $user, Course $course)
     {
-        $student_role = App\Role::where('name', 'student')->first();
+        $student_role = App\Role::where('name', 'user')->first();
         $user->roles()->save($student_role);
         
         $student = new App\Student;
@@ -51,7 +51,7 @@ class UsersTableSeeder extends Seeder
 
     private function setUserToLecturer(User $user, Course $course)
     {
-        $lecturer_role = App\Role::where('name', 'lecturer')->first();
+        $lecturer_role = App\Role::where('name', 'user')->first();
         $user->roles()->save($lecturer_role);
 
         $lecturer = new App\Lecturer;

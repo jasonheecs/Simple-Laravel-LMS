@@ -75,8 +75,8 @@ class CoursesController extends Controller
 
     /**
      * Update list of lecturers for a course
-     * @param  Request $request 
-     * @param  Course  $course  
+     * @param  Request $request
+     * @param  Course  $course
      */
     public function updateLecturers(Request $request, Course $course)
     {
@@ -106,8 +106,8 @@ class CoursesController extends Controller
 
     /**
      * Update list of students for a course
-     * @param  Request $request 
-     * @param  Course  $course  
+     * @param  Request $request
+     * @param  Course  $course
      */
     public function updateStudents(Request $request, Course $course)
     {

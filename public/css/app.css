@@ -932,6 +932,9 @@ label {
   justify-content: space-between;
   margin: 80px 0 60px; }
 
+.link--muted {
+  color: #838383; }
+
 .lesson-files {
   margin-top: 50px; }
 
