@@ -4,7 +4,6 @@ $btn-default-color: #333;
 
 .btn {
   border: 1px solid transparent;
-  border-radius: 5px;
   cursor: pointer;
   display: inline-block;
   font-family: $roboto;
@@ -18,14 +17,12 @@ $btn-default-color: #333;
 
 .btn--lg {
   @include font-size(18px);
-  border-radius: 0;
   line-height: 1.33;
   padding: 10px 16px;
 }
 
 .btn--sm {
   @include font-size(13px);
-  border-radius: 2px;
   padding: 4px 9px;
 }
 

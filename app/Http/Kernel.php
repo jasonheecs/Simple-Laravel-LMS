@@ -50,6 +50,7 @@ class Kernel extends HttpKernel
         'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'edit.course' => \App\Http\Middleware\CanEditCourse::class,
-        'view.course' => \App\Http\Middleware\CanViewCourse::class
+        'view.course' => \App\Http\Middleware\CanViewCourse::class,
+        'create.course' => \App\Http\Middleware\CanCreateCourse::class
     ];
 }

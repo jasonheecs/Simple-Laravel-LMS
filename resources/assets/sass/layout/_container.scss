@@ -1,16 +1,22 @@
  .container {
   @extend %flex;
   flex-wrap: wrap;
+  max-width: 1250px;
+  width: 90%;
 }
 
 .container--centered {
   @extend %flex--center;
   @extend %flex--middle;
-  background: $color-primary;
 }
 
 .container--full-height {
   min-height: 100vh;
+}
+
+.container--full-width {
+  max-width: none;
+  width: 100%;
 }
 
 .container--nowrap {
@@ -19,4 +25,8 @@
 
 .container--f-start {
   @extend %flex--top;
+}
+
+.container--primary-bg {
+  background: $color-primary;
 }

@@ -16,6 +16,7 @@ class CanEditCourse
     {
         $this->course = $course;
     }
+
     /**
      * Handle an incoming request.
      *
@@ -34,6 +35,8 @@ class CanEditCourse
             $course = $request->lesson->course;
         } elseif ($request->file) {
             $course = $request->file->lesson->course;
+        } elseif ($request->course_id) {
+            $course = $this->course->find($request->course_id);
         }
 
         if (!$request->user()->canEdit($course)) {

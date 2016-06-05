@@ -11,6 +11,13 @@ use App\Course;
  */
 class CanViewCourse
 {
+    protected $course;
+
+    public function __construct(Course $course)
+    {
+        $this->course = $course;
+    }
+
     /**
      * Handle an incoming request.
      *
@@ -24,6 +31,8 @@ class CanViewCourse
             $course = $request->course;
         } elseif ($request->lesson) {
             $course = $request->lesson->course;
+        } elseif ($request->course_id) {
+            $course = $this->course->find($request->course_id);
         }
 
         if (!$request->user()->isStudentIn($course) && !$request->user()->canEdit($course)) {

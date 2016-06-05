@@ -1,14 +1,15 @@
 @extends('layouts.master')
 
 @section('layout')
-    <div class="container container--full-height container--nowrap">
-        @include('layouts.sidebar')
+    <div class="container container--full-height container--full-width container--nowrap">
+        @include('shared.sidebar')
 
         <main class="content">
-            @include('layouts.topbar')
+            @include('shared.topbar')
             
-            <div class="content__wrapper">
+            <div class="content__wrapper container container--full-width container--centered">
                 @include('flash')
+                @yield('hero')
 
                 <div class="container container--f-start">
                     <div class="flex__item flex__item--3">
@@ -17,11 +18,11 @@
                         @yield('content')
                     </div>
 
-                    <div class="flex__item flex__item--1 hidden">
+                   <!--  <div class="flex__item flex__item--1 hidden">
                         <div class="panel panel--default">
 
                         </div>
-                    </div>
+                    </div> -->
                 </div>
             </div>      
         </main>

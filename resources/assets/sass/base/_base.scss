@@ -16,7 +16,8 @@ html {
 
 body {
   @include font-size(16px);
-  background: darken($color-white, 5%);
+  // background: darken($color-white, 5%);
+  background: $color-white;
   font-family: $roboto;
 }
 

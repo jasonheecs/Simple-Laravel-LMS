@@ -11,8 +11,9 @@ class CoursesController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('view.course', ['except' => 'index']);
-        $this->middleware('edit.course', ['except' => ['index', 'show']]);
+        $this->middleware('create.course', ['only' => ['create', 'store']]);
+        $this->middleware('view.course', ['except' => ['index', 'create', 'store']]);
+        $this->middleware('edit.course', ['except' => ['index', 'show', 'create', 'store']]);
     }
 
     /**
