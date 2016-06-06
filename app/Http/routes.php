@@ -50,8 +50,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/files/{file}/edit', 'LessonFilesController@edit');
 
     // Medium editor image upload path
-    // TODO: fix this
-    Route::any('upload', 'LessonsController@upload');
+    Route::any('/lessons/{lesson_id}/upload', 'LessonsController@upload');
 
     Route::resource('users', 'UserController');
 });

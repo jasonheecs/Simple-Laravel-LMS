@@ -18,9 +18,12 @@
                 @foreach ($lecturer->courses as $course)
                     <div class="card grid-item">
                         <a href="{{ url('/courses', $course->id) }}">
-                            <figure class="card-figure">
-                                <img src="http://placehold.it/400x200" />
-                            </figure>
+                            @if (isset($course->image))
+                                <figure class="card-figure">
+                                    <img src="{{ $course->image }}" />
+                                </figure>
+                            @endif
+                            
                             <h3 class="card-title">{{ $course->title }}</h3>
                         </a>
                     </div>

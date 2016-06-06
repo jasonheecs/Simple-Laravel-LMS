@@ -154,7 +154,7 @@ class CoursesController extends Controller
         $file = $request->file('files')[0];
 
         if ($file->isValid()) {
-            $fileName = time().'-'.$file->getClientOriginalName();
+            $fileName = 'course_' . $course_id . '.' . $file->guessExtension();
             $destination = public_path() . '/uploads/courses/';
             $file->move($destination, $fileName);
 

@@ -13680,9 +13680,9 @@ return jQuery;
                 throw new Error("medium-editor-insert-plugin runs only in a browser.")
             }
 
-            // if (jQuery === undefined) {
-            //     jQuery = require('jquery');
-            // }
+            if (jQuery === undefined) {
+                jQuery = require('jquery');
+            }
             window.jQuery = jQuery;
 
             Handlebars = require('handlebars/runtime');
@@ -15900,7 +15900,7 @@ this["MediumInsert"]["Templates"]["src/js/templates/images-toolbar.hbs"] = Handl
 
 }));
 
-},{"blueimp-file-upload":1,"handlebars/runtime":21,"jquery-sortable":22,"medium-editor":25}],25:[function(require,module,exports){
+},{"blueimp-file-upload":1,"handlebars/runtime":21,"jquery":23,"jquery-sortable":22,"medium-editor":25}],25:[function(require,module,exports){
 /*global self, document, DOMException */
 
 /*! @source http://purl.eligrey.com/github/classList.js/blob/master/classList.js */
@@ -23464,6 +23464,7 @@ var studentsEl; //element containing list of students
 var adminActionsEl; //parent element containing the buttons of the admin actions
 var contentActionsEl; //parent element containing the buttons of the content actions
 var initialTitle; //variable used to store initial title (for reverting changes made)
+var imgUploadBtn; //button element used to select image file to upload for course banner image
 
 function init() {
     coursePanelEl = document.getElementById('course-panel');
@@ -23471,6 +23472,7 @@ function init() {
 
     if (coursePanelEl) {
         initialTitle = titleEl.innerHTML;
+        imgUploadBtn = document.getElementById('img-upload-btn');
         attachEventListeners();
         initCourseImgUpload();
     }
@@ -23516,6 +23518,7 @@ function attachEventListeners() {
         initEditors();
         titleEditor.setFocus();
         toggleCheckboxlists();
+        imgUploadBtn.classList.remove('hidden');
     }
 
     function cancelChangesListener() {
@@ -23523,6 +23526,7 @@ function attachEventListeners() {
         titleEditor.destroy();
         toggleCheckboxlists();
         changeButtons();
+        imgUploadBtn.classList.add('hidden');
     }
 
     function saveChangesListener(saveBtnEl) {
@@ -23560,6 +23564,7 @@ function attachEventListeners() {
         titleEditor.destroy();
         toggleCheckboxlists();
         changeButtons();
+        imgUploadBtn.classList.add('hidden');
     }
 
     function setLecturersListener() {
@@ -23631,6 +23636,9 @@ function toggleCheckboxlists() {
 }
 
 function initCourseImgUpload() {
+    var $progress = $('#progress');
+    var $hero = $('.hero');
+
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -23641,8 +23649,23 @@ function initCourseImgUpload() {
         dataType: 'json',
         url: '/courses/' + document.getElementById('course-id').value + '/upload/',
         acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i,
+        start: function start(e, data) {
+            $progress.removeClass('hidden');
+            $hero.addClass('uploading');
+            imgUploadBtn.classList.add('hidden');
+        },
         done: function done(e, data) {
-            $('.hero').css('background-image', 'url("' + data.result.files[0].url + '")');
+            //append current timestamp to background image filename to avoid browser caching
+            var imgUrl = data.result.files[0].url + '?' + new Date().toISOString().replace(/[^0-9]/g, '');
+            $hero.css('background-image', 'url("' + imgUrl + '")');
+
+            $progress.addClass('hidden');
+            $hero.removeClass('uploading');
+            imgUploadBtn.classList.remove('hidden');
+        },
+        progressall: function progressall(e, data) {
+            var progress = parseInt(data.loaded / data.total * 100, 10);
+            $progress.find('.progress-bar').css('width', progress + '%');
         }
     });
 }
@@ -23667,7 +23690,7 @@ function Editor() {
     var editableElement;
 }
 
-Editor.prototype.init = function (editableElement, options, useImagePlugin) {
+Editor.prototype.init = function (editableElement, options) {
     this.editableElement = editableElement;
 
     options = options || {};
@@ -23678,31 +23701,29 @@ Editor.prototype.init = function (editableElement, options, useImagePlugin) {
         };
     }
 
-    useImagePlugin = useImagePlugin || false;
-
     if (this.editor) {
         this.editor.setup();
     } else {
         this.editor = new MediumEditor(editableElement, options);
     }
+};
 
-    if (useImagePlugin) {
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
-        });
+Editor.prototype.enableImagePlugin = function (imageUploadUrl) {
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
 
-        $(editableElement).mediumInsert({
-            editor: this.editor,
-            addons: {
-                images: {
-                    fileUploadOptions: { // (object) File upload configuration. See https://github.com/blueimp/jQuery-File-Upload/wiki/Options
-                        url: '/upload' }
-                }
+    $(this.editableElement).mediumInsert({
+        editor: this.editor,
+        addons: {
+            images: {
+                fileUploadOptions: { // (object) File upload configuration. See https://github.com/blueimp/jQuery-File-Upload/wiki/Options
+                    url: imageUploadUrl }
             }
-        });
-    }
+        }
+    });
 };
 
 // (string) A relative path to an upload script
@@ -24174,7 +24195,8 @@ function initEditors() {
         disableReturn: true,
         disableExtraSpaces: true
     });
-    bodyEditor.init(document.querySelector('.body-editable'), {}, true);
+    bodyEditor.init(document.querySelector('.body-editable'));
+    bodyEditor.enableImagePlugin('/lessons/' + document.getElementById('lesson-id').value + '/upload/');
 }
 
 //TODO: move into alert.js

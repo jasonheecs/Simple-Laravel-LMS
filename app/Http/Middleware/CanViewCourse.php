@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use App\Course;
+use App\Lesson;
 
 /**
  * This middleware checks if the user can view a course
@@ -33,6 +34,8 @@ class CanViewCourse
             $course = $request->lesson->course;
         } elseif ($request->course_id) {
             $course = $this->course->find($request->course_id);
+        } elseif ($request->lesson_id) {
+            $course = Lesson::find($request->lesson_id)->course;
         }
 
         if (!$request->user()->isStudentIn($course) && !$request->user()->canEdit($course)) {

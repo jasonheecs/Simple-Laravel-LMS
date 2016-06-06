@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use App\Course;
+use App\Lesson;
 
 /**
  * This middleware checks if the user can edit a course (i.e: the user is an admin / is a lecturer for the course)
@@ -37,6 +38,8 @@ class CanEditCourse
             $course = $request->file->lesson->course;
         } elseif ($request->course_id) {
             $course = $this->course->find($request->course_id);
+        } elseif ($request->lesson_id) {
+            $course = Lesson::find($request->lesson_id)->course;
         }
 
         if (!$request->user()->canEdit($course)) {

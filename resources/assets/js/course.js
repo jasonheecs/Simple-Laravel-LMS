@@ -12,6 +12,7 @@ var studentsEl; //element containing list of students
 var adminActionsEl; //parent element containing the buttons of the admin actions
 var contentActionsEl; //parent element containing the buttons of the content actions
 var initialTitle; //variable used to store initial title (for reverting changes made)
+var imgUploadBtn; //button element used to select image file to upload for course banner image
 
 function init() {
     coursePanelEl = document.getElementById('course-panel');
@@ -19,6 +20,7 @@ function init() {
 
     if (coursePanelEl) {
         initialTitle = titleEl.innerHTML;
+        imgUploadBtn = document.getElementById('img-upload-btn');
         attachEventListeners();
         initCourseImgUpload();
     }
@@ -64,6 +66,7 @@ function attachEventListeners() {
         initEditors();
         titleEditor.setFocus();
         toggleCheckboxlists();
+        imgUploadBtn.classList.remove('hidden');
     }
 
     function cancelChangesListener() {
@@ -71,6 +74,7 @@ function attachEventListeners() {
         titleEditor.destroy();
         toggleCheckboxlists();
         changeButtons();
+        imgUploadBtn.classList.add('hidden');
     }
 
     function saveChangesListener(saveBtnEl) {
@@ -108,6 +112,7 @@ function attachEventListeners() {
         titleEditor.destroy();
         toggleCheckboxlists();
         changeButtons();
+        imgUploadBtn.classList.add('hidden');
     }
 
     function setLecturersListener() {
@@ -180,6 +185,9 @@ function toggleCheckboxlists() {
 }
 
 function initCourseImgUpload() {
+    var $progress = $('#progress');
+    var $hero = $('.hero');
+
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -190,8 +198,23 @@ function initCourseImgUpload() {
         dataType: 'json',
         url: '/courses/'+ document.getElementById('course-id').value +'/upload/',
         acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i,
+        start: function(e, data) {
+            $progress.removeClass('hidden');
+            $hero.addClass('uploading');
+            imgUploadBtn.classList.add('hidden');
+        },
         done: function(e, data) {
-            $('.hero').css('background-image', 'url("'+ data.result.files[0].url + '")');
+            //append current timestamp to background image filename to avoid browser caching
+            var imgUrl = data.result.files[0].url + '?' + (new Date()).toISOString().replace(/[^0-9]/g, '');
+            $hero.css('background-image', 'url("'+ imgUrl + '")');
+
+            $progress.addClass('hidden');
+            $hero.removeClass('uploading');
+            imgUploadBtn.classList.remove('hidden');
+        },
+        progressall: function(e, data) {
+            var progress = parseInt(data.loaded / data.total * 100, 10);
+            $progress.find('.progress-bar').css('width', progress + '%');
         }
     });
 }

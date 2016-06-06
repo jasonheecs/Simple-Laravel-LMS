@@ -9,6 +9,17 @@
   position: relative;
   text-align: center;
   width: 100%;
+
+  &.uploading::before {
+    //scss-lint:disable ColorVariable
+    background: rgba(0, 0, 0, .5);
+    bottom: 0;
+    content: '';
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
 }
 
 .hero--heading {
