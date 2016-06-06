@@ -15,7 +15,7 @@ html {
 }
 
 body {
-  @include font-size(16px);
+  @include font-size(18px);
   // background: darken($color-white, 5%);
   background: $color-white;
   font-family: $roboto;
@@ -24,4 +24,9 @@ body {
 a {
   color: $color-primary;
   text-decoration: none;
+}
+
+img {
+  height: auto;
+  max-width: 100%;
 }

@@ -5,17 +5,9 @@
   align-items: flex-start;
   flex-flow: row wrap;
   padding-left: $sidebar-width;
-
-  // @include respond-to('medium') {
-  //   flex: 4;
-  // }
-
-  // @include respond-to('large') {
-  //   flex: 6;
-  // }
 }
 
 .content__wrapper {
   @extend %flex__item--full-width;
-  // padding: 20px;
+  margin-bottom: 100px;
 }

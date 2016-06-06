@@ -4,15 +4,29 @@
   background-repeat: no-repeat;
   background-size: cover;
   color: $color-white;
-  height: 50vh;
+  height: 60vh;
   min-height: 300px;
   position: relative;
   text-align: center;
   width: 100%;
 }
 
+.hero--heading {
+  width: 100%;
+}
+
 .hero--title {
   @include font-size(60px);
+  margin-left: auto;
+  margin-right: auto;
+
+  @include respond-to('medium') {
+    max-width: 90%;
+  }
+
+  @include respond-to('large') {
+    max-width: 80%;
+  }
 }
 
 .hero--subtitle {

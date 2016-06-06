@@ -1,33 +1,55 @@
 @extends('layouts.with-sidebar')
 
-@section('content')
-    @if (count($instructing))
-        <div class="panel panel--default">
-            <h1 class="panel__heading">Courses you are instructing</h1>
-            <div class="panel__content">
-                <ul class="list list--plain">
-                    @foreach ($instructing as $lecturer)
-                        @foreach ($lecturer->courses as $course)
-                            <li><a href="{{ url('/courses', $course->id) }}">{{ $course->title }}</a></li>
-                        @endforeach
-                    @endforeach
-                </ul>
-            </div>
-        </div>
-    @endif
+@section('hero')
+    @include('shared.hero', [
+                            'hero_image' => 'img/bg/home.jpg',
+                            'hero_title' => 'Welcome,',
+                            'hero_subtitle' => Auth::user()->name
+                            ])
+@stop
 
-    @if (count($studying))
-        <div class="panel panel--default">
-            <h1 class="panel__heading">Courses you are enrolled in</h1>
-            <div class="panel__content">
-                <ul class="list list--plain">
-                    @foreach ($studying as $student)
-                        @foreach ($student->courses as $course)
-                            <li><a href="{{ url('/courses', $course->id) }}">{{ $course->title }}</a></li>
-                        @endforeach
-                    @endforeach
-                </ul>
-            </div>
+@section('content')
+@if (count($instructing))
+<div class="container">
+    <div class="items-grid items-grid--3 items-grid--first">
+        <div class="panel items-grid-panel">
+            <h1 class="items-grid__heading">Courses you are instructing</h1>
+            @foreach ($instructing as $lecturer)
+                @foreach ($lecturer->courses as $course)
+                    <div class="card grid-item">
+                        <a href="{{ url('/courses', $course->id) }}">
+                            <figure class="card-figure">
+                                <img src="http://placehold.it/400x200" />
+                            </figure>
+                            <h3 class="card-title">{{ $course->title }}</h3>
+                        </a>
+                    </div>
+                @endforeach
+            @endforeach
         </div>
-    @endif
+    </div>
+</div>
+@endif
+
+@if (count($studying))
+<div class="container">
+    <div class="items-grid items-grid--3">
+        <div class="panel items-grid-panel">
+            <h1 class="items-grid__heading">Courses you are Studying</h1>
+            @foreach ($studying as $student)
+                @foreach ($student->courses as $course)
+                    <div class="card grid-item">
+                        <a href="{{ url('/courses', $course->id) }}">
+                            <figure class="card-figure">
+                                <img src="http://placehold.it/400x200" />
+                            </figure>
+                            <h3 class="card-title">{{ $course->title }}</h3>
+                        </a>
+                    </div>
+                @endforeach
+            @endforeach
+        </div>
+    </div>
+</div>
+@endif
 @endsection

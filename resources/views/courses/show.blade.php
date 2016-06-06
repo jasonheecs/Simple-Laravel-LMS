@@ -6,8 +6,12 @@
     @endif
 @stop
 
+@section('hero')
+    @include('shared.hero', ['hero_image' => $course->image])
+@stop
+
 @section('content')
-    <div id="course-panel" class="panel panel--default">
+    <div id="course-panel" class="panel panel--default panel--first">
         <h1 id="course-title-content" class="panel__heading title-editable">{{ $course->title }}</h1>
         <div class="panel__content">
             @if (Auth::user()->canEdit($course))

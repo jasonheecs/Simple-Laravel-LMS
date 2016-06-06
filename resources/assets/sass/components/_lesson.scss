@@ -1,0 +1,24 @@
+.lesson-content {
+  h2 {
+    @include font-size(28px);
+    color: $color-secondary;
+    margin-top: 180px;
+    position: relative;
+
+    &::before {
+      background: $color-white;
+      content: '';
+      height: 30px;
+      left: -25%;
+      position: absolute;
+      top: -90px;
+      width: 150%;
+    }
+  }
+
+  p {
+    line-height: 1.5;
+    margin-bottom: 25px;
+    margin-top: 0;
+  }
+}

@@ -1,21 +1,36 @@
 @extends('layouts.with-sidebar')
 
 @section('hero')
-    @include('shared.hero', ['hero_image' => 'img/bg/all_courses.jpg'])
+    @include('shared.hero', [
+                            'hero_image' => 'img/bg/all_courses.jpg',
+                            'hero_title' => 'All Courses',
+                            'hero_subtitle' => 'A directory of useful courses'
+                            ])
 @stop
 
 @section('content')
-<div class="panel items-grid">
-    <div class="panel__content">
-        <ul class="list list--plain">
+<div class="container">
+    <div class="items-grid items-grid--3 items-grid--first">
+        <div class="panel items-grid-panel">
             @foreach ($courses as $course)
-                <li>
-                    <a href="/courses/{{ $course->id }}">{{ $course->title }}</a>
-                </li>
+                <div class="card grid-item">
+                    <a href="{{ url('/courses', $course->id) }}">
+                        <figure class="card-figure">
+                            @if (isset($course->image))
+                                <img src={{ $course->image }} />
+                            @else
+                                <img src="http://placehold.it/400x175" />
+                            @endif
+                            
+                        </figure>
+                        <h3 class="card-title">{{ $course->title }}</h3>
+                    </a>
+                </div>
             @endforeach
-        </ul>
+        </div>
 
         @if (Auth::user()->canCreateCourse())
+        <div class="flex__item flex__item--full-width ">
             <ul id="course-admin-actions" class="list list--inline button-group button-group--right margin--top admin-actions-group">
                 <li>
                     <form method="GET" action="{{ url('/courses/create') }}">
@@ -23,7 +38,9 @@
                     </form>
                 </li>
             </ul>
+        </div>
         @endif
     </div>
 </div>
+
 @stop

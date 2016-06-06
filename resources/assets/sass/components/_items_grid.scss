@@ -1,6 +1,37 @@
 .items-grid {
   background: $color-white;
-  margin-top: -6vh;
   position: relative;
+  width: 100%;
   z-index: 1;
+}
+
+.items-grid--first {
+  margin-top: -6vh;
+}
+
+.items-grid--3 .grid-item {
+  width: 100%;
+
+  @include respond-to('medium') {
+    width: 50%;
+  }
+
+  @include respond-to('large') {
+    width: 33.33%;
+  }
+}
+
+.grid-item {
+  margin-top: $gutter-width;
+}
+
+.items-grid-panel {
+  @extend %flex;
+  background: none;
+  flex-wrap: wrap;
+  margin-top: -$gutter-width;
+}
+
+.items-grid__heading {
+  @extend %flex__item--full-width;
 }

@@ -1,6 +1,7 @@
  .container {
   @extend %flex;
   flex-wrap: wrap;
+  margin: 0 auto;
   max-width: 1250px;
   width: 90%;
 }

@@ -22,7 +22,8 @@ $factory->define(App\User::class, function (Faker\Generator $faker) {
 
 $factory->define(App\Course::class, function (Faker\Generator $faker) {
     return [
-        'title' => $faker->sentence(5)
+        'title' => $faker->sentence(5),
+        'image' => 'http://placehold.it/1500x550'
     ];
 });
 

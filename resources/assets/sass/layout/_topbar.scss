@@ -1,6 +1,6 @@
 .topbar {
   @extend %flex__item--full-width;
-  background: $color-white;
+  background: tint($color-white, 50%);
   border-bottom: 1px solid tint($color-primary, 48%);
   padding: 8px 20px;
 }

@@ -4,7 +4,11 @@
     <div class="hero container container--centered container--full-width">
 @endif
     <div class="hero--heading">
-        <h1 class="hero--title">All Courses</h1>
-        <p class="hero--subtitle">A directory of useful courses</p>
+        @if (isset($hero_title))
+        <h1 class="hero--title">{{ $hero_title }}</h1>
+        @endif
+        @if (isset($hero_subtitle))
+        <p class="hero--subtitle">{{ $hero_subtitle }}</p>
+        @endif
     </div>
 </div>

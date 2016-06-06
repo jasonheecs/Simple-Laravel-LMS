@@ -1,16 +1,10 @@
 .sidebar {
-  // @extend %flex__item--1;
+  @include font-size(16px);
   background: $color-primary;
   height: 100%;
   position: fixed;
-  // width: 100%;
   width: $sidebar-width;
   z-index: 1;
-
-  // @include respond-to('small') {
-  //   position: static;
-  //   width: auto;
-  // }
 }
 
 .avatar {
@@ -47,13 +41,11 @@
   display: inline-block;
   margin: 5px 0;
   text-decoration: none;
+
+  svg {
+    height: 16px;
+    margin-right: 10px;
+    vertical-align: middle;
+    width: 16px;
+  }
 }
-
-.sidebar-icon {
-  height: 16px;
-  margin-right: 10px;
-  vertical-align: middle;
-  width: 16px;
-}
-
-

@@ -9,17 +9,25 @@
     <nav class="sidebar-nav">
         <ul class="sidebar-nav__links">
             <li>
-                <a class="sidebar-nav__link" href="{{ url('/') }}"><object type="image/svg+xml" data="{{ asset('img/icons/home.svg') }}" class="sidebar-icon" style="margin-top:-3px"></object>Home</a>
+                <a class="sidebar-nav__link" href="{{ url('/') }}">
+                    @include('svg.home')Home
+                </a>
             </li>
             <li>
-                <a class="sidebar-nav__link" href="{{ url('/courses') }}"><object type="image/svg+xml" data="{{ asset('img/icons/courses.svg') }}" class="sidebar-icon"></object>Courses</a>
+                <a class="sidebar-nav__link" href="{{ url('/courses') }}">
+                    @include('svg.courses')Courses
+                </a>
             </li>
             <li>
-                <a class="sidebar-nav__link" href="#"><object type="image/svg+xml" data="{{ asset('img/icons/settings.svg') }}" class="sidebar-icon"></object>Settings</a>
+                <a class="sidebar-nav__link" href="#">
+                    @include('svg.settings')Settings
+                </a>
             </li>
             @if (Auth::user()->canManageUsers())
                 <li>
-                    <a class="sidebar-nav__link" href="{{ url('/users') }}"><object type="image/svg+xml" data="{{ asset('img/icons/lecturers.svg') }}" class="sidebar-icon"></object>Users</a>
+                    <a class="sidebar-nav__link" href="{{ url('/users') }}">
+                        @include('svg.users')Users
+                    </a>
                 </li>
             @endif
         </ul>

@@ -1,0 +1,40 @@
+$card-gutter: 10px;
+
+.card {
+  background: tint($color-white, 50%);
+  //scss-lint:disable ColorVariable
+  box-shadow: 0 3px 7px 0 rgba(0, 0, 0, .12), 0 2px 5px 0 rgba(0, 0, 0, .15);
+
+  @include respond-to('medium') {
+    margin: 0 $card-gutter;
+  }
+
+  a {
+    display: block;
+    height: 100%;
+    padding: 20px;
+    width: 100%;
+  }
+}
+
+.card-figure {
+  margin: -$card-gutter;
+}
+
+.items-grid--3 .grid-item.card {
+  width: 100%;
+
+  @include respond-to('medium') {
+    width: calc(50% - #{$card-gutter * 2});
+  }
+
+  @include respond-to('large') {
+    width: calc(33.33% - #{$card-gutter * 2});
+  }
+}
+
+.card-title {
+  @include font-size(20px);
+  color: $color-secondary;
+  font-weight: 400;
+}
