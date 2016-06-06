@@ -27,6 +27,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::patch('/courses/{course}', 'CoursesController@update');
     Route::patch('/courses/{course}/lecturers', 'CoursesController@updateLecturers');
     Route::patch('/courses/{course}/students', 'CoursesController@updateStudents');
+    Route::any('/courses/{course_id}/upload', 'CoursesController@upload');
     Route::delete('/courses/{course}', 'CoursesController@destroy');
 
     // Route::resource('courses', 'CoursesController', ['names' => [
@@ -49,6 +50,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/files/{file}/edit', 'LessonFilesController@edit');
 
     // Medium editor image upload path
+    // TODO: fix this
     Route::any('upload', 'LessonsController@upload');
 
     Route::resource('users', 'UserController');

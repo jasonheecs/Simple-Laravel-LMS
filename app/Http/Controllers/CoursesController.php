@@ -148,4 +148,26 @@ class CoursesController extends Controller
 
         return redirect()->route('home');
     }
+
+    public function upload(Request $request, $course_id)
+    {
+        $file = $request->file('files')[0];
+
+        if ($file->isValid()) {
+            $fileName = time().'-'.$file->getClientOriginalName();
+            $destination = public_path() . '/uploads/courses/';
+            $file->move($destination, $fileName);
+
+            $course = Course::find($course_id);
+            $course->image = url('/uploads/courses/'. $fileName);
+            $course->save();
+
+            $response = ['files' => [['url' => url('/uploads/courses/'. $fileName)]]];
+        } else {
+            echo 'Image Upload Error!';
+            $response = ['files' => [['url' => url('/uploads/error.png')]]];
+        }
+
+        return json_encode($response);
+    }
 }

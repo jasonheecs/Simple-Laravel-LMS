@@ -2,6 +2,7 @@
 
 var Editor = require('./editor');
 var helper = require('./helper');
+var $ = require('jquery');
 var titleEditor; //editor for the title
 
 var coursePanelEl; //wrapper element for the course title
@@ -19,6 +20,7 @@ function init() {
     if (coursePanelEl) {
         initialTitle = titleEl.innerHTML;
         attachEventListeners();
+        initCourseImgUpload();
     }
 }
 
@@ -175,6 +177,23 @@ function toggleCheckboxlists() {
     if (studentsEl) {
         studentsEl.classList.toggle('hidden');
     }
+}
+
+function initCourseImgUpload() {
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+
+    $('#course-img-upload').fileupload({
+        dataType: 'json',
+        url: '/courses/'+ document.getElementById('course-id').value +'/upload/',
+        acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i,
+        done: function(e, data) {
+            $('.hero').css('background-image', 'url("'+ data.result.files[0].url + '")');
+        }
+    });
 }
 
 module.exports = {

@@ -7,7 +7,11 @@
 @stop
 
 @section('hero')
-    @include('shared.hero', ['hero_image' => $course->image])
+    @if (Auth::user()->canEdit($course))
+        @include('shared.hero', ['hero_image' => $course->image, 'show_upload_btn' => true])
+    @else
+        @include('shared.hero', ['hero_image' => $course->image])
+    @endif
 @stop
 
 @section('content')

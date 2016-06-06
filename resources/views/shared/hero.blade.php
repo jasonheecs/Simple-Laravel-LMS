@@ -11,4 +11,15 @@
         <p class="hero--subtitle">{{ $hero_subtitle }}</p>
         @endif
     </div>
+
+    @if (isset($show_upload_btn) && $show_upload_btn)
+        <span class="img-upload-btn btn btn--primary">
+            <i class="fa fa-plus"></i>
+            <span>Change course banner image...</span>
+            <input id="course-img-upload" type="file" name="files[]" />
+        </span>
+        <div id="progress" class="progress">
+            <div class="progress-bar"></div>
+        </div>
+    @endif
 </div>

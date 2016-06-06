@@ -23454,6 +23454,7 @@ MediumEditor.version = MediumEditor.parseVersionString.call(this, ({
 
 var Editor = require('./editor');
 var helper = require('./helper');
+var $ = require('jquery');
 var titleEditor; //editor for the title
 
 var coursePanelEl; //wrapper element for the course title
@@ -23471,6 +23472,7 @@ function init() {
     if (coursePanelEl) {
         initialTitle = titleEl.innerHTML;
         attachEventListeners();
+        initCourseImgUpload();
     }
 }
 
@@ -23628,11 +23630,28 @@ function toggleCheckboxlists() {
     }
 }
 
+function initCourseImgUpload() {
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+
+    $('#course-img-upload').fileupload({
+        dataType: 'json',
+        url: '/courses/' + document.getElementById('course-id').value + '/upload/',
+        acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i,
+        done: function done(e, data) {
+            $('.hero').css('background-image', 'url("' + data.result.files[0].url + '")');
+        }
+    });
+}
+
 module.exports = {
     init: init
 };
 
-},{"./editor":27,"./helper":28}],27:[function(require,module,exports){
+},{"./editor":27,"./helper":28,"jquery":23}],27:[function(require,module,exports){
 'use strict';
 
 var MediumEditor = require('medium-editor');

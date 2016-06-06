@@ -1,0 +1,16 @@
+.img-upload-btn {
+  display: inline-block;
+  overflow: hidden;
+  position: absolute;
+  right: 10px;
+  top: 10px;
+
+  input {
+    cursor: pointer;
+    font-size: 200px;
+    margin: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
+}

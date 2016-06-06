@@ -103,7 +103,7 @@ class LessonsController extends Controller
             $response = ['files' => [['url' => url('/uploads/lessons/'. $fileName)]]];
         } else {
             echo 'Image Upload Error!';
-            $response = ['files' => [['url' => url('/uploads/lessons/error.png')]]];
+            $response = ['files' => [['url' => url('/uploads/error.png')]]];
         }
 
         return json_encode($response);
