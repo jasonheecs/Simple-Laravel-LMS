@@ -235,7 +235,7 @@ function initEditors() {
         disableExtraSpaces: true
     });
     bodyEditor.init(document.querySelector('.body-editable'));
-    bodyEditor.enableImagePlugin('/lessons/' + document.getElementById('lesson-id').value +'/upload/');
+    bodyEditor.enableImagePlugin('/lessons/' + document.getElementById('lesson-id').value +'/upload/', '/lessons/' + document.getElementById('lesson-id').value +'/removeUpload/');
 }
 
 //TODO: move into alert.js

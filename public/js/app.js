@@ -23708,7 +23708,7 @@ Editor.prototype.init = function (editableElement, options) {
     }
 };
 
-Editor.prototype.enableImagePlugin = function (imageUploadUrl) {
+Editor.prototype.enableImagePlugin = function (imageUploadUrl, removeUploadUrl) {
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -23719,6 +23719,7 @@ Editor.prototype.enableImagePlugin = function (imageUploadUrl) {
         editor: this.editor,
         addons: {
             images: {
+                deleteScript: removeUploadUrl,
                 fileUploadOptions: { // (object) File upload configuration. See https://github.com/blueimp/jQuery-File-Upload/wiki/Options
                     url: imageUploadUrl }
             }
@@ -24196,7 +24197,7 @@ function initEditors() {
         disableExtraSpaces: true
     });
     bodyEditor.init(document.querySelector('.body-editable'));
-    bodyEditor.enableImagePlugin('/lessons/' + document.getElementById('lesson-id').value + '/upload/');
+    bodyEditor.enableImagePlugin('/lessons/' + document.getElementById('lesson-id').value + '/upload/', '/lessons/' + document.getElementById('lesson-id').value + '/removeUpload/');
 }
 
 //TODO: move into alert.js

@@ -109,6 +109,24 @@ class LessonsController extends Controller
         return json_encode($response);
     }
 
+    /**
+     * Remove uploaded images inserted via Medium WYSIWYG editor
+     */
+    public function removeUpload(Request $request)
+    {
+        $file = $request->file;
+
+        \File::delete(url($file));
+
+        var_dump($file);
+
+        if (!\File::exists($file)) {
+            return json_encode(['response' => 'Image deleted']);
+        } else {
+            return json_encode(['response' => 'Error deleting image']);
+        }
+    }
+
     public function setPublishedStatus(Request $request, Lesson $lesson)
     {
         $status = '';

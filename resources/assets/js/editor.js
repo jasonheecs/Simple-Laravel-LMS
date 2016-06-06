@@ -41,7 +41,7 @@ Editor.prototype.init = function(editableElement, options) {
     }
 };
 
-Editor.prototype.enableImagePlugin = function(imageUploadUrl) {
+Editor.prototype.enableImagePlugin = function(imageUploadUrl, removeUploadUrl) {
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -52,6 +52,7 @@ Editor.prototype.enableImagePlugin = function(imageUploadUrl) {
         editor: this.editor,
         addons: {
             images: {
+                deleteScript: removeUploadUrl,
                 fileUploadOptions: { // (object) File upload configuration. See https://github.com/blueimp/jQuery-File-Upload/wiki/Options
                     url: imageUploadUrl, // (string) A relative path to an upload script
                 }

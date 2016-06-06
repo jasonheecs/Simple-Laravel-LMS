@@ -41,14 +41,14 @@ class LessonFilesController extends Controller
         return back();
     }
 
-    public function edit(LessonFile $file)
+    public function edit(LessonFile $lesson_file)
     {
         return view('lessonfiles.edit', [
             'file' => $file
         ]);
     }
 
-    public function update(Request $request, LessonFile $file)
+    public function update(Request $request, LessonFile $lesson_file)
     {
         $this->validate($request, [
             'filename' => 'required',
@@ -71,7 +71,7 @@ class LessonFilesController extends Controller
         return redirect()->route('lesson', [$file->lesson]);
     }
 
-    public function destroy(Request $request, LessonFile $file)
+    public function destroy(Request $request, LessonFile $lesson_file)
     {
         $file->delete();
 

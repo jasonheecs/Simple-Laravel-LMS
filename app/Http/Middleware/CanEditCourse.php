@@ -34,8 +34,8 @@ class CanEditCourse
             $course = $request->course;
         } elseif ($request->lesson) {
             $course = $request->lesson->course;
-        } elseif ($request->file) {
-            $course = $request->file->lesson->course;
+        } elseif ($request->lesson_file) {
+            $course = $request->lesson_file->lesson->course;
         } elseif ($request->course_id) {
             $course = $this->course->find($request->course_id);
         } elseif ($request->lesson_id) {

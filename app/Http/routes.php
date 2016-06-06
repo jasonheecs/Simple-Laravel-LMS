@@ -45,12 +45,13 @@ Route::group(['middleware' => 'auth'], function () {
     //     'index', 'create', 'show', 'store'
     // ]]);
 
-    Route::patch('/files/{file}', 'LessonFilesController@update');
-    Route::delete('/files/{file}', 'LessonFilesController@destroy');
-    Route::get('/files/{file}/edit', 'LessonFilesController@edit');
+    Route::patch('/files/{lesson_file}', 'LessonFilesController@update');
+    Route::delete('/files/{lesson_file}', 'LessonFilesController@destroy');
+    Route::get('/files/{lesson_file}/edit', 'LessonFilesController@edit');
 
     // Medium editor image upload path
     Route::any('/lessons/{lesson_id}/upload', 'LessonsController@upload');
+    Route::any('/lessons/{lesson_id}/removeUpload', 'LessonsController@removeUpload');
 
     Route::resource('users', 'UserController');
 });
