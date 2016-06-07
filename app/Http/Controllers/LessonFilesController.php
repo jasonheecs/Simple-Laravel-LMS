@@ -44,7 +44,7 @@ class LessonFilesController extends Controller
     public function edit(LessonFile $lesson_file)
     {
         return view('lessonfiles.edit', [
-            'file' => $file
+            'file' => $lesson_file
         ]);
     }
 
@@ -56,24 +56,24 @@ class LessonFilesController extends Controller
         ]);
         
         if ($request->has('description')) {
-            $file->update([
+            $lesson_file->update([
               'name' => $request->filename,
               'url' => $request->url,
               'description' => $request->description
             ]);
         } else {
-            $file->update([
+            $lesson_file->update([
               'name' => $request->filename,
               'url' => $request->url
             ]);
         }
 
-        return redirect()->route('lesson', [$file->lesson]);
+        return redirect()->route('lesson', [$lesson_file->lesson]);
     }
 
     public function destroy(Request $request, LessonFile $lesson_file)
     {
-        $file->delete();
+        $lesson_file->delete();
 
         flash('File deleted', 'success');
 
