@@ -1,0 +1,38 @@
+$table-border-color: #dfdfdf;
+$table-hover-color: #f0f0f0;
+
+.table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  line-height: 2.5;
+  padding: 8px;
+  width: 100%;
+
+  svg {
+    vertical-align: middle;
+  }
+
+  th {
+    text-align: left;
+  }
+}
+
+.table--bordered {
+  th {
+    border-bottom: 2px solid $table-border-color;
+  }
+
+  tbody td {
+    border-top: 1px solid $table-border-color;
+  }
+
+  tr:last-child td {
+    border-bottom: 1px solid $table-border-color;
+  }
+}
+
+.table--hover {
+  tbody>tr:hover {
+    background-color: $table-hover-color;
+  }
+}
