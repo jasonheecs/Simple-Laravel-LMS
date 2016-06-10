@@ -1,5 +1,13 @@
 @extends('layouts.with-sidebar')
 
+@section('hero')
+    @include('shared.hero', [
+                            'hero_image' => 'img/bg/users.jpg',
+                            'hero_title' => 'All Users',
+                            'hero_subtitle' => 'If you are not an admin, turn back now.'
+                            ])
+@stop
+
 @section('content')
     <div id="users-panel" class="panel panel--default panel--first">
         <div class="panel__content">
