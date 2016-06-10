@@ -1093,6 +1093,29 @@ label {
   text-align: center;
   width: 0; }
 
+.table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  line-height: 2.5;
+  padding: 8px;
+  width: 100%; }
+  .table svg {
+    vertical-align: middle; }
+  .table th {
+    text-align: left; }
+
+.table--bordered th {
+  border-bottom: 2px solid #dfdfdf; }
+
+.table--bordered tbody td {
+  border-top: 1px solid #dfdfdf; }
+
+.table--bordered tr:last-child td {
+  border-bottom: 1px solid #dfdfdf; }
+
+.table--hover tbody > tr:hover {
+  background-color: #f0f0f0; }
+
 .link--muted {
   color: #838383; }
 
@@ -1205,5 +1228,11 @@ label {
   border-bottom: 1px solid #818b99;
   color: #fff;
   text-decoration: none; }
+
+.users__header {
+  margin-bottom: 20px; }
+  .users__header svg {
+    margin-right: 10px;
+    vertical-align: bottom; }
 
 /*# sourceMappingURL=app.css.map */
