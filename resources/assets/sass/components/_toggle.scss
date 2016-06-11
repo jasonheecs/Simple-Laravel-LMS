@@ -1,0 +1,70 @@
+$toggle-bg: #ddd;
+$toggle-switch-bg: #d9d9d9;
+$toggle-width: 90px;
+$toggle-padding: 2px;
+
+.toggle--switch {
+  margin-left: -9999px;
+  position: absolute;
+  visibility: hidden;
+
+  + label {
+    border: 1px solid shade($toggle-bg, 8%);
+    cursor: pointer;
+    display: block;
+    outline: none;
+    position: relative;
+    transition: border-color .35s;
+    user-select: none;
+  }
+
+  &:checked + label {
+    border: 1px solid shade(darken($state-success-bg, 35%), 8%);
+  }
+}
+
+.toggle-switch--round {
+  + label {
+    background-color: $toggle-bg;
+    border-radius: $toggle-width / 2;
+    height: $toggle-width / 2;
+    padding: $toggle-padding;
+    width: $toggle-width;
+
+    &::before,
+    &::after {
+      bottom: 0;
+      content: '';
+      display: block;
+      left: 0;
+      position: absolute;
+      top: 0;
+    }
+
+    &::before {
+      background: $toggle-switch-bg;
+      border-radius: $toggle-width / 2;
+      right: 0;
+      transition: background .4s;
+    }
+
+    &::after {
+      background: lighten($toggle-switch-bg, 25%);
+      border-radius: 100%;
+      //scss-lint:disable ColorVariable
+      box-shadow: 0 3px 5px rgba(0, 0, 0, .35);
+      transition: transform .4s;
+      width: ($toggle-width / 2) - $toggle-padding;
+    }
+  }
+
+  &:checked {
+    + label::before {
+      background: darken($state-success-bg, 35%);
+    }
+
+    + label::after {
+      transform: translate3d($toggle-width / 2, 0, 0);
+    }
+  }
+}

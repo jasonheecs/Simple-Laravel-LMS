@@ -4,6 +4,7 @@ $color-secondary: darken($color-primary, 25%);
 $color-highlight: #4a9800; //lime-green
 $color-highlight-darker: #0cb200; //darker-green
 $color-white: #f1f1f1; //white
+$color-black: #040404;
 $color-muted: #838383;
 
 /// Feedback states
@@ -22,6 +23,9 @@ $state-warning-border: shade($state-warning-bg, 5%);
 $state-danger-color: #a94442;
 $state-danger-bg: #f2dede;
 $state-danger-border: shade($state-danger-bg, 5%);
+
+//scss-lint:disable ColorVariable
+$panel-default-bg: mix(#fff, $color-white, 50%);
 
 /// fonts
 $roboto: 'Roboto', sans-serif;

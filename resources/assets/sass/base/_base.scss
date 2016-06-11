@@ -18,6 +18,7 @@ body {
   @include font-size(18px);
   // background: darken($color-white, 5%);
   background: $color-white;
+  color: $color-black;
   font-family: $roboto;
 }
 
@@ -29,4 +30,10 @@ a {
 img {
   height: auto;
   max-width: 100%;
+}
+
+small {
+  color: $color-muted;
+  display: block;
+  margin: 15px 0;
 }

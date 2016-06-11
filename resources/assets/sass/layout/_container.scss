@@ -31,3 +31,9 @@
 .container--primary-bg {
   background: $color-primary;
 }
+
+.container--single-col {
+  > * {
+    @extend %flex__item--full-width;
+  }
+}

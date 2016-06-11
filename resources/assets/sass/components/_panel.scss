@@ -8,9 +8,17 @@
 }
 
 .panel--default {
-  background: tint($color-white, 50%);
+  background: $panel-default-bg;
   //scss-lint:disable ColorVariable
   box-shadow: 0 3px 7px 0 rgba(0, 0, 0, .12), 0 2px 5px 0 rgba(0, 0, 0, .15);
+}
+
+.panel--pad-lg {
+  padding: 40px;
+
+  + .panel--pad-lg {
+    margin-top: 0;
+  }
 }
 
 .panel__heading {
@@ -19,6 +27,11 @@
   color: shade($color-secondary, 9%);
   margin-bottom: 30px;
   padding-bottom: 20px;
+}
+
+.panel__heading--small {
+  @include font-size(28px);
+  margin-top: 0;
 }
 
 .panel__subheading {
