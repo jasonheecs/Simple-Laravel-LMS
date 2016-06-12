@@ -15,6 +15,10 @@ $table-hover-color: #f0f0f0;
   th {
     text-align: left;
   }
+
+  td a {
+    vertical-align: middle;
+  }
 }
 
 .table--bordered {

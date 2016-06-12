@@ -47,7 +47,7 @@ function attachEventListeners() {
 
     if (lecturersEl) {
         lecturersEl.addEventListener('change', function(evt) {
-            if (evt.target && evt.target.matches('input[type="checkbox"]')) {
+            if (evt.target && helper.matches(evt.target, 'input[type="checkbox"]')) {
                 setLecturersListener();
             }
         });
@@ -55,7 +55,7 @@ function attachEventListeners() {
 
     if (studentsEl) {
         studentsEl.addEventListener('change', function(evt) {
-            if (evt.target && evt.target.matches('input[type="checkbox"]')) {
+            if (evt.target && helper.matches(evt.target, 'input[type="checkbox"]')) {
                 setStudentsListener();
             }
         });

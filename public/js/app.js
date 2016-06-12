@@ -23499,7 +23499,7 @@ function attachEventListeners() {
 
     if (lecturersEl) {
         lecturersEl.addEventListener('change', function (evt) {
-            if (evt.target && evt.target.matches('input[type="checkbox"]')) {
+            if (evt.target && helper.matches(evt.target, 'input[type="checkbox"]')) {
                 setLecturersListener();
             }
         });
@@ -23507,7 +23507,7 @@ function attachEventListeners() {
 
     if (studentsEl) {
         studentsEl.addEventListener('change', function (evt) {
-            if (evt.target && evt.target.matches('input[type="checkbox"]')) {
+            if (evt.target && helper.matches(evt.target, 'input[type="checkbox"]')) {
                 setStudentsListener();
             }
         });
@@ -23931,16 +23931,30 @@ function serialize(form) {
     return q.join("&");
 }
 
+function getVendorPrefix() {
+    var styles = window.getComputedStyle(document.documentElement, '');
+    var pre = (Array.prototype.slice.call(styles).join('').match(/-(moz|webkit|ms)-/) || styles.OLink === '' && ['', 'o'])[1];
+    var dom = 'WebKit|Moz|MS|O'.match(new RegExp('(' + pre + ')', 'i'))[1];
+
+    return {
+        dom: dom,
+        lowercase: pre,
+        css: '-' + pre + '-',
+        js: pre[0].toUpperCase() + pre.substr(1)
+    };
+}
+
 module.exports = {
     setAlert: setAlert,
     disableButton: disableButton,
     enableButton: enableButton,
     matches: matches,
     sendAjaxRequest: sendAjaxRequest,
-    serialize: serialize
+    serialize: serialize,
+    getVendorPrefix: getVendorPrefix
 };
 
-},{"./xhr":33}],29:[function(require,module,exports){
+},{"./xhr":34}],29:[function(require,module,exports){
 'use strict';
 
 /* globals hljs */
@@ -23960,7 +23974,7 @@ module.exports = {
     init: init
 };
 
-},{"highlight":32,"jquery":23}],30:[function(require,module,exports){
+},{"highlight":33,"jquery":23}],30:[function(require,module,exports){
 'use strict';
 
 var Editor = require('./editor');
@@ -24220,13 +24234,41 @@ module.exports = {
 
 var course = require('./course');
 var lesson = require('./lesson');
+var tabs = require('./tabs');
 
 document.addEventListener('DOMContentLoaded', function () {
     course.init();
     lesson.init();
+    tabs.init();
 });
 
-},{"./course":26,"./lesson":30}],32:[function(require,module,exports){
+},{"./course":26,"./lesson":30,"./tabs":32}],32:[function(require,module,exports){
+'use strict';
+
+var helper = require('./helper');
+var tabsEls;
+
+function init() {
+    tabsEls = document.querySelectorAll('.tabs');
+    Array.prototype.forEach.call(tabsEls, function (tabsEl) {
+        initIndicator(tabsEl);
+    });
+}
+
+function initIndicator(tabsEl) {
+    var indicatorEl = tabsEl.querySelector('.tabs__indicator');
+    var activeTabEl = tabsEl.querySelector('.tab--active');
+    var tabWidth = activeTabEl.offsetWidth + 'px';
+
+    indicatorEl.style.width = tabWidth;
+    console.log(helper.getVendorPrefix());
+}
+
+module.exports = {
+    init: init
+};
+
+},{"./helper":28}],33:[function(require,module,exports){
 "use strict";
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
@@ -24434,7 +24476,7 @@ exports = undefined;
   return { aliases: ["js", "jsx"], k: { keyword: "in of if for while finally var new function do return void else break catch instanceof with throw case default try this switch continue typeof delete let yield const export super debugger as async await static import from as", literal: "true false null undefined NaN Infinity", built_in: "eval isFinite isNaN parseFloat parseInt decodeURI decodeURIComponent encodeURI encodeURIComponent escape unescape Object Function Boolean Error EvalError InternalError RangeError ReferenceError StopIteration SyntaxError TypeError URIError Number Math Date String RegExp Array Float32Array Float64Array Int16Array Int32Array Int8Array Uint16Array Uint32Array Uint8Array Uint8ClampedArray ArrayBuffer DataView JSON Intl arguments require module console window document Symbol Set Map WeakSet WeakMap Proxy Reflect Promise" }, c: [{ cN: "meta", r: 10, b: /^\s*['"]use (strict|asm)['"]/ }, { cN: "meta", b: /^#!/, e: /$/ }, e.ASM, e.QSM, { cN: "string", b: "`", e: "`", c: [e.BE, { cN: "subst", b: "\\$\\{", e: "\\}" }] }, e.CLCM, e.CBCM, { cN: "number", v: [{ b: "\\b(0[bB][01]+)" }, { b: "\\b(0[oO][0-7]+)" }, { b: e.CNR }], r: 0 }, { b: "(" + e.RSR + "|\\b(case|return|throw)\\b)\\s*", k: "return throw case", c: [e.CLCM, e.CBCM, e.RM, { b: /</, e: /(\/\w+|\w+\/)>/, sL: "xml", c: [{ b: /<\w+\s*\/>/, skip: !0 }, { b: /<\w+/, e: /(\/\w+|\w+\/)>/, skip: !0, c: ["self"] }] }], r: 0 }, { cN: "function", bK: "function", e: /\{/, eE: !0, c: [e.inherit(e.TM, { b: /[A-Za-z$_][0-9A-Za-z$_]*/ }), { cN: "params", b: /\(/, e: /\)/, eB: !0, eE: !0, c: [e.CLCM, e.CBCM] }], i: /\[|%/ }, { b: /\$[(.]/ }, e.METHOD_GUARD, { cN: "class", bK: "class", e: /[{;=]/, eE: !0, i: /[:"\[\]]/, c: [{ bK: "extends" }, e.UTM] }, { bK: "constructor", e: /\{/, eE: !0 }], i: /#(?!!)/ };
 });
 
-},{}],33:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 'use strict';
 
 /**
