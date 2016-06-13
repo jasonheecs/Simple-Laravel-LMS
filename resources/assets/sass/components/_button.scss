@@ -4,6 +4,7 @@ $btn-default-color: #333;
 
 .btn {
   border: 1px solid transparent;
+  border-radius: 2px;
   cursor: pointer;
   display: inline-block;
   font-family: $roboto;
@@ -21,8 +22,15 @@ $btn-default-color: #333;
   padding: 10px 16px;
 }
 
+.btn--md {
+  @include font-size(16px);
+  line-height: 1.2;
+  padding: 8px 14px;
+}
+
 .btn--sm {
   @include font-size(13px);
+  border-radius: 0;
   padding: 4px 9px;
 }
 
@@ -62,8 +70,8 @@ $btn-default-color: #333;
 
 .btn--outline {
   @extend %btn--outline;
-  border: 2px solid $color-highlight;
-  color: $color-highlight;
+  border: 2px solid tint($color-muted, 25%);
+  color: tint($color-muted, 25%);
 }
 
 .btn--outline-danger {

@@ -54,6 +54,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::any('/lessons/{lesson_id}/removeUpload', 'LessonsController@removeUpload');
 
     Route::resource('users', 'UserController', [
-        'parameters' => 'singular'
+        'parameters' => 'singular',
+        'except' => ['edit']
     ]);
 });

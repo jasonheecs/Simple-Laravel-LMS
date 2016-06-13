@@ -1,0 +1,28 @@
+$icons-dir: $img-dir + 'icons/';
+
+.icon {
+  display: inline-block;
+  line-height: 1;
+  margin-right: 5px;
+  position: relative;
+  vertical-align: middle;
+
+  &::before {
+    content: '';
+    display: inline-block;
+    height: 16px;
+    width: 16px;
+  }
+}
+
+.icon--edit {
+  &::before {
+    background: url($icons-dir + 'pencil.svg') no-repeat;
+  }
+}
+
+.icon--delete {
+  &::before {
+    background: url($icons-dir + 'delete.svg') no-repeat;
+  }
+}

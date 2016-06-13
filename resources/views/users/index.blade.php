@@ -1,5 +1,7 @@
 @extends('layouts.with-sidebar')
 
+@section('pageName', 'js-users-page')
+
 @section('hero')
     @include('shared.hero', [
                             'hero_image' => 'img/bg/users.jpg',

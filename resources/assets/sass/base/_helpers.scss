@@ -23,6 +23,11 @@ $helper-margin-size: 30px;
   margin-bottom: $helper-margin-size;
 }
 
+.margin--bottom-none {
+  //scss-lint:disable ImportantRule
+  margin-bottom: 0 !important;
+}
+
 .margin--top-lg {
   margin-top: $helper-margin-size * 2;
 }

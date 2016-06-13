@@ -8,6 +8,18 @@
   }
 }
 
+.flex {
+  @extend %flex;
+}
+
+.flex--space-between {
+  justify-content: space-between;
+}
+
+.flex--flex-start {
+  align-items: flex-start;
+}
+
 .flex__item {
   + .flex__item {
     margin-left: 25px;

@@ -19,7 +19,7 @@
 
     @yield('head')
 </head>
-<body id="app-layout">
+<body id="@yield('pageName')">
 
     @yield('layout')
 

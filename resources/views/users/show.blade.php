@@ -1,4 +1,7 @@
 @extends('layouts.with-sidebar')
+
+@section('pageName', 'js-user-page')
+
 @section('hero')
     @include('shared.hero', [
         'hero_title' => $user->name
@@ -7,7 +10,7 @@
 
 @section('content')
 <div class="container container--single-col">
-    <div class="panel panel--default panel--first">
+    <div id="user-panel" class="panel panel--default panel--first">
 
         <ul class="tabs">
             <li class="tab tab--active">
@@ -24,12 +27,18 @@
 
         <div id="tab1" class="panel__content margin--top">
             <div class="panel panel--pad-lg">
-                <h2 class="panel__heading panel__heading--small">Personal Details</h2>
+                <div class="panel__heading flex flex--space-between flex--flex-start">
+                    <h2 class="panel__heading--small margin--bottom-none">Personal Details</h2>
+                    <div class="button-group">
+                        <a id="edit-profile-btn" class="btn btn--primary btn--md"><i class="icon icon--edit"></i> Edit</a>
+                        <a id="delete-profile-btn" class="btn btn--outline btn--md"><i class="icon icon--delete"></i> Delete</a>
+                    </div>
+                </div>
                 <div class="panel__content">
                     <h4 class="user__label">Name</h4>
-                    <div class="user__input">{{ $user->name }}</div>
+                    <div id="name-editor" class="user__input">{{ $user->name }}</div>
                     <h4 class="user__label">Email</h4>
-                    <div class="user__input">{{ $user->email }}</div>
+                    <div id="email-editor" class="user__input">{{ $user->email }}</div>
                 </div>
             </div>
             

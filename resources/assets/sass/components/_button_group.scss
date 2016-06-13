@@ -1,5 +1,13 @@
 .button-group:not(.hidden) {
   height: auto;
+
+  .btn {
+    vertical-align: middle;
+  }
+
+  .btn--md {
+    width: 100px;
+  }
 }
 
 .button-group--right {
