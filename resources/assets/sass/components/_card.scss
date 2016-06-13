@@ -17,6 +17,11 @@ $card-gutter: 10px;
   }
 }
 
+.card--secondary {
+  box-shadow: none;
+  border: 1px solid tint($color-muted, 55%);
+}
+
 .card-figure {
   margin: -$card-gutter;
 }

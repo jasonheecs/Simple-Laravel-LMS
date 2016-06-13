@@ -1,11 +1,11 @@
 .items-grid {
-  background: $color-white;
   position: relative;
   width: 100%;
   z-index: 1;
 }
 
 .items-grid--first {
+  background: $color-white;
   margin-top: -6vh;
 }
 

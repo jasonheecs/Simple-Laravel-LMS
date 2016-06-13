@@ -1,8 +1,8 @@
 @extends('layouts.with-sidebar')
 @section('hero')
     @include('shared.hero', [
-                            'hero_title' => $user->name
-                            ])
+        'hero_title' => $user->name
+    ])
 @stop
 
 @section('content')
@@ -11,18 +11,18 @@
 
         <ul class="tabs">
             <li class="tab tab--active">
-                <a href="#">Details</a>
+                <a href="#tab1">Details</a>
             </li>
             <li class="tab">
-                <a href="#">Lectures</a>
+                <a href="#tab2">Lectures</a>
             </li>
             <li class="tab">
-                <a href="#">Studies</a>
+                <a href="#tab3">Studies</a>
             </li>
             <div class="tabs__indicator"></div>
         </ul>
 
-        <div class="panel__content margin--top">
+        <div id="tab1" class="panel__content margin--top">
             <div class="panel panel--pad-lg">
                 <h2 class="panel__heading panel__heading--small">Personal Details</h2>
                 <div class="panel__content">
@@ -82,8 +82,37 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div><!-- end #tab1 -->
 
+        <div id="tab2" class="panel__content margin--top hidden">
+            <div class="items-grid items-grid--3">
+                <div class="panel items-grid-panel panel--pad-lg">
+                    <h2 class="items-grid__heading">Is Lecturer In:</h2>
+                    @foreach ($user->getAllInstructors() as $instructor)
+                        @foreach ($instructor->courses as $course)
+                            @include('shared.card-grid-item', [
+                                'additional_classes' => 'card--secondary'
+                            ])
+                        @endforeach
+                    @endforeach
+                </div>
+            </div>
+        </div><!-- end #tab2 -->
+
+        <div id="tab3" class="panel__content margin--top hidden">
+            <div class="items-grid items-grid--3">
+                <div class="panel items-grid-panel panel--pad-lg">
+                    <h2 class="items-grid__heading">Is Student In:</h2>
+                    @foreach ($user->getAllStudents() as $student)
+                        @foreach ($student->courses as $course)
+                            @include('shared.card-grid-item', [
+                                'additional_classes' => 'card--secondary'
+                            ])
+                        @endforeach
+                    @endforeach
+                </div>
+            </div>
+        </div><!-- end #tab3 -->
     </div>
 </div>
 @stop

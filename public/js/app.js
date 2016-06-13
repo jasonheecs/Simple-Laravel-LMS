@@ -13680,9 +13680,9 @@ return jQuery;
                 throw new Error("medium-editor-insert-plugin runs only in a browser.")
             }
 
-            if (jQuery === undefined) {
-                jQuery = require('jquery');
-            }
+            // if (jQuery === undefined) {
+            //     jQuery = require('jquery');
+            // }
             window.jQuery = jQuery;
 
             Handlebars = require('handlebars/runtime');
@@ -15900,7 +15900,7 @@ this["MediumInsert"]["Templates"]["src/js/templates/images-toolbar.hbs"] = Handl
 
 }));
 
-},{"blueimp-file-upload":1,"handlebars/runtime":21,"jquery":23,"jquery-sortable":22,"medium-editor":25}],25:[function(require,module,exports){
+},{"blueimp-file-upload":1,"handlebars/runtime":21,"jquery-sortable":22,"medium-editor":25}],25:[function(require,module,exports){
 /*global self, document, DOMException */
 
 /*! @source http://purl.eligrey.com/github/classList.js/blob/master/classList.js */
@@ -23931,8 +23931,12 @@ function serialize(form) {
     return q.join("&");
 }
 
-function getVendorPrefix() {
-    var styles = window.getComputedStyle(document.documentElement, '');
+/**
+ * Get vendor prefix of user's browser
+ */
+function getVendorPrefix(prop) {
+    prop = prop || '';
+    var styles = window.getComputedStyle(document.documentElement, prop);
     var pre = (Array.prototype.slice.call(styles).join('').match(/-(moz|webkit|ms)-/) || styles.OLink === '' && ['', 'o'])[1];
     var dom = 'WebKit|Moz|MS|O'.match(new RegExp('(' + pre + ')', 'i'))[1];
 
@@ -23944,6 +23948,20 @@ function getVendorPrefix() {
     };
 }
 
+/**
+ * Determines the right css property value to use. (i.e: transform vs -webkit-transform)
+ * @return {String} the right CSS property based on the user's browser
+ */
+function getPropertyValue(property) {
+    var style = window.getComputedStyle(document.documentElement);
+
+    if (!style.getPropertyValue(property)) {
+        return getVendorPrefix(property).css + property;
+    }
+
+    return property;
+}
+
 module.exports = {
     setAlert: setAlert,
     disableButton: disableButton,
@@ -23951,7 +23969,8 @@ module.exports = {
     matches: matches,
     sendAjaxRequest: sendAjaxRequest,
     serialize: serialize,
-    getVendorPrefix: getVendorPrefix
+    getVendorPrefix: getVendorPrefix,
+    getPropertyValue: getPropertyValue
 };
 
 },{"./xhr":34}],29:[function(require,module,exports){
@@ -24248,22 +24267,72 @@ document.addEventListener('DOMContentLoaded', function () {
 var helper = require('./helper');
 var tabsEls;
 
+function Tabs(element) {
+    this.element = element;
+}
+
+Tabs.prototype.init = function () {
+    this.indicatorEl = this.element.querySelector('.tabs__indicator');
+    this.activeTabEl = this.element.querySelector('.tab--active');
+    this.indicatorEl.style.width = this.activeTabEl.offsetWidth + 'px';
+    this.activeTab = document.querySelector(this.activeTabEl.querySelector('a').hash);
+
+    this.activeTab.classList.remove('hidden');
+    this.setIndicatorPos();
+    this.indicatorEl.style[helper.getPropertyValue('transition')] = helper.getPropertyValue('transform') + ' .25s';
+    this.addEventListener();
+};
+
+Tabs.prototype.setIndicatorPos = function () {
+    var tabsElRect = this.element.getBoundingClientRect();
+    var activeTabElRect = this.activeTabEl.getBoundingClientRect();
+    var translate = 'translate3d(' + (activeTabElRect.left - tabsElRect.left) + 'px, ' + (activeTabElRect.top - tabsElRect.top) + 'px, 0)';
+
+    this.indicatorEl.style[helper.getPropertyValue('transform')] = translate;
+};
+
+Tabs.prototype.addEventListener = function () {
+    this.element.addEventListener('click', function (evt) {
+        if (evt.target && (helper.matches(evt.target, '.tab') || helper.matches(evt.target, '.tab *'))) {
+            var target = evt.target;
+            evt.preventDefault();
+
+            if (!target.classList.contains('.tab')) {
+                target = findAncestor(target, 'tab');
+            }
+
+            target.classList.add('tab--active');
+            this.setActiveTabLink(target);
+            this.setIndicatorPos();
+            this.setActiveTabContent(target);
+        }
+    }.bind(this));
+
+    function findAncestor(el, cls) {
+        while ((el = el.parentElement) && !el.classList.contains(cls)) {}
+        return el;
+    }
+};
+
+Tabs.prototype.setActiveTabLink = function (newTabLink) {
+    this.activeTabEl.classList.remove('tab--active');
+    this.activeTabEl = newTabLink;
+    this.activeTabEl.classList.add('tab--active');
+};
+
+Tabs.prototype.setActiveTabContent = function (newTabLink) {
+    this.activeTab.classList.add('hidden');
+    this.activeTab = document.querySelector(newTabLink.querySelector('a').hash);
+    this.activeTab.classList.remove('hidden');
+};
+
 function init() {
     tabsEls = document.querySelectorAll('.tabs');
     Array.prototype.forEach.call(tabsEls, function (tabsEl) {
-        initIndicator(tabsEl);
+        var tabs = new Tabs(tabsEl);
+        tabs.init();
     });
 }
-
-function initIndicator(tabsEl) {
-    var indicatorEl = tabsEl.querySelector('.tabs__indicator');
-    var activeTabEl = tabsEl.querySelector('.tab--active');
-    var tabWidth = activeTabEl.offsetWidth + 'px';
-
-    indicatorEl.style.width = tabWidth;
-    console.log(helper.getVendorPrefix());
-}
-
 module.exports = {
     init: init
 };

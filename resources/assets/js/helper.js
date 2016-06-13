@@ -147,8 +147,12 @@ function serialize(form) {
     return q.join("&");
 }
 
-function getVendorPrefix() {
-    var styles = window.getComputedStyle(document.documentElement, '');
+/**
+ * Get vendor prefix of user's browser
+ */
+function getVendorPrefix(prop) {
+    prop = prop || '';
+    var styles = window.getComputedStyle(document.documentElement, prop);
     var pre = (Array.prototype.slice
         .call(styles)
         .join('') 
@@ -164,6 +168,20 @@ function getVendorPrefix() {
     };
 }
 
+/**
+ * Determines the right css property value to use. (i.e: transform vs -webkit-transform)
+ * @return {String} the right CSS property based on the user's browser
+ */
+function getPropertyValue(property) {
+    var style = window.getComputedStyle(document.documentElement);
+
+    if (!style.getPropertyValue(property)) {
+        return getVendorPrefix(property).css + property;
+    }
+
+    return property;
+}
+
 module.exports = {
     setAlert: setAlert,
     disableButton: disableButton,
@@ -171,5 +189,6 @@ module.exports = {
     matches: matches,
     sendAjaxRequest: sendAjaxRequest,
     serialize: serialize,
-    getVendorPrefix: getVendorPrefix
+    getVendorPrefix: getVendorPrefix,
+    getPropertyValue: getPropertyValue
 };

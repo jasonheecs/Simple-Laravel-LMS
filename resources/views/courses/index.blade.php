@@ -13,19 +13,7 @@
     <div class="items-grid items-grid--3 items-grid--first">
         <div class="panel items-grid-panel">
             @foreach ($courses as $course)
-                <div class="card grid-item">
-                    <a href="{{ url('/courses', $course->id) }}">
-                        <figure class="card-figure">
-                            @if (isset($course->image))
-                                <img src={{ $course->image }} />
-                            @else
-                                <img src="http://placehold.it/400x175" />
-                            @endif
-                            
-                        </figure>
-                        <h3 class="card-title">{{ $course->title }}</h3>
-                    </a>
-                </div>
+                @include('shared.card-grid-item')
             @endforeach
         </div>
 

@@ -14,11 +14,11 @@
   -ms-flex-align: center;
   align-items: center; }
 
-.container--single-col > *, .content__wrapper, .topbar, .items-grid__heading {
+.container--single-col > *, .content__wrapper, .topbar, .items-grid__heading, .tab {
   -ms-flex: 1 100%;
   flex: 1 100%; }
 
-.flex__item--1, .content, .tab {
+.flex__item--1, .content {
   -ms-flex: 1 auto;
   flex: 1 auto; }
 
@@ -868,6 +868,10 @@ small {
     padding: 20px;
     width: 100%; }
 
+.card--secondary {
+  box-shadow: none;
+  border: 1px solid #c7c7c7; }
+
 .card-figure {
   margin: -10px; }
 
@@ -968,12 +972,12 @@ label {
   color: #c1c1c1; }
 
 .items-grid {
-  background: #f1f1f1;
   position: relative;
   width: 100%;
   z-index: 1; }
 
 .items-grid--first {
+  background: #f1f1f1;
   margin-top: -6vh; }
 
 .items-grid--3 .grid-item {
@@ -1128,10 +1132,14 @@ label {
   text-align: center;
   text-transform: uppercase; }
   .tab a {
+    color: #760046;
     display: block;
     height: 100%;
-    padding: 12px 0;
+    padding: 20px 0;
     width: 100%; }
+
+.tab--active a {
+  color: #d60080; }
 
 .tabs__indicator {
   background-color: #d60080;

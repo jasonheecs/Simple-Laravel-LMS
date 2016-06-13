@@ -16,17 +16,7 @@
                 <h1 class="items-grid__heading">Courses you are instructing</h1>
                 @foreach ($instructing as $lecturer)
                     @foreach ($lecturer->courses as $course)
-                        <div class="card grid-item">
-                            <a href="{{ url('/courses', $course->id) }}">
-                                @if (isset($course->image))
-                                    <figure class="card-figure">
-                                        <img src="{{ $course->image }}" />
-                                    </figure>
-                                @endif
-                                
-                                <h3 class="card-title">{{ $course->title }}</h3>
-                            </a>
-                        </div>
+                      @include('shared.card-grid-item')
                     @endforeach
                 @endforeach
             </div>
@@ -41,17 +31,7 @@
                 <h1 class="items-grid__heading">Courses you are Studying</h1>
                 @foreach ($studying as $student)
                     @foreach ($student->courses as $course)
-                        <div class="card grid-item">
-                            <a href="{{ url('/courses', $course->id) }}">
-                                @if (isset($course->image))
-                                    <figure class="card-figure">
-                                        <img src="{{ $course->image }}" />
-                                    </figure>
-                                @endif
-                                
-                                <h3 class="card-title">{{ $course->title }}</h3>
-                            </a>
-                        </div>
+                       @include('shared.card-grid-item')
                     @endforeach
                 @endforeach
             </div>
