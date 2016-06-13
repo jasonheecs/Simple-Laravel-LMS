@@ -2,8 +2,8 @@ $icons-dir: $img-dir + 'icons/';
 
 .icon {
   display: inline-block;
-  line-height: 1;
   margin-right: 5px;
+  pointer-events: none;
   position: relative;
   vertical-align: middle;
 
@@ -24,5 +24,17 @@ $icons-dir: $img-dir + 'icons/';
 .icon--delete {
   &::before {
     background: url($icons-dir + 'delete.svg') no-repeat;
+  }
+}
+
+.icon--save {
+  &::before {
+    background: url($icons-dir + 'save.svg') no-repeat;
+  }
+}
+
+.icon--cancel {
+  &::before {
+    background: url($icons-dir + 'cancel.svg') no-repeat;
   }
 }

@@ -657,6 +657,10 @@ small {
   -ms-flex-align: start;
   align-items: flex-start; }
 
+.flex--flex-end {
+  -ms-flex-align: end;
+  align-items: flex-end; }
+
 .flex__item + .flex__item {
   margin-left: 25px; }
 
@@ -868,7 +872,7 @@ small {
   .button-group:not(.hidden) .btn {
     vertical-align: middle; }
   .button-group:not(.hidden) .btn--md {
-    width: 100px; }
+    width: 110px; }
 
 .button-group--right {
   text-align: right; }
@@ -996,8 +1000,8 @@ label {
 
 .icon {
   display: inline-block;
-  line-height: 1;
   margin-right: 5px;
+  pointer-events: none;
   position: relative;
   vertical-align: middle; }
   .icon::before {
@@ -1011,6 +1015,12 @@ label {
 
 .icon--delete::before {
   background: url("../img/icons/delete.svg") no-repeat; }
+
+.icon--save::before {
+  background: url("../img/icons/save.svg") no-repeat; }
+
+.icon--cancel::before {
+  background: url("../img/icons/cancel.svg") no-repeat; }
 
 .items-grid {
   position: relative;

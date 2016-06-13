@@ -20,6 +20,11 @@
   align-items: flex-start;
 }
 
+.flex--flex-end {
+  align-items: flex-end;
+}
+
+
 .flex__item {
   + .flex__item {
     margin-left: 25px;

@@ -27,11 +27,15 @@
 
         <div id="tab1" class="panel__content margin--top">
             <div class="panel panel--pad-lg">
-                <div class="panel__heading flex flex--space-between flex--flex-start">
-                    <h2 class="panel__heading--small margin--bottom-none">Personal Details</h2>
-                    <div class="button-group">
+                <div class="panel__heading flex flex--space-between flex--flex-end">
+                    <h2 class="panel__heading--small margin--bottom-none flex__item--1">Personal Details</h2>
+                    <div id="user-actions-grp" class="button-group">
                         <a id="edit-profile-btn" class="btn btn--primary btn--md"><i class="icon icon--edit"></i> Edit</a>
                         <a id="delete-profile-btn" class="btn btn--outline btn--md"><i class="icon icon--delete"></i> Delete</a>
+                    </div>
+                    <div id="content-actions-grp" class="button-group hidden">
+                        <a id="save-changes-btn" class="btn btn--primary btn--md"><i class="icon icon--save"></i> Save</a>
+                        <a id="cancel-changes-btn" class="btn btn--outline btn--md"><i class="icon icon--cancel"></i> Cancel</a>
                     </div>
                 </div>
                 <div class="panel__content">
