@@ -43,9 +43,9 @@ function attachEventListener() {
                 nameEditor.setFocus();
                 switchButtonGroup();
             } else if(evt.target.id === 'delete-profile-btn') {
-                console.log('delete');
+                deleteUserListener(evt);
             } else if(evt.target.id === 'save-changes-btn') {
-                destroyEditors();
+                saveChangesListener(evt.target);
             } else if(evt.target.id === 'cancel-changes-btn') {
                 revertChanges();
                 switchButtonGroup();
@@ -53,6 +53,89 @@ function attachEventListener() {
             }
         }
     });
+
+    userPanelEl.addEventListener('change', function(evt) {
+        if (evt.target) {
+            if (evt.target.id === 'admin-checkbox') {
+                toggleAdminListener();
+            } else if (evt.target.id === 'super-admin-checkbox') {
+                toggleAdminListener(true);
+            }
+        }
+    });
+
+    function saveChangesListener(saveBtnEl) {
+         helper.disableButton(saveBtnEl);
+
+        var newName = nameEditor.getContent()[nameEl.id].value;
+        var newEmail = emailEditor.getContent()[emailEl.id].value;
+        var updateData = {name: newName, email: newEmail};
+
+        // Send ajax request to update user
+        var success = function(response) {
+            initialName = newName;
+            initialEmail = newEmail;
+
+            helper.setAlert(JSON.parse(response).response, 'alert--success');
+        };
+        var failure = function(response) {
+            revertChanges();
+
+            //display errors to alert element
+            var errors = JSON.parse(response);
+            var errorMsg = '';
+
+            for (var error in errors) {
+                errorMsg = errors[error].reduce(function(previousMsg, currentMsg) {
+                    return previousMsg + currentMsg;
+                });
+            }
+            helper.setAlert(errorMsg, 'alert--danger');
+        };
+        var always = function() {
+             helper.enableButton(saveBtnEl);
+        };
+        helper.sendAjaxRequest('PATCH', '/users/'+ document.getElementById('user-id').value, success, failure, always, JSON.stringify(updateData));
+
+        destroyEditors();
+    }
+
+    function deleteUserListener(evt) {
+        var check = window.confirm('Are you sure?');
+
+        if (!check)
+            evt.preventDefault();
+
+        return check;
+    }
+
+    function toggleAdminListener(isSuperAdmin) {
+        var updateData = {isSuperAdmin: false};
+
+        if (isSuperAdmin) {
+            updateData.isSuperAdmin = true;
+        }
+
+        // Send ajax request to update user admin status
+        var success = function(response) {
+            helper.setAlert(JSON.parse(response).response, 'alert--success');
+        };
+        var failure = function(response) {
+            //display errors to alert element
+            var errors = JSON.parse(response);
+            var errorMsg = '';
+
+            for (var error in errors) {
+                errorMsg = errors[error].reduce(function(previousMsg, currentMsg) {
+                    return previousMsg + currentMsg;
+                });
+            }
+            helper.setAlert(errorMsg, 'alert--danger');
+        };
+        var always = function() {};
+
+        helper.sendAjaxRequest('PATCH', '/users/'+ document.getElementById('user-id').value + '/setadmin', success, failure, always, JSON.stringify(updateData));
+    }
 }
 
 function initEditors() {

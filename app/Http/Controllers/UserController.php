@@ -64,9 +64,22 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, User $user)
     {
-        //
+        $this->validate($request, [
+            'name' => 'required',
+            'email'  => 'required|email'
+        ]);
+
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->save();
+
+        if ($request->ajax()) {
+            return response()->json(['response' => 'User Updated']);
+        }
+
+        return back();
     }
 
     /**
@@ -75,8 +88,31 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(User $user)
     {
-        //
+        $user->delete();
+
+        flash('User deleted', 'success');
+
+        return redirect()->route('users.index');
+    }
+
+    public function setAdminStatus(Request $request, User $user)
+    {
+        $status = '';
+
+        if ($request->isSuperAdmin) {
+            $user->toggleRole(Role::getSuperAdminRole());
+            $status = $user->is('superadmin') ? 'User is now a Super Administrator' : 'User is no longer a Super Administrator';
+        } else {
+            $user->toggleRole(Role::getAdminRole());
+            $status = $user->is('admin') ? 'User is now an Administrator' : 'User is no longer an Administrator';
+        }
+
+        if ($request->ajax()) {
+            return response()->json(['response' => $status]);
+        }
+
+        return back();
     }
 }

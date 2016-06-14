@@ -2,6 +2,10 @@
 
 @section('pageName', 'js-user-page')
 
+@section('head')
+    <meta name="csrf-token" content="{{ csrf_token() }}" />
+@stop
+
 @section('hero')
     @include('shared.hero', [
         'hero_title' => $user->name
@@ -11,6 +15,8 @@
 @section('content')
 <div class="container container--single-col">
     <div id="user-panel" class="panel panel--default panel--first">
+
+        <input type="hidden" name="user-id" id="user-id" value="{{ $user->id }}">
 
         <ul class="tabs">
             <li class="tab tab--active">
@@ -31,7 +37,11 @@
                     <h2 class="panel__heading--small margin--bottom-none flex__item--1">Personal Details</h2>
                     <div id="user-actions-grp" class="button-group">
                         <a id="edit-profile-btn" class="btn btn--primary btn--md"><i class="icon icon--edit"></i> Edit</a>
-                        <a id="delete-profile-btn" class="btn btn--outline btn--md"><i class="icon icon--delete"></i> Delete</a>
+                        <form method="POST" class="form--inline" action="{{ url('/users', $user->id) }}">
+                            {{ method_field('DELETE') }}
+                            <button id="delete-profile-btn" class="btn btn--outline btn--md" type="submit"><i class="icon icon--delete"></i> Delete</button>
+                            {!! csrf_field() !!}
+                        </form>
                     </div>
                     <div id="content-actions-grp" class="button-group hidden">
                         <a id="save-changes-btn" class="btn btn--primary btn--md"><i class="icon icon--save"></i> Save</a>

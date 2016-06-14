@@ -13680,9 +13680,9 @@ return jQuery;
                 throw new Error("medium-editor-insert-plugin runs only in a browser.")
             }
 
-            if (jQuery === undefined) {
-                jQuery = require('jquery');
-            }
+            // if (jQuery === undefined) {
+            //     jQuery = require('jquery');
+            // }
             window.jQuery = jQuery;
 
             Handlebars = require('handlebars/runtime');
@@ -15900,7 +15900,7 @@ this["MediumInsert"]["Templates"]["src/js/templates/images-toolbar.hbs"] = Handl
 
 }));
 
-},{"blueimp-file-upload":1,"handlebars/runtime":21,"jquery":23,"jquery-sortable":22,"medium-editor":25}],25:[function(require,module,exports){
+},{"blueimp-file-upload":1,"handlebars/runtime":21,"jquery-sortable":22,"medium-editor":25}],25:[function(require,module,exports){
 /*global self, document, DOMException */
 
 /*! @source http://purl.eligrey.com/github/classList.js/blob/master/classList.js */
@@ -24388,9 +24388,9 @@ function attachEventListener() {
                 nameEditor.setFocus();
                 switchButtonGroup();
             } else if (evt.target.id === 'delete-profile-btn') {
-                console.log('delete');
+                deleteUserListener(evt);
             } else if (evt.target.id === 'save-changes-btn') {
-                destroyEditors();
+                saveChangesListener(evt.target);
             } else if (evt.target.id === 'cancel-changes-btn') {
                 revertChanges();
                 switchButtonGroup();
@@ -24398,6 +24398,88 @@ function attachEventListener() {
             }
         }
     });
+
+    userPanelEl.addEventListener('change', function (evt) {
+        if (evt.target) {
+            if (evt.target.id === 'admin-checkbox') {
+                toggleAdminListener();
+            } else if (evt.target.id === 'super-admin-checkbox') {
+                toggleAdminListener(true);
+            }
+        }
+    });
+
+    function saveChangesListener(saveBtnEl) {
+        helper.disableButton(saveBtnEl);
+
+        var newName = nameEditor.getContent()[nameEl.id].value;
+        var newEmail = emailEditor.getContent()[emailEl.id].value;
+        var updateData = { name: newName, email: newEmail };
+
+        // Send ajax request to update user
+        var success = function success(response) {
+            initialName = newName;
+            initialEmail = newEmail;
+
+            helper.setAlert(JSON.parse(response).response, 'alert--success');
+        };
+        var failure = function failure(response) {
+            revertChanges();
+
+            //display errors to alert element
+            var errors = JSON.parse(response);
+            var errorMsg = '';
+
+            for (var error in errors) {
+                errorMsg = errors[error].reduce(function (previousMsg, currentMsg) {
+                    return previousMsg + currentMsg;
+                });
+            }
+            helper.setAlert(errorMsg, 'alert--danger');
+        };
+        var always = function always() {
+            helper.enableButton(saveBtnEl);
+        };
+        helper.sendAjaxRequest('PATCH', '/users/' + document.getElementById('user-id').value, success, failure, always, JSON.stringify(updateData));
+
+        destroyEditors();
+    }
+
+    function deleteUserListener(evt) {
+        var check = window.confirm('Are you sure?');
+
+        if (!check) evt.preventDefault();
+
+        return check;
+    }
+
+    function toggleAdminListener(isSuperAdmin) {
+        var updateData = { isSuperAdmin: false };
+
+        if (isSuperAdmin) {
+            updateData.isSuperAdmin = true;
+        }
+
+        // Send ajax request to update user admin status
+        var success = function success(response) {
+            helper.setAlert(JSON.parse(response).response, 'alert--success');
+        };
+        var failure = function failure(response) {
+            //display errors to alert element
+            var errors = JSON.parse(response);
+            var errorMsg = '';
+
+            for (var error in errors) {
+                errorMsg = errors[error].reduce(function (previousMsg, currentMsg) {
+                    return previousMsg + currentMsg;
+                });
+            }
+            helper.setAlert(errorMsg, 'alert--danger');
+        };
+        var always = function always() {};
+
+        helper.sendAjaxRequest('PATCH', '/users/' + document.getElementById('user-id').value + '/setadmin', success, failure, always, JSON.stringify(updateData));
+    }
 }
 
 function initEditors() {

@@ -115,4 +115,23 @@ class User extends Authenticatable
     {
         return $this->is('superadmin');
     }
+
+    public function addRole(Role $role)
+    {
+        $this->roles()->attach($role->id);
+    }
+
+    public function removeRole(Role $role)
+    {
+        $this->roles()->detach($role->id);
+    }
+
+    public function toggleRole(Role $role)
+    {
+        if ($this->is($role->name)) {
+            $this->removeRole($role);
+        } else {
+            $this->addRole($role);
+        }
+    }
 }

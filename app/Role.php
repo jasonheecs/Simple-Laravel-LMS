@@ -10,4 +10,13 @@ class Role extends Model
     {
         return $this->belongsToMany(User::class, 'user_role');
     }
+
+    public static function getAdminRole() {
+        return Role::where('name', 'admin')->first();
+    }
+
+    public static function getSuperAdminRole()
+    {
+        return Role::where('name', 'superadmin')->first();
+    }
 }

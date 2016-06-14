@@ -936,6 +936,9 @@ label {
   margin-bottom: 5px;
   max-width: 100%; }
 
+.form--inline {
+  display: inline-block; }
+
 .form-group {
   margin-bottom: 15px; }
 
@@ -1008,6 +1011,7 @@ label {
     content: '';
     display: inline-block;
     height: 16px;
+    vertical-align: text-top;
     width: 16px; }
 
 .icon--edit::before {
