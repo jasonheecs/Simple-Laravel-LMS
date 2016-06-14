@@ -23454,7 +23454,7 @@ MediumEditor.version = MediumEditor.parseVersionString.call(this, ({
 
 var Editor = require('./editor');
 var helper = require('./helper');
-var $ = require('jquery');
+var imgUploader = require('./img-uploader');
 var titleEditor; //editor for the title
 
 var coursePanelEl; //wrapper element for the course title
@@ -23636,45 +23636,24 @@ function toggleCheckboxlists() {
 }
 
 function initCourseImgUpload() {
-    var $progress = $('#progress');
-    var $hero = $('.hero');
+    var heroEl = document.querySelector('.hero');
+    var start = function start() {
+        heroEl.classList.add('uploading');
+    };
+    var done = function done(e, data, imgUrl) {
+        heroEl.style.backgroundImage = 'url("' + imgUrl + '")';
+        heroEl.classList.remove('uploading');
+    };
 
-    $.ajaxSetup({
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        }
-    });
-
-    $('#course-img-upload').fileupload({
-        dataType: 'json',
-        url: '/courses/' + document.getElementById('course-id').value + '/upload/',
-        acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i,
-        start: function start(e, data) {
-            $progress.removeClass('hidden');
-            $hero.addClass('uploading');
-            imgUploadBtn.classList.add('hidden');
-        },
-        done: function done(e, data) {
-            //append current timestamp to background image filename to avoid browser caching
-            var imgUrl = data.result.files[0].url + '?' + new Date().toISOString().replace(/[^0-9]/g, '');
-            $hero.css('background-image', 'url("' + imgUrl + '")');
-
-            $progress.addClass('hidden');
-            $hero.removeClass('uploading');
-            imgUploadBtn.classList.remove('hidden');
-        },
-        progressall: function progressall(e, data) {
-            var progress = parseInt(data.loaded / data.total * 100, 10);
-            $progress.find('.progress-bar').css('width', progress + '%');
-        }
-    });
+    imgUploader.init(document.getElementById('course-img-upload'), imgUploadBtn);
+    imgUploader.upload('/courses/' + document.getElementById('course-id').value + '/upload/', start, done);
 }
 
 module.exports = {
     init: init
 };
 
-},{"./editor":27,"./helper":28,"jquery":23}],27:[function(require,module,exports){
+},{"./editor":27,"./helper":28,"./img-uploader":30}],27:[function(require,module,exports){
 'use strict';
 
 var MediumEditor = require('medium-editor');
@@ -23973,7 +23952,7 @@ module.exports = {
     getPropertyValue: getPropertyValue
 };
 
-},{"./xhr":35}],29:[function(require,module,exports){
+},{"./xhr":36}],29:[function(require,module,exports){
 'use strict';
 
 /* globals hljs */
@@ -23993,7 +23972,75 @@ module.exports = {
     init: init
 };
 
-},{"highlight":34,"jquery":23}],30:[function(require,module,exports){
+},{"highlight":35,"jquery":23}],30:[function(require,module,exports){
+'use strict';
+
+/**
+ * Module for handling image uploads. Interfaces with the jQuery File-Upload plugin.
+ * Refer to https://github.com/blueimp/jQuery-File-Upload/wiki
+ */
+
+var $ = require('jquery');
+
+var $progress; // progress bar element
+var $fileUpload; // <input type="file"> element
+var $imgUploadBtn; // button element that triggers the uploading of file(s)
+
+function init(fileuploadEl, uploadBtnEl) {
+    $progress = $('#progress');
+    $fileUpload = $(fileuploadEl);
+    $imgUploadBtn = $(uploadBtnEl);
+}
+
+/**
+ * Uploads selected image files to the server, the uploaded image url is passed as an argument into the done function callback
+ * @param  {string}   url    url for handling the image upload
+ * @param  {[type]}   start  callback function that runs on start of upload
+ * @param  {Function} done  callback function that runs on completion of image(s) upload
+ */
+function upload(url, _start, _done) {
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+
+    $fileUpload.fileupload({
+        dataType: 'json',
+        url: url,
+        acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i,
+        start: function start(e, data) {
+            $progress.removeClass('hidden');
+            $imgUploadBtn.addClass('hidden');
+
+            _start.call(this, e, data);
+        },
+        done: function done(e, data) {
+            $progress.addClass('hidden');
+            $imgUploadBtn.removeClass('hidden');
+            //append current timestamp to background image filename to avoid browser caching
+            var imgUrl = data.result.files[0].url + '?' + new Date().toISOString().replace(/[^0-9]/g, '');
+
+            _done.call(this, e, data, imgUrl);
+        },
+        progressall: function progressall(e, data) {
+            var progress = parseInt(data.loaded / data.total * 100, 10);
+            $progress.find('.progress-bar').css('width', progress + '%');
+        }
+    });
+
+    // show error messages, if any
+    $fileUpload.bind('fileuploadprocessfail', function (e, data) {
+        window.alert(data.files[data.index].error);
+    });
+}
+
+module.exports = {
+    init: init,
+    upload: upload
+};
+
+},{"jquery":23}],31:[function(require,module,exports){
 'use strict';
 
 var Editor = require('./editor');
@@ -24248,7 +24295,7 @@ module.exports = {
     init: init
 };
 
-},{"./editor":27,"./helper":28,"./highlighter":29}],31:[function(require,module,exports){
+},{"./editor":27,"./helper":28,"./highlighter":29}],32:[function(require,module,exports){
 'use strict';
 
 var course = require('./course');
@@ -24262,11 +24309,11 @@ document.addEventListener('DOMContentLoaded', function () {
     tabs.init();
 
     if (document.getElementById('js-user-page')) {
-        user.init();
+        user.edit.init();
     }
 });
 
-},{"./course":26,"./lesson":30,"./tabs":32,"./user":33}],32:[function(require,module,exports){
+},{"./course":26,"./lesson":31,"./tabs":33,"./user":34}],33:[function(require,module,exports){
 'use strict';
 
 var helper = require('./helper');
@@ -24342,15 +24389,17 @@ module.exports = {
     init: init
 };
 
-},{"./helper":28}],33:[function(require,module,exports){
+},{"./helper":28}],34:[function(require,module,exports){
 'use strict';
 
 var Editor = require('./editor');
 var helper = require('./helper');
+var imgUploader = require('./img-uploader');
 
 var userPanelEl;
 var nameEditor;
 var emailEditor;
+var avatarUploadEl;
 
 var userActionsGrpEl;
 var contentActionsGrpEl;
@@ -24360,159 +24409,183 @@ var emailEl;
 var initialName;
 var initialEmail;
 
-function init() {
-    userPanelEl = document.getElementById('user-panel');
+var Edit = {
+    init: function init() {
+        userPanelEl = document.getElementById('user-panel');
 
-    if (userPanelEl) {
-        userActionsGrpEl = document.getElementById('user-actions-grp');
-        contentActionsGrpEl = document.getElementById('content-actions-grp');
-        nameEl = document.getElementById('name-editor');
-        emailEl = document.getElementById('email-editor');
-        initialName = nameEl.innerHTML;
-        initialEmail = emailEl.innerHTML;
+        if (userPanelEl) {
+            userActionsGrpEl = document.getElementById('user-actions-grp');
+            contentActionsGrpEl = document.getElementById('content-actions-grp');
+            nameEl = document.getElementById('name-editor');
+            emailEl = document.getElementById('email-editor');
+            avatarUploadEl = document.getElementById('img-upload-btn');
+            initialName = nameEl.innerHTML;
+            initialEmail = emailEl.innerHTML;
 
-        attachEventListener();
-    }
-}
-
-function switchButtonGroup() {
-    userActionsGrpEl.classList.toggle('hidden');
-    contentActionsGrpEl.classList.toggle('hidden');
-}
-
-function attachEventListener() {
-    userPanelEl.addEventListener('click', function (evt) {
-        if (evt.target) {
-            if (evt.target.id === 'edit-profile-btn') {
-                initEditors();
-                nameEditor.setFocus();
-                switchButtonGroup();
-            } else if (evt.target.id === 'delete-profile-btn') {
-                deleteUserListener(evt);
-            } else if (evt.target.id === 'save-changes-btn') {
-                saveChangesListener(evt.target);
-            } else if (evt.target.id === 'cancel-changes-btn') {
-                revertChanges();
-                switchButtonGroup();
-                destroyEditors();
-            }
+            initAvatarUpload();
+            this.attachEventListener();
         }
-    });
+    },
 
-    userPanelEl.addEventListener('change', function (evt) {
-        if (evt.target) {
-            if (evt.target.id === 'admin-checkbox') {
-                toggleAdminListener();
-            } else if (evt.target.id === 'super-admin-checkbox') {
-                toggleAdminListener(true);
+    switchButtonGroup: function switchButtonGroup() {
+        userActionsGrpEl.classList.toggle('hidden');
+        contentActionsGrpEl.classList.toggle('hidden');
+    },
+
+    attachEventListener: function attachEventListener() {
+        var _this = this;
+        userPanelEl.addEventListener('click', function (evt) {
+            if (evt.target) {
+                if (evt.target.id === 'edit-profile-btn') {
+                    this.initEditors();
+                    nameEditor.setFocus();
+                    this.switchButtonGroup();
+                    avatarUploadEl.classList.remove('hidden');
+                } else if (evt.target.id === 'delete-profile-btn') {
+                    deleteUserListener(evt);
+                } else if (evt.target.id === 'save-changes-btn') {
+                    saveChangesListener(evt.target);
+                } else if (evt.target.id === 'cancel-changes-btn') {
+                    this.revertChanges();
+                    this.switchButtonGroup();
+                    this.destroyEditors();
+                }
             }
-        }
-    });
+        }.bind(this));
 
-    function saveChangesListener(saveBtnEl) {
-        helper.disableButton(saveBtnEl);
-
-        var newName = nameEditor.getContent()[nameEl.id].value;
-        var newEmail = emailEditor.getContent()[emailEl.id].value;
-        var updateData = { name: newName, email: newEmail };
-
-        // Send ajax request to update user
-        var success = function success(response) {
-            initialName = newName;
-            initialEmail = newEmail;
-
-            helper.setAlert(JSON.parse(response).response, 'alert--success');
-        };
-        var failure = function failure(response) {
-            revertChanges();
-
-            //display errors to alert element
-            var errors = JSON.parse(response);
-            var errorMsg = '';
-
-            for (var error in errors) {
-                errorMsg = errors[error].reduce(function (previousMsg, currentMsg) {
-                    return previousMsg + currentMsg;
-                });
+        userPanelEl.addEventListener('change', function (evt) {
+            if (evt.target) {
+                if (evt.target.id === 'admin-checkbox') {
+                    toggleAdminListener();
+                } else if (evt.target.id === 'super-admin-checkbox') {
+                    toggleAdminListener(true);
+                }
             }
-            helper.setAlert(errorMsg, 'alert--danger');
-        };
-        var always = function always() {
-            helper.enableButton(saveBtnEl);
-        };
-        helper.sendAjaxRequest('PATCH', '/users/' + document.getElementById('user-id').value, success, failure, always, JSON.stringify(updateData));
+        });
 
-        destroyEditors();
-    }
+        function saveChangesListener(saveBtnEl) {
+            helper.disableButton(saveBtnEl);
 
-    function deleteUserListener(evt) {
-        var check = window.confirm('Are you sure?');
+            var newName = nameEditor.getContent()[nameEl.id].value;
+            var newEmail = emailEditor.getContent()[emailEl.id].value;
+            var updateData = { name: newName, email: newEmail };
 
-        if (!check) evt.preventDefault();
+            // Send ajax request to update user
+            var success = function success(response) {
+                initialName = newName;
+                initialEmail = newEmail;
 
-        return check;
-    }
+                document.getElementById('hero-user-name').textContent = newName;
 
-    function toggleAdminListener(isSuperAdmin) {
-        var updateData = { isSuperAdmin: false };
+                helper.setAlert(JSON.parse(response).response, 'alert--success');
+            };
+            var failure = function failure(response) {
+                this.revertChanges();
 
-        if (isSuperAdmin) {
-            updateData.isSuperAdmin = true;
+                //display errors to alert element
+                var errors = JSON.parse(response);
+                var errorMsg = '';
+
+                for (var error in errors) {
+                    errorMsg = errors[error].reduce(function (previousMsg, currentMsg) {
+                        return previousMsg + currentMsg;
+                    });
+                }
+                helper.setAlert(errorMsg, 'alert--danger');
+            };
+            var always = function always() {
+                helper.enableButton(saveBtnEl);
+            };
+            helper.sendAjaxRequest('PATCH', '/users/' + document.getElementById('user-id').value, success, failure, always, JSON.stringify(updateData));
+
+            _this.switchButtonGroup();
+            _this.destroyEditors();
         }
 
-        // Send ajax request to update user admin status
-        var success = function success(response) {
-            helper.setAlert(JSON.parse(response).response, 'alert--success');
-        };
-        var failure = function failure(response) {
-            //display errors to alert element
-            var errors = JSON.parse(response);
-            var errorMsg = '';
+        function deleteUserListener(evt) {
+            var check = window.confirm('Are you sure?');
 
-            for (var error in errors) {
-                errorMsg = errors[error].reduce(function (previousMsg, currentMsg) {
-                    return previousMsg + currentMsg;
-                });
+            if (!check) evt.preventDefault();
+
+            return check;
+        }
+
+        function toggleAdminListener(isSuperAdmin) {
+            var updateData = { isSuperAdmin: false };
+
+            if (isSuperAdmin) {
+                updateData.isSuperAdmin = true;
             }
-            helper.setAlert(errorMsg, 'alert--danger');
+
+            // Send ajax request to update user admin status
+            var success = function success(response) {
+                helper.setAlert(JSON.parse(response).response, 'alert--success');
+            };
+            var failure = function failure(response) {
+                //display errors to alert element
+                var errors = JSON.parse(response);
+                var errorMsg = '';
+
+                for (var error in errors) {
+                    errorMsg = errors[error].reduce(function (previousMsg, currentMsg) {
+                        return previousMsg + currentMsg;
+                    });
+                }
+                helper.setAlert(errorMsg, 'alert--danger');
+            };
+            var always = function always() {};
+
+            helper.sendAjaxRequest('PATCH', '/users/' + document.getElementById('user-id').value + '/setadmin', success, failure, always, JSON.stringify(updateData));
+        }
+    },
+
+    initEditors: function initEditors() {
+        nameEditor = new Editor();
+        emailEditor = new Editor();
+        var editorOptions = {
+            toolbar: false,
+            disableReturn: true,
+            disableExtraSpaces: true
         };
-        var always = function always() {};
 
-        helper.sendAjaxRequest('PATCH', '/users/' + document.getElementById('user-id').value + '/setadmin', success, failure, always, JSON.stringify(updateData));
+        nameEditor.init(document.getElementById('name-editor'), editorOptions);
+        emailEditor.init(document.getElementById('email-editor'), editorOptions);
+    },
+
+    destroyEditors: function destroyEditors() {
+        nameEditor.destroy();
+        emailEditor.destroy();
+    },
+
+    /**
+     * Revert changes made when 'Cancel' button is clicked
+     */
+    revertChanges: function revertChanges() {
+        nameEl.innerHTML = initialName;
+        emailEl.innerHTML = initialEmail;
     }
-}
+};
 
-function initEditors() {
-    nameEditor = new Editor();
-    emailEditor = new Editor();
-    var editorOptions = {
-        toolbar: false,
-        disableReturn: true,
-        disableExtraSpaces: true
+function initAvatarUpload() {
+    var avatarEl = document.getElementById('user-avatar');
+    var heroEl = document.querySelector('.hero');
+    var start = function start() {
+        heroEl.classList.add('uploading');
+    };
+    var done = function done(e, data, imgUrl) {
+        avatarEl.src = imgUrl;
+        heroEl.classList.remove('uploading');
     };
 
-    nameEditor.init(document.getElementById('name-editor'), editorOptions);
-    emailEditor.init(document.getElementById('email-editor'), editorOptions);
-}
-
-function destroyEditors() {
-    nameEditor.destroy();
-    emailEditor.destroy();
-}
-
-/**
- * Revert changes made when 'Cancel' button is clicked
- */
-function revertChanges() {
-    nameEl.innerHTML = initialName;
-    emailEl.innerHTML = initialEmail;
+    imgUploader.init(document.getElementById('user-img-upload'), avatarUploadEl);
+    imgUploader.upload('/users/' + document.getElementById('user-id').value + '/upload/', start, done);
 }
 
 module.exports = {
-    init: init
+    edit: Edit
 };
 
-},{"./editor":27,"./helper":28}],34:[function(require,module,exports){
+},{"./editor":27,"./helper":28,"./img-uploader":30}],35:[function(require,module,exports){
 "use strict";
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
@@ -24720,7 +24793,7 @@ exports = undefined;
   return { aliases: ["js", "jsx"], k: { keyword: "in of if for while finally var new function do return void else break catch instanceof with throw case default try this switch continue typeof delete let yield const export super debugger as async await static import from as", literal: "true false null undefined NaN Infinity", built_in: "eval isFinite isNaN parseFloat parseInt decodeURI decodeURIComponent encodeURI encodeURIComponent escape unescape Object Function Boolean Error EvalError InternalError RangeError ReferenceError StopIteration SyntaxError TypeError URIError Number Math Date String RegExp Array Float32Array Float64Array Int16Array Int32Array Int8Array Uint16Array Uint32Array Uint8Array Uint8ClampedArray ArrayBuffer DataView JSON Intl arguments require module console window document Symbol Set Map WeakSet WeakMap Proxy Reflect Promise" }, c: [{ cN: "meta", r: 10, b: /^\s*['"]use (strict|asm)['"]/ }, { cN: "meta", b: /^#!/, e: /$/ }, e.ASM, e.QSM, { cN: "string", b: "`", e: "`", c: [e.BE, { cN: "subst", b: "\\$\\{", e: "\\}" }] }, e.CLCM, e.CBCM, { cN: "number", v: [{ b: "\\b(0[bB][01]+)" }, { b: "\\b(0[oO][0-7]+)" }, { b: e.CNR }], r: 0 }, { b: "(" + e.RSR + "|\\b(case|return|throw)\\b)\\s*", k: "return throw case", c: [e.CLCM, e.CBCM, e.RM, { b: /</, e: /(\/\w+|\w+\/)>/, sL: "xml", c: [{ b: /<\w+\s*\/>/, skip: !0 }, { b: /<\w+/, e: /(\/\w+|\w+\/)>/, skip: !0, c: ["self"] }] }], r: 0 }, { cN: "function", bK: "function", e: /\{/, eE: !0, c: [e.inherit(e.TM, { b: /[A-Za-z$_][0-9A-Za-z$_]*/ }), { cN: "params", b: /\(/, e: /\)/, eB: !0, eE: !0, c: [e.CLCM, e.CBCM] }], i: /\[|%/ }, { b: /\$[(.]/ }, e.METHOD_GUARD, { cN: "class", bK: "class", e: /[{;=]/, eE: !0, i: /[:"\[\]]/, c: [{ bK: "extends" }, e.UTM] }, { bK: "constructor", e: /\{/, eE: !0 }], i: /#(?!!)/ };
 });
 
-},{}],35:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 'use strict';
 
 /**
@@ -24801,6 +24874,6 @@ Xhr.prototype.getXMLHttpRequest = function () {
 
 module.exports = Xhr;
 
-},{}]},{},[31]);
+},{}]},{},[32]);
 
 //# sourceMappingURL=app.js.map

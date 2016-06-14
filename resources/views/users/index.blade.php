@@ -4,10 +4,10 @@
 
 @section('hero')
     @include('shared.hero', [
-                            'hero_image' => 'img/bg/users.jpg',
-                            'hero_title' => 'All Users',
-                            'hero_subtitle' => 'If you are not an admin, turn back now.'
-                            ])
+        'hero_image' => 'img/bg/users.jpg',
+        'hero_title' => 'All Users',
+        'hero_subtitle' => 'If you are not an admin, turn back now.'
+    ])
 @stop
 
 @section('content')
@@ -29,10 +29,10 @@
                 <tr>
                     <td><input type="checkbox" /></td>
                     <td>
-                        @if ($user->is('admin'))
-                            @include('svg.hammer')
-                        @elseif ($user->is('superadmin'))
+                        @if ($user->is('superadmin'))
                             @include('svg.star')
+                        @elseif ($user->is('admin'))
+                            @include('svg.hammer')
                         @endif
                     </td>
                     <td><a href="/users/{{ $user->id }}">{{ $user->name }}</a></td>

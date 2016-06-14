@@ -2,7 +2,7 @@
 
 var Editor = require('./editor');
 var helper = require('./helper');
-var $ = require('jquery');
+var imgUploader = require('./img-uploader');
 var titleEditor; //editor for the title
 
 var coursePanelEl; //wrapper element for the course title
@@ -185,38 +185,17 @@ function toggleCheckboxlists() {
 }
 
 function initCourseImgUpload() {
-    var $progress = $('#progress');
-    var $hero = $('.hero');
+    var heroEl = document.querySelector('.hero');
+    var start = function() {
+        heroEl.classList.add('uploading');
+    };
+    var done = function(e, data, imgUrl) {
+        heroEl.style.backgroundImage = 'url("'+ imgUrl + '")';
+        heroEl.classList.remove('uploading');
+    };
 
-    $.ajaxSetup({
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        }
-    });
-
-    $('#course-img-upload').fileupload({
-        dataType: 'json',
-        url: '/courses/'+ document.getElementById('course-id').value +'/upload/',
-        acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i,
-        start: function(e, data) {
-            $progress.removeClass('hidden');
-            $hero.addClass('uploading');
-            imgUploadBtn.classList.add('hidden');
-        },
-        done: function(e, data) {
-            //append current timestamp to background image filename to avoid browser caching
-            var imgUrl = data.result.files[0].url + '?' + (new Date()).toISOString().replace(/[^0-9]/g, '');
-            $hero.css('background-image', 'url("'+ imgUrl + '")');
-
-            $progress.addClass('hidden');
-            $hero.removeClass('uploading');
-            imgUploadBtn.classList.remove('hidden');
-        },
-        progressall: function(e, data) {
-            var progress = parseInt(data.loaded / data.total * 100, 10);
-            $progress.find('.progress-bar').css('width', progress + '%');
-        }
-    });
+    imgUploader.init(document.getElementById('course-img-upload'), imgUploadBtn);
+    imgUploader.upload('/courses/'+ document.getElementById('course-id').value +'/upload/', start, done);
 }
 
 module.exports = {

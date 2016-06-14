@@ -9,6 +9,6 @@ document.addEventListener('DOMContentLoaded', function() {
     tabs.init();
 
     if (document.getElementById('js-user-page')) {
-        user.init();
+        user.edit.init();
     }
 });

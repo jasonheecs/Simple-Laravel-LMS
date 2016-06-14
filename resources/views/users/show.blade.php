@@ -8,7 +8,7 @@
 
 @section('hero')
     @include('shared.hero', [
-        'hero_title' => $user->name
+        'sub_template' => 'users.hero-sub'
     ])
 @stop
 

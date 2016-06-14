@@ -134,4 +134,10 @@ class User extends Authenticatable
             $this->addRole($role);
         }
     }
+
+    public function setAvatar($avatarFile)
+    {
+        $this->avatar = $avatarFile;
+        $this->save();
+    }
 }

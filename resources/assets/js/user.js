@@ -2,10 +2,12 @@
 
 var Editor = require('./editor');
 var helper = require('./helper');
+var imgUploader = require('./img-uploader');
 
 var userPanelEl;
 var nameEditor;
 var emailEditor;
+var avatarUploadEl;
 
 var userActionsGrpEl;
 var contentActionsGrpEl;
@@ -15,155 +17,179 @@ var emailEl;
 var initialName;
 var initialEmail;
 
-function init() {
-    userPanelEl = document.getElementById('user-panel');
+var Edit = {
+    init: function() {
+        userPanelEl = document.getElementById('user-panel');
 
-    if (userPanelEl) {
-        userActionsGrpEl = document.getElementById('user-actions-grp');
-        contentActionsGrpEl = document.getElementById('content-actions-grp');
-        nameEl = document.getElementById('name-editor');
-        emailEl = document.getElementById('email-editor');
-        initialName = nameEl.innerHTML;
-        initialEmail = emailEl.innerHTML;
+        if (userPanelEl) {
+            userActionsGrpEl = document.getElementById('user-actions-grp');
+            contentActionsGrpEl = document.getElementById('content-actions-grp');
+            nameEl = document.getElementById('name-editor');
+            emailEl = document.getElementById('email-editor');
+            avatarUploadEl = document.getElementById('img-upload-btn');
+            initialName = nameEl.innerHTML;
+            initialEmail = emailEl.innerHTML;
 
-        attachEventListener();
-    }
-}
-
-function switchButtonGroup() {
-    userActionsGrpEl.classList.toggle('hidden');
-    contentActionsGrpEl.classList.toggle('hidden');
-}
-
-function attachEventListener() {
-    userPanelEl.addEventListener('click', function(evt) {
-        if (evt.target) {
-            if (evt.target.id === 'edit-profile-btn') {
-                initEditors();
-                nameEditor.setFocus();
-                switchButtonGroup();
-            } else if(evt.target.id === 'delete-profile-btn') {
-                deleteUserListener(evt);
-            } else if(evt.target.id === 'save-changes-btn') {
-                saveChangesListener(evt.target);
-            } else if(evt.target.id === 'cancel-changes-btn') {
-                revertChanges();
-                switchButtonGroup();
-                destroyEditors();
-            }
+            initAvatarUpload();
+            this.attachEventListener();
         }
-    });
+    },
 
-    userPanelEl.addEventListener('change', function(evt) {
-        if (evt.target) {
-            if (evt.target.id === 'admin-checkbox') {
-                toggleAdminListener();
-            } else if (evt.target.id === 'super-admin-checkbox') {
-                toggleAdminListener(true);
+    switchButtonGroup: function() {
+        userActionsGrpEl.classList.toggle('hidden');
+        contentActionsGrpEl.classList.toggle('hidden');
+    },
+
+    attachEventListener: function() {
+        var _this = this;
+        userPanelEl.addEventListener('click', function(evt) {
+            if (evt.target) {
+                if (evt.target.id === 'edit-profile-btn') {
+                    this.initEditors();
+                    nameEditor.setFocus();
+                    this.switchButtonGroup();
+                    avatarUploadEl.classList.remove('hidden');
+                } else if(evt.target.id === 'delete-profile-btn') {
+                    deleteUserListener(evt);
+                } else if(evt.target.id === 'save-changes-btn') {
+                    saveChangesListener(evt.target);
+                } else if(evt.target.id === 'cancel-changes-btn') {
+                    this.revertChanges();
+                    this.switchButtonGroup();
+                    this.destroyEditors();
+                }
             }
-        }
-    });
+        }.bind(this));
 
-    function saveChangesListener(saveBtnEl) {
-         helper.disableButton(saveBtnEl);
-
-        var newName = nameEditor.getContent()[nameEl.id].value;
-        var newEmail = emailEditor.getContent()[emailEl.id].value;
-        var updateData = {name: newName, email: newEmail};
-
-        // Send ajax request to update user
-        var success = function(response) {
-            initialName = newName;
-            initialEmail = newEmail;
-
-            helper.setAlert(JSON.parse(response).response, 'alert--success');
-        };
-        var failure = function(response) {
-            revertChanges();
-
-            //display errors to alert element
-            var errors = JSON.parse(response);
-            var errorMsg = '';
-
-            for (var error in errors) {
-                errorMsg = errors[error].reduce(function(previousMsg, currentMsg) {
-                    return previousMsg + currentMsg;
-                });
+        userPanelEl.addEventListener('change', function(evt) {
+            if (evt.target) {
+                if (evt.target.id === 'admin-checkbox') {
+                    toggleAdminListener();
+                } else if (evt.target.id === 'super-admin-checkbox') {
+                    toggleAdminListener(true);
+                }
             }
-            helper.setAlert(errorMsg, 'alert--danger');
-        };
-        var always = function() {
-             helper.enableButton(saveBtnEl);
-        };
-        helper.sendAjaxRequest('PATCH', '/users/'+ document.getElementById('user-id').value, success, failure, always, JSON.stringify(updateData));
+        });
 
-        destroyEditors();
-    }
+        function saveChangesListener(saveBtnEl) {
+            helper.disableButton(saveBtnEl);
 
-    function deleteUserListener(evt) {
-        var check = window.confirm('Are you sure?');
+            var newName = nameEditor.getContent()[nameEl.id].value;
+            var newEmail = emailEditor.getContent()[emailEl.id].value;
+            var updateData = {name: newName, email: newEmail};
 
-        if (!check)
-            evt.preventDefault();
+            // Send ajax request to update user
+            var success = function(response) {
+                initialName = newName;
+                initialEmail = newEmail;
 
-        return check;
-    }
+                document.getElementById('hero-user-name').textContent = newName;
 
-    function toggleAdminListener(isSuperAdmin) {
-        var updateData = {isSuperAdmin: false};
+                helper.setAlert(JSON.parse(response).response, 'alert--success');
+            };
+            var failure = function(response) {
+                this.revertChanges();
 
-        if (isSuperAdmin) {
-            updateData.isSuperAdmin = true;
+                //display errors to alert element
+                var errors = JSON.parse(response);
+                var errorMsg = '';
+
+                for (var error in errors) {
+                    errorMsg = errors[error].reduce(function(previousMsg, currentMsg) {
+                        return previousMsg + currentMsg;
+                    });
+                }
+                helper.setAlert(errorMsg, 'alert--danger');
+            };
+            var always = function() {
+                helper.enableButton(saveBtnEl);
+            };
+            helper.sendAjaxRequest('PATCH', '/users/'+ document.getElementById('user-id').value, success, failure, always, JSON.stringify(updateData));
+
+            _this.switchButtonGroup();
+            _this.destroyEditors();
         }
 
-        // Send ajax request to update user admin status
-        var success = function(response) {
-            helper.setAlert(JSON.parse(response).response, 'alert--success');
-        };
-        var failure = function(response) {
-            //display errors to alert element
-            var errors = JSON.parse(response);
-            var errorMsg = '';
+        function deleteUserListener(evt) {
+            var check = window.confirm('Are you sure?');
 
-            for (var error in errors) {
-                errorMsg = errors[error].reduce(function(previousMsg, currentMsg) {
-                    return previousMsg + currentMsg;
-                });
+            if (!check)
+                evt.preventDefault();
+
+            return check;
+        }
+
+        function toggleAdminListener(isSuperAdmin) {
+            var updateData = {isSuperAdmin: false};
+
+            if (isSuperAdmin) {
+                updateData.isSuperAdmin = true;
             }
-            helper.setAlert(errorMsg, 'alert--danger');
+
+            // Send ajax request to update user admin status
+            var success = function(response) {
+                helper.setAlert(JSON.parse(response).response, 'alert--success');
+            };
+            var failure = function(response) {
+                //display errors to alert element
+                var errors = JSON.parse(response);
+                var errorMsg = '';
+
+                for (var error in errors) {
+                    errorMsg = errors[error].reduce(function(previousMsg, currentMsg) {
+                        return previousMsg + currentMsg;
+                    });
+                }
+                helper.setAlert(errorMsg, 'alert--danger');
+            };
+            var always = function() {};
+
+            helper.sendAjaxRequest('PATCH', '/users/'+ document.getElementById('user-id').value + '/setadmin', success, failure, always, JSON.stringify(updateData));
+        }
+    },
+
+    initEditors: function() {
+        nameEditor = new Editor();
+        emailEditor = new Editor();
+        var editorOptions = {
+            toolbar:false,
+            disableReturn: true,
+            disableExtraSpaces: true
         };
-        var always = function() {};
+        
+        nameEditor.init(document.getElementById('name-editor'), editorOptions);
+        emailEditor.init(document.getElementById('email-editor'), editorOptions);
+    },
 
-        helper.sendAjaxRequest('PATCH', '/users/'+ document.getElementById('user-id').value + '/setadmin', success, failure, always, JSON.stringify(updateData));
+    destroyEditors: function() {
+        nameEditor.destroy();
+        emailEditor.destroy();
+    },
+
+    /**
+     * Revert changes made when 'Cancel' button is clicked
+     */
+    revertChanges: function() {
+        nameEl.innerHTML = initialName;
+        emailEl.innerHTML = initialEmail;
     }
-}
+};
 
-function initEditors() {
-    nameEditor = new Editor();
-    emailEditor = new Editor();
-    var editorOptions = {
-        toolbar:false,
-        disableReturn: true,
-        disableExtraSpaces: true
+function initAvatarUpload() {
+    var avatarEl = document.getElementById('user-avatar');
+    var heroEl = document.querySelector('.hero');
+    var start = function() {
+        heroEl.classList.add('uploading');
     };
-    
-    nameEditor.init(document.getElementById('name-editor'), editorOptions);
-    emailEditor.init(document.getElementById('email-editor'), editorOptions);
-}
+    var done = function(e, data, imgUrl) {
+        avatarEl.src = imgUrl;
+        heroEl.classList.remove('uploading');
+    };
 
-function destroyEditors() {
-    nameEditor.destroy();
-    emailEditor.destroy();
-}
-
-/**
- * Revert changes made when 'Cancel' button is clicked
- */
-function revertChanges() {
-    nameEl.innerHTML = initialName;
-    emailEl.innerHTML = initialEmail;
+    imgUploader.init(document.getElementById('user-img-upload'), avatarUploadEl);
+    imgUploader.upload('/users/'+ document.getElementById('user-id').value +'/upload/', start, done);
 }
 
 module.exports = {
-    init: init
+    edit: Edit
 };

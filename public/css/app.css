@@ -981,22 +981,26 @@ label {
     right: 0;
     top: 0; }
 
-.hero--heading {
+.hero__heading {
   width: 100%; }
 
-.hero--title {
-  font-size: 60px;
-  font-size: 3.75rem;
+.hero__title {
+  font-size: 58px;
+  font-size: 3.625rem;
   margin-left: auto;
   margin-right: auto; }
   @media (min-width: 768px) {
-    .hero--title {
+    .hero__title {
       max-width: 90%; } }
   @media (min-width: 992px) {
-    .hero--title {
+    .hero__title {
       max-width: 80%; } }
 
-.hero--subtitle {
+.hero__title--small {
+  font-size: 48px;
+  font-size: 3rem; }
+
+.hero__subtitle {
   font-size: 18px;
   font-size: 1.125rem;
   color: #c1c1c1; }

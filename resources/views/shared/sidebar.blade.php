@@ -1,7 +1,13 @@
 <section class="sidebar">
     <div class="avatar">
         <figure class="avatar-figure">
-            <img src="//api.adorable.io/avatars/151/jason%40jason.com" class="avatar__img" width="150" height="150" />
+        
+            @if (isset(Auth::user()->avatar))
+            <img src="{{ Auth::user()->avatar }}" class="avatar__img" width="150" height="150" />
+            @else
+            <img src="//api.adorable.io/avatars/150/{{ Auth::user()->name }}" class="avatar__img" width="150" height="150" />
+            @endif
+            
             <figcaption class="avatar__name">{{ Auth::user()->name }}</figcaption>
         </figure>
         <span class="avatar__status">Enrolled in 1 course(s)</span>

@@ -30,7 +30,7 @@ class UserController extends Controller
      */
     public function create()
     {
-        //
+        return view('users.create');
     }
 
     /**
@@ -47,7 +47,7 @@ class UserController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  \App\User  $user
      * @return \Illuminate\Http\Response
      */
     public function show(User $user)
@@ -61,7 +61,7 @@ class UserController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  \App\User  $user
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, User $user)
@@ -85,7 +85,7 @@ class UserController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  \App\User  $user
      * @return \Illuminate\Http\Response
      */
     public function destroy(User $user)
@@ -97,6 +97,11 @@ class UserController extends Controller
         return redirect()->route('users.index');
     }
 
+    /**
+     * Sets whether the user is an administrator / super admin
+     * @param Request \Illuminate\Http\Request  $request
+     * @param User    \App\User  $user
+     */
     public function setAdminStatus(Request $request, User $user)
     {
         $status = '';
@@ -114,5 +119,32 @@ class UserController extends Controller
         }
 
         return back();
+    }
+
+    /**
+     * Handles uploading of avatar image file
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $user_id
+     * @return JSON   JSON response
+     */
+    public function upload(Request $request, $user_id)
+    {
+        $imageUploader = new \App\ImageUploader($request);
+        $file = $imageUploader->getFile();
+        $filename = 'user_' . $user_id . '.' . $file->guessExtension();
+
+        $upload_success = $imageUploader->upload($filename, public_path() . '/uploads/users/', 150, 150, true);
+
+        if ($upload_success) {
+            $user = User::find($user_id);
+            $user->setAvatar(url('/uploads/users/'. $filename));
+
+            $response = ['files' => [['url' => url('/uploads/users/'. $filename)]]];
+        } else {
+            echo 'Image Upload Error!';
+            $response = ['files' => [['url' => url('/uploads/error.png')]]];
+        }
+
+        return json_encode($response);
     }
 }

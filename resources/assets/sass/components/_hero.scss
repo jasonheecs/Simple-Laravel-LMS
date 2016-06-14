@@ -22,12 +22,12 @@
   }
 }
 
-.hero--heading {
+.hero__heading {
   width: 100%;
 }
 
-.hero--title {
-  @include font-size(60px);
+.hero__title {
+  @include font-size(58px);
   margin-left: auto;
   margin-right: auto;
 
@@ -40,7 +40,11 @@
   }
 }
 
-.hero--subtitle {
+.hero__title--small {
+  @include font-size(48px);
+}
+
+.hero__subtitle {
   @include font-size(18px);
   color: shade($color-white, 20%);
 }
