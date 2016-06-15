@@ -60,4 +60,9 @@ class ImageUploader {
     {
         return $this->file;
     }
+
+    public static function formatResponse($responseUrl)
+    {
+        return ['files' => [['url' => url($responseUrl)]]];
+    }
 }

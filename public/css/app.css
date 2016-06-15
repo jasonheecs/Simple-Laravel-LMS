@@ -61,6 +61,14 @@
 .panel::after {
   clear: both; }
 
+[data-medium-editor-element],
+.medium-editor-insert-plugin, .form-control--secondary {
+  outline: 1px dotted #f3b3d9; }
+  [data-medium-editor-element]:focus,
+  .medium-editor-insert-plugin:focus, .form-control--secondary:focus {
+    background: rgba(87, 0, 52, 0.04);
+    outline: 0 solid transparent; }
+
 .medium-toolbar-arrow-under:after {
   border-color: #4f002f transparent transparent transparent;
   top: 40px; }
@@ -920,11 +928,6 @@ small {
 .medium-editor-insert-plugin {
   min-height: 0; }
 
-[data-medium-editor-element]:focus,
-.medium-editor-insert-plugin:focus {
-  background: rgba(87, 0, 52, 0.04);
-  outline: 0 solid transparent; }
-
 input:focus,
 textarea:focus,
 button:focus {
@@ -942,21 +945,30 @@ label {
 .form-group {
   margin-bottom: 15px; }
 
+.form-group--lg {
+  margin-bottom: 28px; }
+
 .form-control {
+  display: block;
+  height: 35px;
+  line-height: 1.4;
+  padding: 6px 12px;
+  width: 100%; }
+
+.form-control--primary {
   background-color: #f1f1f1;
   border: 1px solid #b38ca4;
   border-radius: 4px;
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
   color: #555;
-  display: block;
-  height: 35px;
-  line-height: 1.4;
-  padding: 6px 12px;
-  transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
-  width: 100%; }
-  .form-control:focus {
+  transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s; }
+  .form-control--primary:focus {
     border: 1px solid #d60080;
     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(255, 35, 167, 0.6); }
+
+.form-control--secondary {
+  background: none;
+  border: 0; }
 
 .form-control--textarea {
   height: auto; }
@@ -1395,10 +1407,12 @@ label {
   text-decoration: none; }
 
 .user__label {
+  display: block;
+  font-weight: bold;
   margin-bottom: 0; }
 
 .user__input {
-  padding: 4px 0; }
+  padding: 6px 0; }
 
 .users__header {
   margin-bottom: 20px; }

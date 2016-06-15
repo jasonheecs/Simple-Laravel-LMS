@@ -3,6 +3,7 @@
 var Editor = require('./editor');
 var helper = require('./helper');
 var imgUploader = require('./img-uploader');
+var throttle = require('lodash/throttle');
 
 var userPanelEl;
 var nameEditor;
@@ -30,7 +31,7 @@ var Edit = {
             initialName = nameEl.innerHTML;
             initialEmail = emailEl.innerHTML;
 
-            initAvatarUpload();
+            initAvatarUpload('/users/'+ document.getElementById('user-id').value +'/upload/');
             this.attachEventListener();
         }
     },
@@ -175,7 +176,32 @@ var Edit = {
     }
 };
 
-function initAvatarUpload() {
+var Create = {
+    init: function() {
+        userPanelEl = document.getElementById('user-panel');
+
+        if (userPanelEl) {
+            contentActionsGrpEl = document.getElementById('content-actions-grp');
+            avatarUploadEl = document.getElementById('img-upload-btn');
+            avatarUploadEl.classList.remove('hidden');
+
+            initAvatarUpload('/users/0/upload/');
+            this.attachEventListener();
+        }
+    },
+
+    attachEventListener: function() {
+        userPanelEl.addEventListener('keyup', throttle(function(evt) {
+            if (evt.target) {
+                if(evt.target.id === 'user-name') {
+                    document.getElementById('hero-user-name').textContent = evt.target.value;
+                }
+            }
+        }, 50).bind(this));
+    }
+};
+
+function initAvatarUpload(uploadUrl) {
     var avatarEl = document.getElementById('user-avatar');
     var heroEl = document.querySelector('.hero');
     var start = function() {
@@ -187,9 +213,10 @@ function initAvatarUpload() {
     };
 
     imgUploader.init(document.getElementById('user-img-upload'), avatarUploadEl);
-    imgUploader.upload('/users/'+ document.getElementById('user-id').value +'/upload/', start, done);
+    imgUploader.upload(uploadUrl, start, done);
 }
 
 module.exports = {
+    create: Create,
     edit: Edit
 };

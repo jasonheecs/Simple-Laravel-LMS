@@ -26,3 +26,13 @@ $list-icon-width: 1.5em;
     clear: both;
   }
 }
+
+/// Styles for medium editor editable input area(s) (when focused)
+%editor-input-element {
+  outline: 1px dotted tint($color-primary, 70%);
+
+  &:focus {
+    background: rgba($color-secondary, .04);
+    outline: 0 solid transparent;
+  }
+}

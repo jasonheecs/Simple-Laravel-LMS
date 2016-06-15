@@ -54,7 +54,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::any('/lessons/{lesson_id}/removeUpload', 'LessonsController@removeUpload');
 
     Route::patch('users/{user}/setadmin', 'UserController@setAdminStatus');
-    Route::any('/users/{user_id}/upload', 'UserController@upload');
+    Route::any('users/{user_id}/upload', 'UserController@upload');
     Route::resource('users', 'UserController', [
         'parameters' => 'singular',
         'except' => ['edit']

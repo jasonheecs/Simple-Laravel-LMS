@@ -10,5 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (document.getElementById('js-user-page')) {
         user.edit.init();
+    } else if (document.getElementById('js-create-user-page')) {
+        user.create.init();
     }
 });

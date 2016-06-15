@@ -4,8 +4,5 @@
 
 [data-medium-editor-element],
 .medium-editor-insert-plugin {
-  &:focus {
-    background: rgba($color-secondary, .04);
-    outline: 0 solid transparent;
-  }
+    @extend %editor-input-element;
 }

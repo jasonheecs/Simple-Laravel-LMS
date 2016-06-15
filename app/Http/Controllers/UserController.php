@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\User;
 use App\Role;
+use App\ImageUploader;
+use Storage;
 
 class UserController extends Controller
 {
@@ -41,7 +43,26 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $this->validate($request, [
+            'name' => 'required',
+            'email' => 'required|email|unique:users'
+        ]);
+
+        $user = new User();
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->save();
+
+        if ($request->has('isSuperAdmin') && $request->isSuperAdmin == 'on') {
+            $user->addRole(Role::getSuperAdminRole());
+        }
+        if ($request->has('isAdmin') && $request->isAdmin == 'on') {
+            $user->addRole(Role::getAdminRole());
+        }
+
+        flash('User created', 'success');
+
+        return redirect()->route('users.show', $user->id);
     }
 
     /**
@@ -122,29 +143,65 @@ class UserController extends Controller
     }
 
     /**
-     * Handles uploading of avatar image file
+     * Handles uploading of avatar image file.
+     * If $user_id is 0, means that the user model is a temporary one (most likely one made during the create() view before saving the model)
+     * If user model is temporary ($user_id = 0), upload the file to a temporary directory first.
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $user_id
      * @return JSON   JSON response
      */
     public function upload(Request $request, $user_id)
     {
-        $imageUploader = new \App\ImageUploader($request);
+        $imageUploader = new ImageUploader($request);
         $file = $imageUploader->getFile();
-        $filename = 'user_' . $user_id . '.' . $file->guessExtension();
 
-        $upload_success = $imageUploader->upload($filename, public_path() . '/uploads/users/', 150, 150, true);
-
-        if ($upload_success) {
-            $user = User::find($user_id);
-            $user->setAvatar(url('/uploads/users/'. $filename));
-
-            $response = ['files' => [['url' => url('/uploads/users/'. $filename)]]];
+        if ($user_id == 0) {
+            $response = $this->uploadToTmp($file, $imageUploader);
         } else {
-            echo 'Image Upload Error!';
-            $response = ['files' => [['url' => url('/uploads/error.png')]]];
+            $filename = 'user_' . sha1($user_id) . '.' . $file->guessExtension();
+            $upload_success = $imageUploader->upload($filename, public_path() . '/uploads/users/', 150, 150, true);
+
+            if ($upload_success) {
+                $user = User::find($user_id);
+                $user->setAvatar(url('/uploads/users/'. $filename));
+
+                $response = ImageUploader::formatResponse('/uploads/users/'. $filename);
+            } else {
+                echo 'Image Upload Error!';
+                $response = ImageUploader::formatResponse('/uploads/error.png');
+            }
         }
 
         return json_encode($response);
+    }
+
+    /**
+     * Upload file to the Users tmp directory
+     * @param  [type] $file          [description]
+     * @param  \App\ImageUploader $imageUploader
+     * @return [Array]            Response Array containing the directory path of the uploaded file
+     */
+    private function uploadToTmp($file, $imageUploader)
+    {
+        // create tmp directory if it does not exist
+        $tmp_dir = public_path() . '/uploads/users/tmp/';
+        // if (!file_exists($tmp_dir)) {
+            // mkdir($tmp_dir, 0755, true);
+        $directory = Storage::makeDirectory('/uploads/users/tmp/');
+        // }
+        // 
+        dd($directory);
+
+        $filename = time().'-'.$file->getClientOriginalName();
+        $upload_success = $imageUploader->upload($filename, $tmp_dir, 150, 150, true);
+
+        if ($upload_success) {
+            $response = ImageUploader::formatResponse('/uploads/users/tmp/'. $filename);
+        } else {
+            echo 'Image Upload Error!';
+            $response = ImageUploader::formatResponse('/uploads/error.png');
+        }
+
+        return $response;
     }
 }
