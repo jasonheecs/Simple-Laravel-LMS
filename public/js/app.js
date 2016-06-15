@@ -24945,6 +24945,7 @@ var Edit = {
                     this.revertChanges();
                     this.switchButtonGroup();
                     this.destroyEditors();
+                    avatarUploadEl.classList.add('hidden');
                 }
             }
         }.bind(this));
@@ -24996,6 +24997,7 @@ var Edit = {
 
             _this.switchButtonGroup();
             _this.destroyEditors();
+            avatarUploadEl.classList.add('hidden');
         }
 
         function deleteUserListener(evt) {

@@ -158,14 +158,14 @@ class UserController extends Controller
         if ($user_id == 0) {
             $response = $this->uploadToTmp($file, $imageUploader);
         } else {
-            $filename = 'user_' . sha1($user_id) . '.' . $file->guessExtension();
-            $upload_success = $imageUploader->upload($filename, public_path() . '/uploads/users/', 150, 150, true);
+            $filename = 'user_' . $user_id;
+            $uploadedFile = $imageUploader->upload($filename, public_path('/uploads/users/'), 150, 150, true);
 
-            if ($upload_success) {
+            if ($uploadedFile) {
                 $user = User::find($user_id);
-                $user->setAvatar(url('/uploads/users/'. $filename));
+                $user->setAvatar(url('/uploads/users/'. $uploadedFile));
 
-                $response = ImageUploader::formatResponse('/uploads/users/'. $filename);
+                $response = ImageUploader::formatResponse('/uploads/users/'. $uploadedFile);
             } else {
                 echo 'Image Upload Error!';
                 $response = ImageUploader::formatResponse('/uploads/error.png');
@@ -184,19 +184,16 @@ class UserController extends Controller
     private function uploadToTmp($file, $imageUploader)
     {
         // create tmp directory if it does not exist
-        $tmp_dir = public_path() . '/uploads/users/tmp/';
-        // if (!file_exists($tmp_dir)) {
-            // mkdir($tmp_dir, 0755, true);
-        $directory = Storage::makeDirectory('/uploads/users/tmp/');
-        // }
-        // 
-        dd($directory);
+        $tmp_dir = '/public/tmp/user';
+        if (!file_exists(storage_path('app/' . $tmp_dir))) {
+            $directory = Storage::makeDirectory($tmp_dir, 0775, true);
+        }
 
-        $filename = time().'-'.$file->getClientOriginalName();
-        $upload_success = $imageUploader->upload($filename, $tmp_dir, 150, 150, true);
+        $filename = time().'-'.'user_' . generate_random_str(20);
+        $uploadedFile = $imageUploader->upload($filename, $tmp_dir, 150, 150, true);
 
-        if ($upload_success) {
-            $response = ImageUploader::formatResponse('/uploads/users/tmp/'. $filename);
+        if ($uploadedFile) {
+            $response = ImageUploader::formatResponse('/uploads/users/tmp/'. $uploadedFile);
         } else {
             echo 'Image Upload Error!';
             $response = ImageUploader::formatResponse('/uploads/error.png');

@@ -18,6 +18,10 @@ class ImageUploader {
     public function upload($fileName, $destination, $width = 0, $height = 0, $crop_image = false)
     {
         if ($this->file->isValid()) {
+
+            // encrypt file name
+            $fileName = hash('ripemd320', $fileName) . '.' . $this->file->guessExtension();
+
             if ($width > 0 && $height > 0) { //crop or resize uploaded image
                 if ($crop_image) {
                     $img = $this->crop($width, $height);
@@ -30,7 +34,7 @@ class ImageUploader {
                 $this->file->move($destination, $fileName);
             }
 
-            return true;
+            return $fileName;
         }
 
         return false;
