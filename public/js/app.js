@@ -14173,9 +14173,9 @@ module.exports = toNumber;
                 throw new Error("medium-editor-insert-plugin runs only in a browser.")
             }
 
-            // if (jQuery === undefined) {
-            //     jQuery = require('jquery');
-            // }
+            if (jQuery === undefined) {
+                jQuery = require('jquery');
+            }
             window.jQuery = jQuery;
 
             Handlebars = require('handlebars/runtime');
@@ -16393,7 +16393,7 @@ this["MediumInsert"]["Templates"]["src/js/templates/images-toolbar.hbs"] = Handl
 
 }));
 
-},{"blueimp-file-upload":1,"handlebars/runtime":21,"jquery-sortable":22,"medium-editor":33}],33:[function(require,module,exports){
+},{"blueimp-file-upload":1,"handlebars/runtime":21,"jquery":23,"jquery-sortable":22,"medium-editor":33}],33:[function(require,module,exports){
 /*global self, document, DOMException */
 
 /*! @source http://purl.eligrey.com/github/classList.js/blob/master/classList.js */
@@ -25080,13 +25080,27 @@ var Create = {
     },
 
     attachEventListener: function attachEventListener() {
+        var avatarApi = window.location.protocol + '//api.adorable.io/avatars/150/';
+        var usernameInputEl = document.getElementById('user-name');
+
         userPanelEl.addEventListener('keyup', throttle(function (evt) {
             if (evt.target) {
-                if (evt.target.id === 'user-name') {
-                    document.getElementById('hero-user-name').textContent = evt.target.value;
+                if (evt.target === usernameInputEl) {
+                    document.getElementById('hero-user-name').textContent = usernameInputEl.value;
                 }
             }
         }, 50).bind(this));
+
+        userPanelEl.addEventListener('blur', function (evt) {
+            if (evt.target && evt.target === usernameInputEl) {
+                var hiddenAvatarField = document.getElementById('user-avatar');
+                if ((hiddenAvatarField.value.length === 0 || hiddenAvatarField.value.substring(0, avatarApi.length) === avatarApi) && usernameInputEl.value.length > 0) {
+                    var avatarUrl = avatarApi + usernameInputEl.value;
+                    hiddenAvatarField.value = avatarUrl;
+                    document.getElementById('user-avatar-img').src = avatarUrl;
+                }
+            }
+        }.bind(this), true);
     }
 };
 
