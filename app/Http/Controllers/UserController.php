@@ -8,25 +8,28 @@ use App\Http\Requests;
 use App\User;
 use App\Role;
 use App\ImageUploader;
-use Storage;
+
+use Intervention\Image\ImageManagerStatic as Image;
 
 class UserController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of Users.
      *
      * @return \Illuminate\Http\Response
      */
     public function index()
     {
+        $users = User::all();
+        $users->load('roles');
+
         return view('users.index', [
-            'users' => User::all(),
-            'roles' => Role::all()
+            'users' => $users
         ]);
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Show the form for creating a new User.
      *
      * @return \Illuminate\Http\Response
      */
@@ -36,7 +39,7 @@ class UserController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created User in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
@@ -53,6 +56,9 @@ class UserController extends Controller
         $user->email = $request->email;
         $user->save();
 
+        if ($request->has('avatar')) {
+            $this->transferTmpAvatar($request->avatar, $user);
+        }
         if ($request->has('isSuperAdmin') && $request->isSuperAdmin == 'on') {
             $user->addRole(Role::getSuperAdminRole());
         }
@@ -66,7 +72,7 @@ class UserController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Display the specified User.
      *
      * @param  \App\User  $user
      * @return \Illuminate\Http\Response
@@ -79,7 +85,7 @@ class UserController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update the specified User in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \App\User  $user
@@ -104,7 +110,7 @@ class UserController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the specified User from storage.
      *
      * @param  \App\User  $user
      * @return \Illuminate\Http\Response
@@ -152,23 +158,22 @@ class UserController extends Controller
      */
     public function upload(Request $request, $user_id)
     {
-        $imageUploader = new ImageUploader($request);
-        $file = $imageUploader->getFile();
+        $imageUploader = new ImageUploader($request->file('files')[0]);
 
         if ($user_id == 0) {
-            $response = $this->uploadToTmp($file, $imageUploader);
+            $response = $this->uploadToTmp($imageUploader);
         } else {
             $filename = 'user_' . $user_id;
-            $uploadedFile = $imageUploader->upload($filename, public_path('/uploads/users/'), 150, 150, true);
+            $uploadedFile = $imageUploader->upload($filename, public_path(config('constants.upload_dir.users')), 150, 150, true);
 
             if ($uploadedFile) {
                 $user = User::find($user_id);
-                $user->setAvatar(url('/uploads/users/'. $uploadedFile));
+                $user->setAvatar(url(config('constants.upload_dir.users'). $uploadedFile));
 
-                $response = ImageUploader::formatResponse('/uploads/users/'. $uploadedFile);
+                $response = ImageUploader::formatResponse(url(config('constants.upload_dir.users'). $uploadedFile));
             } else {
                 echo 'Image Upload Error!';
-                $response = ImageUploader::formatResponse('/uploads/error.png');
+                $response = ImageUploader::getErrorResponse();
             }
         }
 
@@ -177,28 +182,50 @@ class UserController extends Controller
 
     /**
      * Upload file to the Users tmp directory
-     * @param  [type] $file          [description]
+     * @param  \Illuminate\Http\UploadedFile $file
      * @param  \App\ImageUploader $imageUploader
      * @return [Array]            Response Array containing the directory path of the uploaded file
      */
-    private function uploadToTmp($file, $imageUploader)
+    private function uploadToTmp($imageUploader)
     {
-        // create tmp directory if it does not exist
-        $tmp_dir = '/public/tmp/user';
-        if (!file_exists(storage_path('app/' . $tmp_dir))) {
-            $directory = Storage::makeDirectory($tmp_dir, 0775, true);
-        }
-
         $filename = time().'-'.'user_' . generate_random_str(20);
-        $uploadedFile = $imageUploader->upload($filename, $tmp_dir, 150, 150, true);
+        $uploadedFile = $imageUploader->upload($filename, public_path(config('constants.upload_dir.tmp')), 150, 150, true);
 
         if ($uploadedFile) {
-            $response = ImageUploader::formatResponse('/uploads/users/tmp/'. $uploadedFile);
+            $response = ImageUploader::formatResponse(url(config('constants.upload_dir.tmp') . $uploadedFile));
         } else {
             echo 'Image Upload Error!';
-            $response = ImageUploader::formatResponse('/uploads/error.png');
+            $response = ImageUploader::getErrorResponse();
         }
 
         return $response;
+    }
+
+    private function transferTmpAvatar($imageUrl, User $user)
+    {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL,$imageUrl); 
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_BINARYTRANSFER, 1);
+        $data = curl_exec($ch);
+        curl_close($ch);
+
+        $imagedata = imagecreatefromstring($data);
+
+        if ($imagedata !== false) {
+            $imageUploader = new ImageUploader($imagedata);
+            $filename = 'user_' . $user->id;
+            $uploadedFile = $imageUploader->upload($filename, public_path(config('constants.upload_dir.users')), 0, 0, false, true);
+
+            if ($uploadedFile) {
+                $user->avatar = url(config('constants.upload_dir.users'). $uploadedFile);
+                $user->save();
+
+                // delete tmp avatar file
+                \File::delete(public_path(config('constants.upload_dir.tmp')) . basename($imageUrl));
+            }
+
+            imagedestroy($imagedata);
+        }
     }
 }

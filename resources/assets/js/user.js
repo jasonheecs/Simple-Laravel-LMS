@@ -204,14 +204,22 @@ var Create = {
 };
 
 function initAvatarUpload(uploadUrl) {
-    var avatarEl = document.getElementById('user-avatar');
+    var avatarEl = document.getElementById('user-avatar-img');
     var heroEl = document.querySelector('.hero');
     var start = function() {
         heroEl.classList.add('uploading');
     };
-    var done = function(e, data, imgUrl) {
+    var done = function(e, data, imgUrl, imgFile) {
         avatarEl.src = imgUrl;
         heroEl.classList.remove('uploading');
+
+        // populate hidden avatar field value during user creation
+        var hiddenField = document.getElementById('user-avatar');
+        if (hiddenField) {
+            console.log(data);
+            hiddenField.value = imgFile.url;
+        }
+
     };
 
     imgUploader.init(document.getElementById('user-img-upload'), avatarUploadEl);

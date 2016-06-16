@@ -5,34 +5,39 @@ use Illuminate\Http\Request;
 use Intervention\Image\ImageManagerStatic as Image;
 
 class ImageUploader {
-    private $request;
     private $file;
+    private $image;
 
-    public function __construct(Request $request)
+    public function __construct($image_file)
     {
-        $this->request = $request;
-        $this->file = $request->file('files')[0];
-        $this->fq_filename = $this->file->getRealPath();
+        $this->file = $image_file;
+        $this->image = Image::make($this->file);
     }
 
-    public function upload($fileName, $destination, $width = 0, $height = 0, $crop_image = false)
+    public function upload($fileName, $destination, $width = 0, $height = 0, $crop_image = false, $force_png = false)
     {
-        if ($this->file->isValid()) {
+        if ($this->image) {
 
             // encrypt file name
-            $fileName = hash('ripemd320', $fileName) . '.' . $this->file->guessExtension();
+            if ($force_png) {
+                $fileName = hash('ripemd256', $fileName) . '.png';
+            } else {
+                if ($this->file instanceof \Illuminate\Http\UploadedFile) {
+                    $fileName = hash('ripemd256', $fileName) . '.' . $this->file->guessExtension();
+                }
+            }
+
+            $this->createDirectoryIfAbsent($destination);
 
             if ($width > 0 && $height > 0) { //crop or resize uploaded image
                 if ($crop_image) {
-                    $img = $this->crop($width, $height);
+                    $this->crop($width, $height);
                 } else {
-                    $img = $this->resize($width, $height);
+                    $this->resize($width, $height);
                 }
-                
-                $img->save($destination . $fileName);
-            } else {
-                $this->file->move($destination, $fileName);
             }
+
+            $this->image->save($destination . $fileName);
 
             return $fileName;
         }
@@ -42,22 +47,16 @@ class ImageUploader {
 
     public function resize($width, $height)
     {
-        if ($this->file->isValid()) {
-            $img = Image::make($this->file)->resize($width, $height);
-            return $img;
+        if ($this->image) {
+            $this->image->resize($width, $height);
         }
-
-        return null;
     }
 
     public function crop($width, $height)
     {
-        if ($this->file->isValid()) {
-            $img = Image::make($this->file)->crop($width, $height);
-            return $img;
+        if ($this->image) {
+            $this->image->crop($width, $height);
         }
-
-        return null;
     }
 
     public function getFile()
@@ -67,6 +66,19 @@ class ImageUploader {
 
     public static function formatResponse($responseUrl)
     {
-        return ['files' => [['url' => url($responseUrl)]]];
+        return ['files' => [['url' => $responseUrl]]];
+    }
+
+    public static function getErrorResponse() {
+        return self::formatResponse(url('/uploads/error.png'));
+    }
+
+    private function createDirectoryIfAbsent($dir) {
+        if (!file_exists($dir)) {
+            mkdir($dir, 0755, true);
+            return true;
+        }
+
+        return false;
     }
 }

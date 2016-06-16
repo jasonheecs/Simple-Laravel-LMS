@@ -24511,10 +24511,11 @@ function upload(url, _start, _done) {
         done: function done(e, data) {
             $progress.addClass('hidden');
             $imgUploadBtn.removeClass('hidden');
+            var imgFile = data.result.files[0];
             //append current timestamp to background image filename to avoid browser caching
-            var imgUrl = data.result.files[0].url + '?' + new Date().toISOString().replace(/[^0-9]/g, '');
+            var imgUrl = imgFile.url + '?' + new Date().toISOString().replace(/[^0-9]/g, '');
 
-            _done.call(this, e, data, imgUrl);
+            _done.call(this, e, data, imgUrl, imgFile);
         },
         progressall: function progressall(e, data) {
             var progress = parseInt(data.loaded / data.total * 100, 10);
@@ -25090,14 +25091,21 @@ var Create = {
 };
 
 function initAvatarUpload(uploadUrl) {
-    var avatarEl = document.getElementById('user-avatar');
+    var avatarEl = document.getElementById('user-avatar-img');
     var heroEl = document.querySelector('.hero');
     var start = function start() {
         heroEl.classList.add('uploading');
     };
-    var done = function done(e, data, imgUrl) {
+    var done = function done(e, data, imgUrl, imgFile) {
         avatarEl.src = imgUrl;
         heroEl.classList.remove('uploading');
+
+        // populate hidden avatar field value during user creation
+        var hiddenField = document.getElementById('user-avatar');
+        if (hiddenField) {
+            console.log(data);
+            hiddenField.value = imgFile.url;
+        }
     };
 
     imgUploader.init(document.getElementById('user-img-upload'), avatarUploadEl);

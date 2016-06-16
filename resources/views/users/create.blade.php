@@ -30,6 +30,8 @@
 
         <div id="create-user" class="panel__content margin--top">
             <form action="{{ url('/users') }}" method="POST">
+                <input type="hidden" id="user-avatar" name="avatar" value="">
+
                 <div class="panel panel--pad-lg">
                     <div class="panel__heading flex flex--space-between flex--flex-end">
                         <h2 class="panel__heading--small margin--bottom-none flex__item--1">Personal Details</h2>

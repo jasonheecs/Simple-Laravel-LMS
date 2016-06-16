@@ -43,10 +43,11 @@ function upload(url, start, done) {
         done: function(e, data) {
             $progress.addClass('hidden');
             $imgUploadBtn.removeClass('hidden');
+            var imgFile = data.result.files[0];
             //append current timestamp to background image filename to avoid browser caching
-            var imgUrl = data.result.files[0].url + '?' + (new Date()).toISOString().replace(/[^0-9]/g, '');
+            var imgUrl = imgFile.url + '?' + (new Date()).toISOString().replace(/[^0-9]/g, '');
 
-            done.call(this, e, data, imgUrl);
+            done.call(this, e, data, imgUrl, imgFile);
         },
         progressall: function(e, data) {
             var progress = parseInt(data.loaded / data.total * 100, 10);
