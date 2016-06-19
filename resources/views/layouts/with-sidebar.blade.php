@@ -17,12 +17,6 @@
 
                     @yield('content')
                 </div>
-
-               <!--  <div class="flex__item flex__item--1 hidden">
-                    <div class="panel panel--default">
-
-                    </div>
-                </div> -->
             </div>
         </div>      
     </main>

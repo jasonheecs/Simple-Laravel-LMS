@@ -1,4 +1,5 @@
 $helper-margin-size: 30px;
+$helper-padding-size: 30px;
 
 //  Visibility Helper classes
 .hidden {
@@ -34,6 +35,40 @@ $helper-margin-size: 30px;
 
 .margin--bottom-lg {
   margin-bottom: $helper-margin-size * 2;
+}
+
+// Padding Helper classes
+.padding--top {
+  padding-top: $helper-padding-size;
+}
+
+.padding--bottom {
+  padding-bottom: $helper-padding-size;
+}
+
+.padding--bottom-lg {
+  padding-bottom: $helper-padding-size * 2;
+}
+
+.padding--left {
+  padding-left: $helper-padding-size;
+}
+
+.padding--right {
+  padding-right: $helper-padding-size;
+}
+
+// Text Align Helper classes
+.text--left {
+  text-align: left;
+}
+
+.text--center {
+  text-align: center;
+}
+
+.text--right {
+  text-align: right;
 }
 
 // Float Helper classes

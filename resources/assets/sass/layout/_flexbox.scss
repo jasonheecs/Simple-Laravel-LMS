@@ -12,16 +12,24 @@
   @extend %flex;
 }
 
+.flex--center {
+  @extend %flex--center;
+}
+
 .flex--space-between {
-  justify-content: space-between;
+  @extend %flex--space-between;
 }
 
-.flex--flex-start {
-  align-items: flex-start;
+.flex--top {
+  @extend %flex--top;
 }
 
-.flex--flex-end {
-  align-items: flex-end;
+.flex--middle {
+  @extend %flex--middle;
+}
+
+.flex--bottom {
+  @extend %flex--bottom;
 }
 
 

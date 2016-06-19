@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+  <title>Create User</title>
+  <path d="M10.18,9.46c1.94,0,5.82,1,5.82,2.89v1.46H4.36V12.36C4.36,10.42,8.24,9.46,10.18,9.46ZM3.64,6.54H5.82V8H3.64v2.18H2.18V8H0V6.54H2.18V4.36H3.64V6.54ZM10.18,8A2.89,2.89,0,0,1,7.29,5.11a2.89,2.89,0,1,1,5.79,0A2.89,2.89,0,0,1,10.18,8Z" fill="#fff" transform="translate(-.5px, 0)"/>
+</svg>

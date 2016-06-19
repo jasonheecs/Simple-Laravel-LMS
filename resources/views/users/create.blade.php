@@ -33,11 +33,11 @@
                 <input type="hidden" id="user-avatar" name="avatar" value="">
 
                 <div class="panel panel--pad-lg">
-                    <div class="panel__heading flex flex--space-between flex--flex-end">
+                    <div class="panel__heading flex flex--space-between flex--bottom">
                         <h2 class="panel__heading--small margin--bottom-none flex__item--1">Personal Details</h2>
                         <div id="content-actions-grp" class="button-group">
-                            <button id="save-changes-btn" class="btn btn--primary btn--md" type="submit"><i class="icon icon--save"></i> Save</button>
-                            <a id="cancel-changes-btn" class="btn btn--outline btn--md"><i class="icon icon--cancel"></i> Cancel</a>
+                            <button id="save-changes-btn" class="btn btn--primary btn--md" type="submit" name="save" value="save"><i class="icon icon--save"></i> Save</button>
+                            <button id="cancel-changes-btn" class="btn btn--outline btn--md" type="submit" name="cancel" value="cancel" formnovalidate><i class="icon icon--cancel"></i> Cancel</a>
                         </div>
                     </div>
                     <div class="panel__content">
@@ -48,6 +48,10 @@
                         <div class="form-group form-group--lg">
                             <label class="user__label" for="user-email">Email</label>
                             <input type="email" name="email" id="user-email" class="form-control form-control--secondary" placeholder="Enter User's email" required />
+                        </div>
+                        <div class="form-group form-group--lg">
+                            <label class="user__label" for="user-company">Company</label>
+                            <input type="text" name="company" id="user-company" class="form-control form-control--secondary" placeholder="Enter User's company" />
                         </div>
                     </div>
                 </div>

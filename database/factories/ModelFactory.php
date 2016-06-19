@@ -14,12 +14,19 @@
 $factory->define(App\User::class, function (Faker\Generator $faker) {
     $name = $faker->name;
     return [
-        'name' => $name,
-        'email' => $faker->safeEmail,
-        'password' => bcrypt(str_random(10)),
+        'name'           => $name,
+        'email'          => $faker->safeEmail,
+        'password'       => bcrypt(str_random(10)),
         'remember_token' => str_random(10),
-        'avatar' => "//api.adorable.io/avatars/150/$name"
+        'avatar'         => 'http://api.adorable.io/avatars/150/' . urlencode($name),
+        'company'        => $faker->company
     ];
+});
+
+$factory->defineAs(App\User::class, 'superadmin', function (Faker\Generator $faker) use ($factory) {
+    $user = $factory->raw(App\User::class);
+
+    return $user;
 });
 
 $factory->define(App\Course::class, function (Faker\Generator $faker) {

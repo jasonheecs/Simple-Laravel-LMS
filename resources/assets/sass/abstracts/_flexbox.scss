@@ -6,12 +6,20 @@
   justify-content: center;
 }
 
+%flex--space-between {
+  justify-content: space-between;
+}
+
 %flex--top {
   align-items: flex-start;
 }
 
 %flex--middle {
   align-items: center;
+}
+
+%flex--bottom {
+  align-items: flex-end;
 }
 
 //flex items

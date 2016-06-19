@@ -7,9 +7,8 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\User;
 use App\Role;
-use App\ImageUploader;
-
-use Intervention\Image\ImageManagerStatic as Image;
+use App\Uploaders\ImageUploader;
+use App\Uploaders\AvatarUploader;
 
 class UserController extends Controller
 {
@@ -23,9 +22,19 @@ class UserController extends Controller
         $users = User::all();
         $users->load('roles');
 
-        return view('users.index', [
+        // generate file path to thumbnail version of avatars
+        $users = $users->each(function ($user) {
+            $path_parts = pathinfo($user->avatar);
+            $user->avatar = $path_parts['dirname'] . '/' .$path_parts['filename'] .
+                            config('constants.thumbnail_suffix') . '.' . $path_parts['extension'];
+        });
+
+        // return index view without caching the page
+        return response()->view('users.index', [
             'users' => $users
-        ]);
+        ])->header('cache-control', 'no-store,no-cache,must-revalidate')
+          ->header('pragma', 'no-cache')
+          ->header('expires', '0');
     }
 
     /**
@@ -46,44 +55,11 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request, [
-            'name' => 'required',
-            'email' => 'required|email|unique:users'
-        ]);
-
-        $user = new User();
-        $user->name = $request->name;
-        $user->email = $request->email;
-
-        //  If avatar is specified, check if the avatar is uploaded successfully. If so,
-        //  move the avatar from the uploads/tmp dir to the uploads/users dir
-        if ($request->has('avatar')) {
-            $avatarTmpFile = $this->transferTmpAvatar($request->avatar);
-            if ($avatarTmpFile) {
-                $user->save(); //save user so that we can get an id
-                $avatarFileName = ImageUploader::encryptFilename('user_' . $user->id);
-                $avatarTmpFile = public_path(config('constants.upload_dir.tmp')) . $avatarTmpFile;
-                $avatarFile = public_path(config('constants.upload_dir.users')) . $avatarFileName . '.png';
-
-                \File::move($avatarTmpFile, $avatarFile);
-
-                $user->avatar = url(config('constants.upload_dir.users'). $avatarFileName . '.png');
-                $user->save();
-            }
-        } else {
-            $user->save();
+        if ($request->has('save')) {
+            return $this->createNewUser($request);
+        } elseif ($request->has('cancel')) {
+            return $this->cancelCreateNewUser($request);
         }
-
-        if ($request->has('isSuperAdmin') && $request->isSuperAdmin == 'on') {
-            $user->addRole(Role::getSuperAdminRole());
-        }
-        if ($request->has('isAdmin') && $request->isAdmin == 'on') {
-            $user->addRole(Role::getAdminRole());
-        }
-
-        flash('User created', 'success');
-
-        return redirect()->route('users.show', $user->id);
     }
 
     /**
@@ -115,6 +91,7 @@ class UserController extends Controller
 
         $user->name = $request->name;
         $user->email = $request->email;
+        $user->company = $request->company;
         $user->save();
 
         if ($request->ajax()) {
@@ -135,6 +112,67 @@ class UserController extends Controller
         $user->delete();
 
         flash('User deleted', 'success');
+
+        return redirect()->route('users.index');
+    }
+
+    private function createNewUser(Request $request)
+    {
+        $this->validate($request, [
+            'name' => 'required',
+            'email' => 'required|email|unique:users'
+        ]);
+
+        $user = new User();
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->company = $request->company;
+
+        //  If avatar is specified, check if the avatar is uploaded successfully. If so,
+        //  move the avatar from the uploads/tmp dir to the uploads/users dir
+        if ($request->has('avatar')) {
+            $avatarTmpFile = $this->transferTmpAvatar($request->avatar);
+            if ($avatarTmpFile) {
+                $user->save(); //save user so that we can get an id
+
+                $filename = 'user_' . $user->id;
+                $avatarTmpFilePath = public_path(config('constants.upload_dir.tmp')) . $avatarTmpFile;
+                $avatarUploader = new AvatarUploader($avatarTmpFilePath);
+
+                $uploadedFile = $avatarUploader->upload(
+                    $filename,
+                    public_path(config('constants.upload_dir.users')),
+                    150,
+                    150,
+                    false,
+                    true
+                );
+
+                $user->setAvatar(url(config('constants.upload_dir.users'). $uploadedFile));
+                \File::delete($avatarTmpFilePath);
+            }
+        } else {
+            $user->save();
+        }
+
+        if ($request->has('isSuperAdmin') && $request->isSuperAdmin == 'on') {
+            $user->addRole(Role::getSuperAdminRole());
+        }
+        if ($request->has('isAdmin') && $request->isAdmin == 'on') {
+            $user->addRole(Role::getAdminRole());
+        }
+
+        flash('User created', 'success');
+
+        return redirect()->route('users.show', $user->id);
+    }
+
+    private function cancelCreateNewUser(Request $request)
+    {
+        // delete any temporary uploaded user avatar image file
+        if ($request->has('avatar')) {
+            \File::delete(public_path(config('constants.upload_dir.tmp')) . basename($request->avatar));
+        }
 
         return redirect()->route('users.index');
     }
@@ -176,13 +214,13 @@ class UserController extends Controller
      */
     public function upload(Request $request, $user_id)
     {
-        $imageUploader = new ImageUploader($request->file('files')[0]);
-
         if ($user_id == 0) {
+            $imageUploader = new ImageUploader($request->file('files')[0]);
             $response = $this->uploadToTmp($imageUploader);
         } else {
+            $avatarUploader = new AvatarUploader($request->file('files')[0]);
             $filename = 'user_' . $user_id;
-            $uploadedFile = $imageUploader->upload(
+            $uploadedFile = $avatarUploader->upload(
                 $filename,
                 public_path(config('constants.upload_dir.users')),
                 150,
@@ -194,10 +232,10 @@ class UserController extends Controller
                 $user = User::find($user_id);
                 $user->setAvatar(url(config('constants.upload_dir.users'). $uploadedFile));
 
-                $response = ImageUploader::formatResponse(url(config('constants.upload_dir.users'). $uploadedFile));
+                $response = AvatarUploader::formatResponse(url(config('constants.upload_dir.users'). $uploadedFile));
             } else {
                 echo 'Image Upload Error!';
-                $response = ImageUploader::getErrorResponse();
+                $response = AvatarUploader::getErrorResponse();
             }
         }
 
@@ -208,7 +246,7 @@ class UserController extends Controller
      * Upload avatar image file to the Users tmp directory
      * Used as an ajax endpoint for the jQuery file upload plugin
      * @param  \Illuminate\Http\UploadedFile $file
-     * @param  \App\ImageUploader $imageUploader
+     * @param  \App\Uploaders\ImageUploader $imageUploader
      * @return array          Response Array containing the directory path of the uploaded file
      */
     private function uploadToTmp($imageUploader)
@@ -273,5 +311,7 @@ class UserController extends Controller
 
             return $uploadedFile;
         }
+
+        return false;
     }
 }

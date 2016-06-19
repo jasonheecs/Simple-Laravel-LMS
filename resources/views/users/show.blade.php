@@ -33,7 +33,7 @@
 
         <div id="tab1" class="panel__content margin--top">
             <div class="panel panel--pad-lg">
-                <div class="panel__heading flex flex--space-between flex--flex-end">
+                <div class="panel__heading flex flex--space-between flex--bottom">
                     <h2 class="panel__heading--small margin--bottom-none flex__item--1">Personal Details</h2>
                     <div id="user-actions-grp" class="button-group">
                         <a id="edit-profile-btn" class="btn btn--primary btn--md"><i class="icon icon--edit"></i> Edit</a>
@@ -53,6 +53,8 @@
                     <div id="name-editor" class="user__input">{{ $user->name }}</div>
                     <h4 class="user__label">Email</h4>
                     <div id="email-editor" class="user__input">{{ $user->email }}</div>
+                    <h4 class="user__label">Company</h4>
+                    <div id="company-editor" class="user__input">{{ $user->company }}</div>
                 </div>
             </div>
             

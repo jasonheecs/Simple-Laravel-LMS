@@ -12,12 +12,25 @@
 
 @section('content')
 <div id="users-panel" class="panel panel--default panel--first">
-    <div class="users__header">@include('svg.user'){{ count($users) }} Users</div>
-    <div class="panel__content">
+    <div class="users__header flex flex--space-between flex--middle">
+        <div>@include('svg.user'){{ count($users) }} Users</div>
+        @if (Auth::user()->canManageUsers())
+            <ul id="user-admin-actions" class="list list--inline button-group button-group--right">
+                <li>
+                    <form method="GET" action="{{ url('/users/create') }}">
+                        <button id="create-user-btn" class="btn btn--primary" type="submit"><i class="icon icon--create-user"></i> Create User</button>
+                    </form>
+                </li>
+            </ul>
+        @endif
+    </div>
+
+    <div class="panel__content padding--bottom-lg">
         <table class="table table--bordered table--hover">
             <thead>
                 <tr>
-                    <th><input type="checkbox" name="checkall" /></th>
+                    <th class="text--center"><input type="checkbox" name="checkall" /></th>
+                    <th>&nbsp;</th>
                     <th>&nbsp;</th>
                     <th>Name</th>
                     <th>Company</th>
@@ -27,31 +40,26 @@
             <tbody>
             @foreach ($users as $user)
                 <tr>
-                    <td><input type="checkbox" /></td>
-                    <td>
+                    <td class="text--center"><input type="checkbox" /></td>
+                    <td class="text--center users__status-icon">
                         @if ($user->is('superadmin'))
                             @include('svg.star')
                         @elseif ($user->is('admin'))
                             @include('svg.hammer')
                         @endif
                     </td>
+                    <td class="text--right users__avatar-container">
+                        @if ($user->avatar)
+                            <img src="{{ $user->avatar }}" alt="{{ $user->name }}" class="users__avatar" width="28" height="28">
+                        @endif
+                    </td>
                     <td><a href="/users/{{ $user->id }}">{{ $user->name }}</a></td>
-                    <td>Efusion Technology</td>
+                    <td>{{ $user->company }}</td>
                     <td><a href="mailto:{{ $user->email }}" class="link--muted">{{ $user->email }}</a></td>
                 </tr>
             @endforeach
             </tbody>
         </table>
-
-        @if (Auth::user()->canManageUsers())
-            <ul id="user-admin-actions" class="list list--inline button-group button-group--right margin--top admin-actions-group">
-                <li>
-                    <form method="GET" action="{{ url('/users/create') }}">
-                        <button id="create-user-btn" class="btn btn--primary" type="submit">Create User</button>
-                    </form>
-                </li>
-            </ul>
-        @endif
     </div>
 </div>
 @stop

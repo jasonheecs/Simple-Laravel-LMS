@@ -8,6 +8,7 @@ var throttle = require('lodash/throttle');
 var userPanelEl;
 var nameEditor;
 var emailEditor;
+var companyEditor;
 var avatarUploadEl;
 
 var userActionsGrpEl;
@@ -15,8 +16,10 @@ var contentActionsGrpEl;
 
 var nameEl;
 var emailEl;
+var companyEl;
 var initialName;
 var initialEmail;
+var initialCompany;
 
 var Edit = {
     init: function() {
@@ -27,9 +30,11 @@ var Edit = {
             contentActionsGrpEl = document.getElementById('content-actions-grp');
             nameEl = document.getElementById('name-editor');
             emailEl = document.getElementById('email-editor');
+            companyEl = document.getElementById('company-editor');
             avatarUploadEl = document.getElementById('img-upload-btn');
             initialName = nameEl.innerHTML;
             initialEmail = emailEl.innerHTML;
+            initialCompany = companyEl.innerHTML;
 
             initAvatarUpload('/users/'+ document.getElementById('user-id').value +'/upload/');
             this.attachEventListener();
@@ -78,12 +83,14 @@ var Edit = {
 
             var newName = nameEditor.getContent()[nameEl.id].value;
             var newEmail = emailEditor.getContent()[emailEl.id].value;
-            var updateData = {name: newName, email: newEmail};
+            var newCompany = companyEditor.getContent()[companyEl.id].value;
+            var updateData = {name: newName, email: newEmail, company: newCompany};
 
             // Send ajax request to update user
             var success = function(response) {
                 initialName = newName;
                 initialEmail = newEmail;
+                initialCompany = newCompany;
 
                 document.getElementById('hero-user-name').textContent = newName;
 
@@ -154,19 +161,22 @@ var Edit = {
     initEditors: function() {
         nameEditor = new Editor();
         emailEditor = new Editor();
+        companyEditor = new Editor();
         var editorOptions = {
             toolbar:false,
             disableReturn: true,
             disableExtraSpaces: true
         };
         
-        nameEditor.init(document.getElementById('name-editor'), editorOptions);
-        emailEditor.init(document.getElementById('email-editor'), editorOptions);
+        nameEditor.init(nameEl, editorOptions);
+        emailEditor.init(emailEl, editorOptions);
+        companyEditor.init(companyEl, editorOptions);
     },
 
     destroyEditors: function() {
         nameEditor.destroy();
         emailEditor.destroy();
+        companyEditor.destroy();
     },
 
     /**
@@ -175,6 +185,7 @@ var Edit = {
     revertChanges: function() {
         nameEl.innerHTML = initialName;
         emailEl.innerHTML = initialEmail;
+        companyEl.innerHTML = initialCompany;
     }
 };
 
@@ -209,7 +220,7 @@ var Create = {
                 var hiddenAvatarField = document.getElementById('user-avatar');
                 if ((hiddenAvatarField.value.length === 0 || hiddenAvatarField.value.substring(0, avatarApi.length) === avatarApi) && 
                     usernameInputEl.value.length > 0) {
-                    var avatarUrl = avatarApi + usernameInputEl.value;
+                    var avatarUrl = avatarApi + encodeURIComponent(usernameInputEl.value);
                     hiddenAvatarField.value = avatarUrl;
                     document.getElementById('user-avatar-img').src = avatarUrl;
                 }
@@ -231,7 +242,6 @@ function initAvatarUpload(uploadUrl) {
         // populate hidden avatar field value during user creation
         var hiddenField = document.getElementById('user-avatar');
         if (hiddenField) {
-            console.log(data);
             hiddenField.value = imgFile.url;
         }
 

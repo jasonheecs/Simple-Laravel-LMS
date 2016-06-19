@@ -11,7 +11,6 @@ $icons-dir: $img-dir + 'icons/';
     content: '';
     display: inline-block;
     height: 16px;
-    vertical-align: text-top;
     width: 16px;
   }
 }
@@ -37,5 +36,11 @@ $icons-dir: $img-dir + 'icons/';
 .icon--cancel {
   &::before {
     background: url($icons-dir + 'cancel.svg') no-repeat;
+  }
+}
+
+.icon--create-user {
+  &::before {
+    background: url($icons-dir + 'create_user.svg') no-repeat;
   }
 }

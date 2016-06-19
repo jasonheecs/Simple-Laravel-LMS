@@ -1,6 +1,6 @@
 .panel {
   @extend %clearfix;
-  padding: 20px;
+  padding: 20px 40px;
 
   + .panel {
     margin-top: $gutter-width;

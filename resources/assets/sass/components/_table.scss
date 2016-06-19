@@ -12,7 +12,7 @@ $table-hover-color: #f0f0f0;
     vertical-align: middle;
   }
 
-  th {
+  th:not(.text--center) {
     text-align: left;
   }
 

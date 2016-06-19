@@ -3,7 +3,7 @@
  * Class used for image uploads
  * Refer to http://image.intervention.io/
  */
-namespace App;
+namespace App\Uploaders;
 
 use Illuminate\Http\Request;
 use Intervention\Image\ImageManagerStatic as Image;
@@ -33,15 +33,7 @@ class ImageUploader
     public function upload($fileName, $destination, $width = 0, $height = 0, $crop_image = false, $force_png = false)
     {
         if ($this->image) {
-            // encrypt file name
-            if ($force_png) {
-                $fileName = self::encryptFilename($fileName) . '.png';
-            } else {
-                if ($this->file instanceof \Illuminate\Http\UploadedFile) {
-                    $fileName = self::encryptFilename($fileName) . '.' . $this->file->guessExtension();
-                }
-            }
-
+            $fileName = $this->getNewFilename($fileName, $force_png);
             $this->createDirectoryIfAbsent($destination);
 
             if ($width > 0 && $height > 0) { //crop or resize uploaded image
@@ -64,6 +56,7 @@ class ImageUploader
     {
         if ($this->image) {
             $this->image->resize($width, $height);
+            return $this->image;
         }
     }
 
@@ -71,12 +64,18 @@ class ImageUploader
     {
         if ($this->image) {
             $this->image->crop($width, $height);
+            return $this->image;
         }
     }
 
     public function getFile()
     {
         return $this->file;
+    }
+
+    public function getImage()
+    {
+        return $this->image;
     }
 
     /**
@@ -98,12 +97,38 @@ class ImageUploader
         return self::formatResponse(url('/uploads/error.png'));
     }
 
+    /**
+     * Generates encrypted new filename with file extension
+     * @param  string  $old_filename old image file name
+     * @param  boolean $force_png    force new file extension to be .png. Default value is false
+     * @param  string  $suffix       optional suffix to the filename (eg: _thumb for thumbnails)
+     * @return string  new image filename with file extension
+     */
+    protected function getNewFilename($old_filename, $force_png = false, $suffix = '')
+    {
+        $filename = self::encryptFilename($old_filename);
+
+        if (strlen($suffix) > 0) {
+            $filename .= $suffix;
+        }
+
+        if ($force_png) {
+            return $filename . '.png';
+        } else {
+            if ($this->file && $this->file instanceof \Illuminate\Http\UploadedFile) {
+                return $filename . '.' . $this->file->guessExtension();
+            }
+        }
+
+        return $filename;
+    }
+
     public static function encryptFilename($filename)
     {
         return hash('ripemd256', $filename);
     }
 
-    private function createDirectoryIfAbsent($dir)
+    protected function createDirectoryIfAbsent($dir)
     {
         if (!file_exists($dir)) {
             mkdir($dir, 0755, true);
