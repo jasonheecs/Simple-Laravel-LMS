@@ -14173,9 +14173,9 @@ module.exports = toNumber;
                 throw new Error("medium-editor-insert-plugin runs only in a browser.")
             }
 
-            // if (jQuery === undefined) {
-            //     jQuery = require('jquery');
-            // }
+            if (jQuery === undefined) {
+                jQuery = require('jquery');
+            }
             window.jQuery = jQuery;
 
             Handlebars = require('handlebars/runtime');
@@ -16393,7 +16393,7 @@ this["MediumInsert"]["Templates"]["src/js/templates/images-toolbar.hbs"] = Handl
 
 }));
 
-},{"blueimp-file-upload":1,"handlebars/runtime":21,"jquery-sortable":22,"medium-editor":33}],33:[function(require,module,exports){
+},{"blueimp-file-upload":1,"handlebars/runtime":21,"jquery":23,"jquery-sortable":22,"medium-editor":33}],33:[function(require,module,exports){
 /*global self, document, DOMException */
 
 /*! @source http://purl.eligrey.com/github/classList.js/blob/master/classList.js */

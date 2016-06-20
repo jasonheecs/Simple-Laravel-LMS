@@ -1,3 +1,11 @@
+.login__wrapper {
+  @extend %flex;
+  @extend %flex--center;
+  @extend %flex--middle;
+  background: $color-primary;
+  min-height: 100vh;
+}
+
 .login__container {
   //scss-lint:disable ColorVariable
   background: #fff;

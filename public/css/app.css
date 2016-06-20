@@ -1,8 +1,8 @@
-.flex, .grid, .grid--match > *, .items-grid-panel, .tabs, .lesson-panel {
+.flex, .grid, .grid--match > *, .items-grid-panel, .tabs, .lesson-panel, .login__wrapper {
   display: -ms-flexbox;
   display: flex; }
 
-.flex--center {
+.flex--center, .login__wrapper {
   -ms-flex-pack: center;
   justify-content: center; }
 
@@ -14,7 +14,7 @@
   -ms-flex-align: start;
   align-items: flex-start; }
 
-.flex--middle {
+.flex--middle, .login__wrapper {
   -ms-flex-align: center;
   align-items: center; }
 
@@ -673,7 +673,7 @@ small {
 
 .container {
   margin: 0 auto;
-  max-width: 1250px;
+  max-width: 1200px;
   padding: 0 35px; }
 
 @media (min-width: 992px) {
@@ -1160,7 +1160,7 @@ small {
   pointer-events: none; }
 
 .button-group {
-  margin: 5px 0; }
+  margin: 0; }
 
 .button-group:not(.hidden) {
   height: auto; }
@@ -1436,11 +1436,17 @@ label {
 .panel__title {
   font-size: 36px;
   font-size: 2.25rem;
-  border-bottom: 1px solid rgba(87, 0, 52, 0.2);
   color: #4f002f;
+  margin-top: 40px; }
+
+.panel__title--small {
+  font-size: 28px;
+  font-size: 1.75rem; }
+
+.panel__divider {
+  border-bottom: 1px solid rgba(87, 0, 52, 0.2);
   margin-bottom: 30px;
-  margin-top: 0;
-  padding-bottom: 20px; }
+  padding-bottom: 18px; }
 
 .progress {
   left: 50%;
@@ -1620,6 +1626,10 @@ label {
 .add-file-form {
   margin: 30px 0; }
 
+.login__wrapper {
+  background: #d60080;
+  min-height: 100vh; }
+
 .login__container {
   background: #fff;
   border-radius: 10px;
@@ -1694,7 +1704,7 @@ label {
   padding: 6px 0; }
 
 .users__header {
-  margin: 20px 0; }
+  margin: 15px 0 30px; }
   .users__header svg {
     margin-right: 10px;
     vertical-align: bottom; }

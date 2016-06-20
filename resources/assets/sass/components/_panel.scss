@@ -9,15 +9,6 @@
   }
 }
 
-// .panel {
-//   @extend %clearfix;
-//   padding: 20px 40px;
-
-//   + .panel {
-//     margin-top: $gutter-width;
-//   }
-// }
-
 .panel--default {
   background: $panel-default-bg;
   //scss-lint:disable ColorVariable
@@ -26,11 +17,18 @@
 
 .panel__title {
   @include font-size(36px);
-  border-bottom: 1px solid rgba($color-secondary, .2);
   color: shade($color-secondary, 9%);
+  margin-top: 40px;
+}
+
+.panel__title--small {
+  @include font-size(28px);
+}
+
+.panel__divider {
+  border-bottom: 1px solid rgba($color-secondary, .2);
   margin-bottom: 30px;
-  margin-top: 0;
-  padding-bottom: 20px;
+  padding-bottom: 18px;
 }
 
 // .panel--pad-lg {

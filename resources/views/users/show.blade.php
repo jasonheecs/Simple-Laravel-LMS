@@ -13,7 +13,7 @@
 @stop
 
 @section('content')
-<div class="container container--single-col">
+<div class="container">
     <div id="user-panel" class="panel panel--default">
 
         <input type="hidden" name="user-id" id="user-id" value="{{ $user->id }}">
@@ -41,10 +41,10 @@
             </div>
         @endif
 
-        <div id="tab1" class="panel__content margin--top">
-            <div class="panel panel--pad-lg">
-                <div class="panel__heading flex flex--space-between flex--bottom">
-                    <h2 class="panel__heading--small margin--bottom-none flex__item--1">Personal Details</h2>
+        <div id="tab1" class="panel">
+            <div>
+                <div class="panel__divider flex flex--space-between flex--bottom">
+                    <h2 class="panel__title panel__title--small margin--bottom-none flex__item--1">Personal Details</h2>
                     <div id="user-actions-grp" class="button-group">
                         <a id="edit-profile-btn" class="btn btn--primary btn--md"><i class="icon icon--edit"></i> Edit</a>
                         <form method="POST" class="form--inline" action="{{ url('/users', $user->id) }}">
@@ -58,7 +58,7 @@
                         <a id="cancel-changes-btn" class="btn btn--outline btn--md"><i class="icon icon--cancel"></i> Cancel</a>
                     </div>
                 </div>
-                <div class="panel__content">
+                <div>
                     <h4 class="user__label">Name</h4>
                     <div id="name-editor" class="user__input">{{ $user->name }}</div>
                     <h4 class="user__label">Email</h4>
@@ -68,10 +68,10 @@
                 </div>
             </div>
             
-            <div class="panel panel--pad-lg">
-                <h2 class="panel__heading panel__heading--small">Permissions</h2>
-                <div class="panel__content">
-                    <div class="container container--full-width">
+            <div>
+                <h2 class="panel__title panel__title--small panel__divider">Permissions</h2>
+                <div class="margin--top">
+                    <div class="flex">
                         <div class="flex__item--5">
                             Is this user a Super Administrator?
                             <small>
@@ -94,7 +94,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="container container--full-width">
+                    <div class="flex">
                         <div class="flex__item--5">
                             Is this user an Administrator?
                             <small>
@@ -119,9 +119,9 @@
             </div>
         </div><!-- end #tab1 -->
 
-        <div id="tab2" class="panel__content margin--top hidden">
+        <div id="tab2" class="panel hidden">
             <div class="items-grid items-grid--3">
-                <div class="panel items-grid-panel panel--pad-lg">
+                <div class="items-grid-panel">
                     <h2 class="items-grid__heading">Is Lecturer In:</h2>
                     @foreach ($user->getAllInstructors() as $instructor)
                         @foreach ($instructor->courses as $course)
@@ -134,9 +134,9 @@
             </div>
         </div><!-- end #tab2 -->
 
-        <div id="tab3" class="panel__content margin--top hidden">
+        <div id="tab3" class="panel hidden">
             <div class="items-grid items-grid--3">
-                <div class="panel items-grid-panel panel--pad-lg">
+                <div class="items-grid-panel">
                     <h2 class="items-grid__heading">Is Student In:</h2>
                     @foreach ($user->getAllStudents() as $student)
                         @foreach ($student->courses as $course)
