@@ -1,7 +1,7 @@
 @if (isset($hero_image))
-<div class="hero container container--centered container--full-width" style="background-image: url('{{ asset($hero_image) }}')">
+<div class="hero flex flex--center flex--middle" style="background-image: url('{{ asset($hero_image) }}')">
 @else
-<div class="hero container container--centered container--full-width">
+<div class="hero flex flex--center flex--middle">
 @endif
     @if (isset($hero_title) || isset($hero_subtitle))
     <div class="hero__heading">

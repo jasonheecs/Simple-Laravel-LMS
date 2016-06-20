@@ -14,7 +14,7 @@
 
 @section('content')
 <div class="container container--single-col">
-    <div id="user-panel" class="panel panel--default panel--first">
+    <div id="user-panel" class="panel panel--default">
 
         <input type="hidden" name="user-id" id="user-id" value="{{ $user->id }}">
 
@@ -30,6 +30,16 @@
             </li>
             <div class="tabs__indicator"></div>
         </ul>
+
+        @if (count($errors) > 0)
+            <div class="alert alert--danger">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
 
         <div id="tab1" class="panel__content margin--top">
             <div class="panel panel--pad-lg">

@@ -20,6 +20,12 @@
     right: 0;
     top: 0;
   }
+
+  + div {
+    margin-top: -6vh;
+    position: relative;
+    z-index: 1;
+  }
 }
 
 .hero__heading {

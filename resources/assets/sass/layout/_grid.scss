@@ -1,0 +1,142 @@
+$grid-gutter: 25px;
+$grid-gutter-lg: 35px;
+
+.grid {
+  @extend %clearfix;
+  @extend %flex;
+  @extend %flex--wrap;
+  list-style: none;
+  margin: 0;
+  margin-left: -$grid-gutter;
+  padding: 0;
+
+  @include respond-to('x-large') {
+    margin-left: -$grid-gutter-lg;
+  }
+
+  > * {
+    @extend %flex__item--none;
+    margin: 0;
+    padding-left: $grid-gutter;
+
+    @include respond-to('x-large') {
+      padding-left: $grid-gutter-lg;
+    }
+
+    > :last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  + .grid,
+  > * > .panel + .panel {
+    margin-top: $grid-gutter;
+
+    @include respond-to('x-large') {
+      margin-top: $grid-gutter-lg;
+    }
+  }
+}
+
+///
+// Grid without gutters
+///
+.grid--collapse {
+  margin-left: 0;
+
+  > * {
+    padding-left: 0;
+  }
+
+  + .grid--collapse,
+  > * > .panel + .panel {
+    margin-top: 0;
+  }
+}
+
+///
+// Match child item heights in grid
+///
+.grid--match > * {
+  @extend %flex;
+  @extend %flex--wrap;
+
+  > * {
+    @extend %flex__item--none;
+    width: 100%;
+  }
+}
+
+///
+// Modifier classes to grid to set same widths for each child item
+// E.g: .grid--width-1-2, .grid--width-small-1-3, .grid--width-xlarge-1-4
+///
+[class^='grid--width'] > * {
+    width: 100%;
+}
+
+$grid-columns: 6;
+
+@mixin generate-grid-width-modifiers($class-suffix : '') {
+  @if str-length($class-suffix) != 0 {
+    $class-suffix: $class-suffix + '-';
+  }
+
+  @for $i from 1 through $grid-columns {
+    .grid--width-#{$class-suffix}1-#{$i} > * {
+      width: 100% / $i;
+    }
+  }
+}
+
+@include generate-grid-width-modifiers();
+
+///
+// Width classes
+// E.g: .width--1-2, .width--small-1-3, .width--xlarge-1-4
+///
+[class^='width--'] {
+    width: 100%;
+}
+
+$width-columns: 6;
+
+@mixin generate-width-classes($class-suffix : '') {
+  @if str-length($class-suffix) != 0 {
+    $class-suffix: $class-suffix + '-';
+  }
+
+  @for $i from 1 through $width-columns - 1 {
+    @for $j from $i + 1 through $width-columns {
+      .width--#{$class-suffix}#{$i}-#{$j} > * {
+        width: (100% / $j) * $i;
+      }
+    }
+  }
+}
+
+@include generate-width-classes();
+
+@include respond-to('small') {
+  $suffix: 'small';
+  @include generate-grid-width-modifiers($suffix);
+  @include generate-width-classes($suffix);
+}
+
+@include respond-to('medium') {
+  $suffix: 'medium';
+  @include generate-grid-width-modifiers($suffix);
+  @include generate-width-classes($suffix);
+}
+
+@include respond-to('large') {
+  $suffix: 'large';
+  @include generate-grid-width-modifiers($suffix);
+  @include generate-width-classes($suffix);
+}
+
+@include respond-to('x-large') {
+  $suffix: 'xlarge';
+  @include generate-grid-width-modifiers($suffix);
+  @include generate-width-classes($suffix);
+}

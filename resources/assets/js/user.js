@@ -97,7 +97,7 @@ var Edit = {
                 helper.setAlert(JSON.parse(response).response, 'alert--success');
             };
             var failure = function(response) {
-                this.revertChanges();
+                _this.revertChanges();
 
                 //display errors to alert element
                 var errors = JSON.parse(response);

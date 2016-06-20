@@ -19,7 +19,8 @@ $list-icon-width: 1.5em;
   &::before,
   &::after {
     content: '';
-    display: table;
+    display: block;
+    overflow: hidden;
   }
 
   &::after {

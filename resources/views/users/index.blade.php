@@ -11,7 +11,7 @@
 @stop
 
 @section('content')
-<div id="users-panel" class="panel panel--default panel--first">
+<div id="users-panel" class="panel panel--default">
     <div class="users__header flex flex--space-between flex--middle">
         <div>@include('svg.user'){{ count($users) }} Users</div>
         @if (Auth::user()->canManageUsers())
@@ -25,8 +25,8 @@
         @endif
     </div>
 
-    <div class="panel__content padding--bottom-lg">
-        <table class="table table--bordered table--hover">
+    <div class="padding--bottom-lg">
+        <table id="users-list" class="table table--bordered table--hover">
             <thead>
                 <tr>
                     <th class="text--center"><input type="checkbox" name="checkall" /></th>

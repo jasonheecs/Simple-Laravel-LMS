@@ -18,9 +18,9 @@
   'base/animations';
 
 @import
-  'layout/flexbox',
   'layout/container',
-  'layout/main',
+  'layout/flexbox',
+  'layout/grid',
   'layout/sidebar',
   'layout/topbar';
 
@@ -29,6 +29,7 @@
   'components/button',
   'components/button_group',
   'components/card',
+  'components/content_wrapper',
   'components/editor',
   'components/form',
   'components/hero',

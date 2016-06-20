@@ -9,6 +9,7 @@ $btn-default-color: #333;
   display: inline-block;
   font-family: $roboto;
   font-weight: normal;
+  line-height: 1;
   margin-bottom: 0;
   padding: 8px 15px;
   text-align: center;
@@ -24,7 +25,7 @@ $btn-default-color: #333;
 
 .btn--md {
   @include font-size(16px);
-  padding: 6px 14px;
+  padding: 8px 14px;
 }
 
 .btn--sm {

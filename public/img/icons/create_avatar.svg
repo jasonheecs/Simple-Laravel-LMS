@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+     width="13.7px" height="16px" viewBox="0 0 13.7 16" enable-background="new 0 0 13.7 16" xml:space="preserve">
+     <title>Create User Avatar</title>
+<path fill="#FFFFFF" d="M12.2,0c0.8,0,1.5,0.7,1.5,1.5v10.7c0,0.8-0.7,1.5-1.5,1.5h-3L6.9,16l-2.3-2.3h-3C0.7,13.7,0,13,0,12.2V1.5
+    C0,0.7,0.7,0,1.5,0L12.2,0L12.2,0z"/>
+<g>
+    <path fill="#4A9800" d="M11.4,10.6V10c0-1.5-3-2.4-4.6-2.4S2.3,8.4,2.3,10v0.7H11.4z"/>
+    <path fill="#4A9800" d="M6.9,2.5c-1.1,0-2.1,0.9-2.1,2.1s0.9,2,2.1,2s2.1-0.9,2.1-2S8,2.5,6.9,2.5z"/>
+</g>
+</svg>

@@ -11,7 +11,7 @@
 @endif
 
 <span id="img-upload-btn" class="img-upload-btn btn btn--primary hidden">
-    <i class="fa fa-plus"></i>
+    <i class="icon icon--create-avatar"></i>
     <span>Change User Avatar...</span>
     <input id="user-img-upload" type="file" name="files[]" />
 </span>

@@ -58,6 +58,10 @@ $helper-padding-size: 30px;
   padding-right: $helper-padding-size;
 }
 
+.padding--remove {
+  padding: 0 !important;
+}
+
 // Text Align Helper classes
 .text--left {
   text-align: left;

@@ -24,9 +24,11 @@ class UserController extends Controller
 
         // generate file path to thumbnail version of avatars
         $users = $users->each(function ($user) {
-            $path_parts = pathinfo($user->avatar);
-            $user->avatar = $path_parts['dirname'] . '/' .$path_parts['filename'] .
-                            config('constants.thumbnail_suffix') . '.' . $path_parts['extension'];
+            if ($user->avatar) {
+                $path_parts = pathinfo($user->avatar);
+                $user->avatar = $path_parts['dirname'] . '/' .$path_parts['filename'] .
+                                config('constants.thumbnail_suffix') . '.' . $path_parts['extension'];
+            }
         });
 
         // return index view without caching the page
@@ -86,7 +88,7 @@ class UserController extends Controller
     {
         $this->validate($request, [
             'name' => 'required',
-            'email'  => 'required|email'
+            'email'  => 'required|email|unique:users,email,' . $user->id
         ]);
 
         $user->name = $request->name;

@@ -22,6 +22,10 @@
   align-items: flex-end;
 }
 
+%flex--wrap {
+  flex-wrap: wrap;
+}
+
 //flex items
 %flex__item--none {
   flex: none;
