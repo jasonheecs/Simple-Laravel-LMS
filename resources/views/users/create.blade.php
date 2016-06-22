@@ -13,8 +13,8 @@
 @stop
 
 @section('content')
-<div class="container container--single-col">
-    <div id="user-panel" class="panel panel--default panel--first">
+<div class="container">
+    <div id="user-panel" class="panel panel--default">
 
         <h1>Create New User</h1>
 
@@ -28,19 +28,19 @@
             </div>
         @endif
 
-        <div id="create-user" class="panel__content margin--top">
+        <div id="create-user" class="panel">
             <form action="{{ url('/users') }}" method="POST">
                 <input type="hidden" id="user-avatar" name="avatar" value="">
 
-                <div class="panel panel--pad-lg">
-                    <div class="panel__heading flex flex--space-between flex--bottom">
-                        <h2 class="panel__heading--small margin--bottom-none flex__item--1">Personal Details</h2>
+                <div>
+                    <div class="panel__divider flex flex--space-between flex--bottom"">
+                        <h2 class="panel__title panel__title--small margin--bottom-none flex__item--1">Personal Details</h2>
                         <div id="content-actions-grp" class="button-group">
                             <button id="save-changes-btn" class="btn btn--primary btn--md" type="submit" name="save" value="save"><i class="icon icon--save"></i> Save</button>
                             <button id="cancel-changes-btn" class="btn btn--outline btn--md" type="submit" name="cancel" value="cancel" formnovalidate><i class="icon icon--cancel"></i> Cancel</a>
                         </div>
                     </div>
-                    <div class="panel__content">
+                    <div>
                         <div class="form-group form-group--lg">
                             <label class="user__label" for="user-name">Name</label>
                             <input type="text" name="name" id="user-name" class="form-control form-control--secondary" placeholder="Enter User's name" autofocus required />
@@ -56,10 +56,10 @@
                     </div>
                 </div>
                 
-                <div class="panel panel--pad-lg">
-                    <h2 class="panel__heading panel__heading--small">Permissions</h2>
-                    <div class="panel__content">
-                        <div class="container container--full-width">
+                <div>
+                    <h2 class="panel__title panel__title--small panel__divider">Permissions</h2>
+                    <div class="margin--top">
+                        <div class="flex">
                             <div class="flex__item--5">
                                 Is this user a Super Administrator?
                                 <small>
@@ -78,7 +78,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="container container--full-width">
+                        <div class="flex">
                             <div class="flex__item--5">
                                 Is this user an Administrator?
                                 <small>

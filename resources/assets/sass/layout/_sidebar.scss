@@ -1,10 +1,15 @@
 .sidebar {
   @include font-size(16px);
   background: $color-primary;
+  display: none;
   height: 100%;
   position: fixed;
   width: $sidebar-width;
   z-index: 1;
+
+  @include respond-to('x-large') {
+    display: block;
+  }
 }
 
 .avatar {

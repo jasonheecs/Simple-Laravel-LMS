@@ -26,7 +26,7 @@
     </div>
 
     <div class="padding--bottom-lg">
-        <table id="users-list" class="table table--bordered table--hover">
+        <table id="users-list" class="table table--bordered table--hover table--responsive">
             <thead>
                 <tr>
                     <th class="text--center"><input type="checkbox" name="checkall" /></th>
@@ -41,21 +41,23 @@
             @foreach ($users as $user)
                 <tr>
                     <td class="text--center"><input type="checkbox" /></td>
-                    <td class="text--center users__status-icon">
+                    <td class="users__status-icon">
                         @if ($user->is('superadmin'))
                             @include('svg.star')
                         @elseif ($user->is('admin'))
                             @include('svg.hammer')
                         @endif
                     </td>
-                    <td class="text--right users__avatar-container">
+                    <td class="users__avatar-container">
                         @if ($user->avatar)
+                        <a href="/users/{{ $user->id }}">
                             <img src="{{ $user->avatar }}" alt="{{ $user->name }}" class="users__avatar" width="28" height="28">
+                        </a>
                         @endif
                     </td>
-                    <td><a href="/users/{{ $user->id }}">{{ $user->name }}</a></td>
-                    <td>{{ $user->company }}</td>
-                    <td><a href="mailto:{{ $user->email }}" class="link--muted">{{ $user->email }}</a></td>
+                    <td data-th="Name"><a href="/users/{{ $user->id }}">{{ $user->name }}</a></td>
+                    <td data-th="Company">{{ $user->company }}</td>
+                    <td data-th="Email"><a href="mailto:{{ $user->email }}" class="link--muted">{{ $user->email }}</a></td>
                 </tr>
             @endforeach
             </tbody>

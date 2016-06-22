@@ -1,8 +1,23 @@
+.topbar__wrapper {
+  border-bottom: 1px solid tint($color-primary, 48%);
+}
+
 .topbar {
   @extend %flex__item--full-width;
   background: tint($color-white, 50%);
-  border-bottom: 1px solid tint($color-primary, 48%);
-  padding: 8px 20px;
+  padding: 10px 0 0;
+
+  @include respond-to('medium') {
+    padding: 8px 20px;
+  }
+}
+
+.topbar__content {
+  justify-content: center;
+
+  @include respond-to('medium') {
+    justify-content: space-between;
+  }
 }
 
 .topbar__logo {
@@ -12,5 +27,86 @@
 .topbar__subtitle {
   @include font-size(14px);
   display: inline-block;
-  margin-left: 20px;
+  text-align: center;
+  width: 100%;
+
+  @include respond-to('medium') {
+    margin-left: 20px;
+    text-align: left;
+    width: auto;
+  }
+}
+
+.topbar-nav {
+  line-height: 1;
+  margin-top: 20px;
+  width: 100%;
+
+  @include respond-to('medium') {
+    margin-bottom: 0;
+    margin-left: 10px;
+    margin-top: 0;
+    width: auto;
+  }
+
+  @include respond-to('large') {
+    margin-left: 20px;
+  }
+
+  @include respond-to('x-large') {
+    display: none;
+  }
+}
+
+.topbar-nav__list {
+  @extend %flex;
+  @include font-size(15px);
+  padding-left: 0;
+
+  li {
+    @extend %flex__item--1;
+    text-align: center;
+
+    @include respond-to('medium') {
+      flex: none;
+      margin-right: 10px;
+    }
+
+    @include respond-to('large') {
+      margin-right: 20px;
+    }
+  }
+}
+
+.topbar-nav__link {
+  color: tint($color-secondary, 25%);
+  display: inline-block;
+  padding: 12px 0;
+  width: 100%;
+
+  svg {
+    height: 16px;
+    margin-right: 10px;
+    vertical-align: middle;
+    width: 16px;
+
+    @include respond-to('medium') {
+      margin-right: 5px;
+    }
+  }
+}
+
+.topbar__avatar {
+  background-size: cover;
+  display: none;
+  height: 70px;
+  width: 70px;
+
+  @include respond-to('medium') {
+    display: block;
+  }
+
+  @include respond-to('x-large') {
+    display: none;
+  }
 }

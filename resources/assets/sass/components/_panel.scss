@@ -1,10 +1,14 @@
 .panel {
   @extend %clearfix;
   display: block;
-  padding: 20px 40px;
+  padding: 10px 20px;
   position: relative;
 
-  > :last-child {
+  @include respond-to('medium') {
+    padding: 20px 40px;
+  }
+
+  > :not(.grid):last-child {
     margin-bottom: 0;
   }
 }

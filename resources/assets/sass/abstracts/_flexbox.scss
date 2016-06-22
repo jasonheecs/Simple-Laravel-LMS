@@ -41,6 +41,6 @@
 
 @for $i from 1 through 6 {
   %flex__item--#{$i} {
-    flex: $i auto;
+    flex: $i;
   }
 }

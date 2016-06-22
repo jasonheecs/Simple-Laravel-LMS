@@ -9,6 +9,29 @@
 
 .users__status-icon {
   padding: 0 5px;
+  position: relative;
+  text-align: left;
+
+  @include respond-to('medium') {
+    text-align: center;
+  }
+
+  svg {
+    bottom: -24px;
+    position: absolute;
+
+    @include respond-to('medium') {
+      position: static;
+    }
+  }
+}
+
+.table--responsive .users__status-icon {
+  margin-bottom: -20px;
+
+  @include respond-to('medium') {
+    margin-bottom: 0;
+  }
 }
 
 .users__avatar {
@@ -17,4 +40,12 @@
   margin-right: 10px;
   vertical-align: middle;
   width: 28px;
+}
+
+.users__avatar-container {
+  text-align: left;
+
+  @include respond-to('medium') {
+    text-align: right;
+  }
 }

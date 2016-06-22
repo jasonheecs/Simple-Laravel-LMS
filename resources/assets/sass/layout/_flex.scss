@@ -32,6 +32,9 @@
   @extend %flex--bottom;
 }
 
+.flex--wrap {
+  @extend %flex--wrap;
+}
 
 .flex__item {
   + .flex__item {

@@ -1,7 +1,7 @@
 @if (isset($additional_classes))
-    <div class="card grid-item {{ $additional_classes }}">
+    <div class="card {{ $additional_classes }}">
 @else
-    <div class="card grid-item">
+    <div class="card">
 @endif
     <a href="{{ url('/courses', $course->id) }}">
         @if (isset($course->image))

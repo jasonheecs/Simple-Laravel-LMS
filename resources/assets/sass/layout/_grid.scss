@@ -1,5 +1,6 @@
 $grid-gutter: 25px;
 $grid-gutter-lg: 35px;
+$grid-gutter-sm: 20px;
 
 .grid {
   @extend %clearfix;
@@ -51,6 +52,25 @@ $grid-gutter-lg: 35px;
   + .grid--collapse,
   > * > .panel + .panel {
     margin-top: 0;
+  }
+}
+
+///
+// Grid with small gutters
+///
+.grid--small {
+  margin-bottom: $grid-gutter-sm;
+  margin-left: -$grid-gutter-sm;
+  margin-top: -$grid-gutter-sm;
+
+  > * {
+    margin-top: $grid-gutter-sm;
+    padding-left: $grid-gutter-sm;
+  }
+
+  + .grid--small,
+  > * > .panel + .panel {
+    margin-top: $grid-gutter-sm;
   }
 }
 

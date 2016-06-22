@@ -120,34 +120,35 @@
         </div><!-- end #tab1 -->
 
         <div id="tab2" class="panel hidden">
-            <div class="items-grid items-grid--3">
-                <div class="items-grid-panel">
-                    <h2 class="items-grid__heading">Is Lecturer In:</h2>
-                    @foreach ($user->getAllInstructors() as $instructor)
-                        @foreach ($instructor->courses as $course)
+            <h2 class="panel__title panel__title--small panel__divider">Is Lecturer In:</h2>
+            <div class="grid grid--width-1-3 grid--small">
+                @foreach ($user->getAllInstructors() as $instructor)
+                    @foreach ($instructor->courses as $course)
+                        <div>
                             @include('shared.card-grid-item', [
                                 'additional_classes' => 'card--secondary'
                             ])
-                        @endforeach
+                        </div>
                     @endforeach
-                </div>
+                @endforeach
             </div>
         </div><!-- end #tab2 -->
 
         <div id="tab3" class="panel hidden">
-            <div class="items-grid items-grid--3">
-                <div class="items-grid-panel">
-                    <h2 class="items-grid__heading">Is Student In:</h2>
-                    @foreach ($user->getAllStudents() as $student)
-                        @foreach ($student->courses as $course)
+            <h2 class="panel__title panel__title--small panel__divider">Is Student In:</h2>
+            <div class="grid grid--width-1-3 grid--small">
+                @foreach ($user->getAllStudents() as $student)
+                    @foreach ($student->courses as $course)
+                        <div>
                             @include('shared.card-grid-item', [
                                 'additional_classes' => 'card--secondary'
                             ])
-                        @endforeach
+                        </div>
                     @endforeach
-                </div>
+                @endforeach
             </div>
         </div><!-- end #tab3 -->
+        
     </div>
 </div>
 @stop

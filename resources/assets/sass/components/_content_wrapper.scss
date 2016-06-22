@@ -1,4 +1,6 @@
 .content {
-  margin-bottom: 12vh;
-  padding-left: $sidebar-width;
+  @include respond-to('x-large') {
+    margin-bottom: 12vh;
+    padding-left: $sidebar-width;
+  }
 }
