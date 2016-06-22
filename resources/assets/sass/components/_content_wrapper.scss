@@ -1,4 +1,10 @@
 .content {
+  margin-bottom: 1vh;
+
+  @include respond-to('medium') {
+    margin-bottom: 4vh;
+  }
+
   @include respond-to('x-large') {
     margin-bottom: 12vh;
     padding-left: $sidebar-width;

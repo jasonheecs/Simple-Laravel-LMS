@@ -13,26 +13,49 @@
 }
 
 .topbar__content {
+  flex-wrap: wrap;
   justify-content: center;
 
   @include respond-to('medium') {
+    flex-wrap: nowrap;
     justify-content: space-between;
   }
 }
 
+.topbar__logo-wrapper {
+  text-align: center;
+
+  @include respond-to('medium') {
+    text-align: left;
+  }
+}
+
 .topbar__logo {
+  margin-top: 10px;
   vertical-align: middle;
+
+  @include respond-to('medium') {
+    margin-top: 0;
+  }
+}
+
+.topbar__logo-link {
+  display: inline-block;
 }
 
 .topbar__subtitle {
   @include font-size(14px);
   display: inline-block;
-  text-align: center;
+  vertical-align: middle;
   width: 100%;
 
   @include respond-to('medium') {
+    margin-left: 5px;
+    width: 40%;
+  }
+
+  @include respond-to('large') {
     margin-left: 20px;
-    text-align: left;
     width: auto;
   }
 }
@@ -44,7 +67,6 @@
 
   @include respond-to('medium') {
     margin-bottom: 0;
-    margin-left: 10px;
     margin-top: 0;
     width: auto;
   }
@@ -69,10 +91,6 @@
 
     @include respond-to('medium') {
       flex: none;
-      margin-right: 10px;
-    }
-
-    @include respond-to('large') {
       margin-right: 20px;
     }
   }

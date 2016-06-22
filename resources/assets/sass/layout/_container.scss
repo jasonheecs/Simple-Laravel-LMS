@@ -1,5 +1,9 @@
 .container {
   margin: 0 auto;
   max-width: 1200px;
-  padding: 0 35px;
+  padding: 0 8px;
+
+  @include respond-to('medium') {
+    padding: 0 35px;
+  }
 }

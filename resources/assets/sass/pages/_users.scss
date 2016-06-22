@@ -7,14 +7,17 @@
   }
 }
 
-.users__status-icon {
-  padding: 0 5px;
-  position: relative;
-  text-align: left;
-
+.users__checkbox {
   @include respond-to('medium') {
     text-align: center;
   }
+}
+
+.users__status-icon {
+  min-width: 35px;
+  padding: 0 5px;
+  position: relative;
+  text-align: center;
 
   svg {
     bottom: -24px;
@@ -26,12 +29,24 @@
   }
 }
 
-.table--responsive .users__status-icon {
-  margin-bottom: -20px;
+.table--responsive {
+  .users__status-icon {
+    margin-bottom: -20px;
+    text-align: left;
 
-  @include respond-to('medium') {
-    margin-bottom: 0;
-  }
+    @include respond-to('medium') {
+      margin-bottom: 0;
+      text-align: center;
+    }
+ }
+
+ .users__avatar-container {
+   text-align: left;
+
+   @include respond-to('medium') {
+     text-align: right;
+   }
+ }
 }
 
 .users__avatar {
@@ -40,12 +55,4 @@
   margin-right: 10px;
   vertical-align: middle;
   width: 28px;
-}
-
-.users__avatar-container {
-  text-align: left;
-
-  @include respond-to('medium') {
-    text-align: right;
-  }
 }
