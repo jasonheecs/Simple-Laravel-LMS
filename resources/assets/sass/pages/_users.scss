@@ -56,3 +56,31 @@
   vertical-align: middle;
   width: 28px;
 }
+
+.user__personal-details {
+  flex-wrap: wrap;
+
+  @include respond-to('medium') {
+    flex-wrap: nowrap;
+  }
+}
+
+.user__button-grp {
+  margin-top: 12px;
+
+  @include respond-to('medium') {
+    margin-top: 0;
+  }
+
+  .btn {
+    margin-right: 8px;
+
+    @include respond-to('medium') {
+      margin-right: 4px;
+    }
+
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+}

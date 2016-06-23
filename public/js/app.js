@@ -14173,9 +14173,9 @@ module.exports = toNumber;
                 throw new Error("medium-editor-insert-plugin runs only in a browser.")
             }
 
-            if (jQuery === undefined) {
-                jQuery = require('jquery');
-            }
+            // if (jQuery === undefined) {
+            //     jQuery = require('jquery');
+            // }
             window.jQuery = jQuery;
 
             Handlebars = require('handlebars/runtime');
@@ -16393,7 +16393,7 @@ this["MediumInsert"]["Templates"]["src/js/templates/images-toolbar.hbs"] = Handl
 
 }));
 
-},{"blueimp-file-upload":1,"handlebars/runtime":21,"jquery":23,"jquery-sortable":22,"medium-editor":33}],33:[function(require,module,exports){
+},{"blueimp-file-upload":1,"handlebars/runtime":21,"jquery-sortable":22,"medium-editor":33}],33:[function(require,module,exports){
 /*global self, document, DOMException */
 
 /*! @source http://purl.eligrey.com/github/classList.js/blob/master/classList.js */
@@ -24813,6 +24813,7 @@ document.addEventListener('DOMContentLoaded', function () {
 'use strict';
 
 var helper = require('./helper');
+var throttle = require('lodash/throttle');
 var tabsEls;
 
 function Tabs(element) {
@@ -24821,14 +24822,20 @@ function Tabs(element) {
 
 Tabs.prototype.init = function () {
     this.indicatorEl = this.element.querySelector('.tabs__indicator');
+    this.initIndicator();
+
+    this.activeTab.classList.remove('hidden');
+    this.indicatorEl.style[helper.getPropertyValue('transition')] = helper.getPropertyValue('transform') + ' .25s';
+    this.addEventListener();
+
+    window.addEventListener('resize', throttle(this.initIndicator, 250).bind(this));
+};
+
+Tabs.prototype.initIndicator = function () {
     this.activeTabEl = this.element.querySelector('.tab--active');
     this.indicatorEl.style.width = this.activeTabEl.offsetWidth + 'px';
     this.activeTab = document.querySelector(this.activeTabEl.querySelector('a').hash);
-
-    this.activeTab.classList.remove('hidden');
     this.setIndicatorPos();
-    this.indicatorEl.style[helper.getPropertyValue('transition')] = helper.getPropertyValue('transform') + ' .25s';
-    this.addEventListener();
 };
 
 Tabs.prototype.setIndicatorPos = function () {
@@ -24885,7 +24892,7 @@ module.exports = {
     init: init
 };
 
-},{"./helper":36}],42:[function(require,module,exports){
+},{"./helper":36,"lodash/throttle":30}],42:[function(require,module,exports){
 'use strict';
 
 var Editor = require('./editor');

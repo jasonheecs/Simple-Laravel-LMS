@@ -43,9 +43,9 @@
 
         <div id="tab1" class="panel">
             <div>
-                <div class="panel__divider flex flex--space-between flex--bottom">
+                <div class="user__personal-details panel__divider flex flex--space-between flex--bottom">
                     <h2 class="panel__title panel__title--small margin--bottom-none flex__item--1">Personal Details</h2>
-                    <div id="user-actions-grp" class="button-group">
+                    <div id="user-actions-grp" class="user__button-grp button-group">
                         <a id="edit-profile-btn" class="btn btn--primary btn--md"><i class="icon icon--edit"></i> Edit</a>
                         <form method="POST" class="form--inline" action="{{ url('/users', $user->id) }}">
                             {{ method_field('DELETE') }}
@@ -53,7 +53,7 @@
                             {!! csrf_field() !!}
                         </form>
                     </div>
-                    <div id="content-actions-grp" class="button-group hidden">
+                    <div id="content-actions-grp" class="user__button-grp button-group hidden">
                         <a id="save-changes-btn" class="btn btn--primary btn--md"><i class="icon icon--save"></i> Save</a>
                         <a id="cancel-changes-btn" class="btn btn--outline btn--md"><i class="icon icon--cancel"></i> Cancel</a>
                     </div>
@@ -121,7 +121,7 @@
 
         <div id="tab2" class="panel hidden">
             <h2 class="panel__title panel__title--small panel__divider">Is Lecturer In:</h2>
-            <div class="grid grid--width-1-3 grid--small">
+            <div class="grid grid--width-1-1 grid--width-medium-1-2 grid--width-large-1-3 grid--small grid--match">
                 @foreach ($user->getAllInstructors() as $instructor)
                     @foreach ($instructor->courses as $course)
                         <div>

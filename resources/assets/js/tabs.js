@@ -1,6 +1,7 @@
 'use strict';
 
 var helper = require('./helper');
+var throttle = require('lodash/throttle');
 var tabsEls;
 
 function Tabs(element) {
@@ -9,14 +10,20 @@ function Tabs(element) {
 
 Tabs.prototype.init = function() {
     this.indicatorEl = this.element.querySelector('.tabs__indicator');
+    this.initIndicator();
+
+    this.activeTab.classList.remove('hidden');
+    this.indicatorEl.style[helper.getPropertyValue('transition')] = helper.getPropertyValue('transform') + ' .25s';
+    this.addEventListener();
+
+    window.addEventListener('resize', throttle(this.initIndicator, 250).bind(this));
+};
+
+Tabs.prototype.initIndicator = function() {
     this.activeTabEl = this.element.querySelector('.tab--active');
     this.indicatorEl.style.width = this.activeTabEl.offsetWidth + 'px';
     this.activeTab = document.querySelector(this.activeTabEl.querySelector('a').hash);
-
-    this.activeTab.classList.remove('hidden');
     this.setIndicatorPos();
-    this.indicatorEl.style[helper.getPropertyValue('transition')] = helper.getPropertyValue('transform') + ' .25s';
-    this.addEventListener();
 };
 
 Tabs.prototype.setIndicatorPos = function() {
