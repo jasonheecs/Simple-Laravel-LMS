@@ -1535,6 +1535,32 @@ label {
 .list--striped > li:nth-child(odd) {
   background: #eaeaea; }
 
+.notifications {
+  margin: 0;
+  padding: 0;
+  position: fixed;
+  right: 0;
+  top: 78px;
+  z-index: 2; }
+
+.notification {
+  background: #dff0d8;
+  box-shadow: -2px 2px 2px rgba(4, 4, 4, 0.5);
+  color: #3c763d;
+  display: block;
+  margin-top: 5px;
+  max-width: 320px;
+  min-width: 200px;
+  padding: 12px 15px;
+  position: relative;
+  transform: translate3d(100%, 0, 0);
+  transition: transform .3s; }
+  .notification:first-child {
+    margin-top: 0; }
+
+.notification--show {
+  transform: translate3d(0, 0, 0); }
+
 .panel {
   display: block;
   padding: 10px 20px;

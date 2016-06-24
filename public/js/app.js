@@ -24445,7 +24445,7 @@ module.exports = {
     getPropertyValue: getPropertyValue
 };
 
-},{"./xhr":44}],37:[function(require,module,exports){
+},{"./xhr":45}],37:[function(require,module,exports){
 'use strict';
 
 /* globals hljs */
@@ -24465,7 +24465,7 @@ module.exports = {
     init: init
 };
 
-},{"highlight":43,"jquery":23}],38:[function(require,module,exports){
+},{"highlight":44,"jquery":23}],38:[function(require,module,exports){
 'use strict';
 
 /**
@@ -24809,7 +24809,62 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
-},{"./course":34,"./lesson":39,"./tabs":41,"./user":42}],41:[function(require,module,exports){
+},{"./course":34,"./lesson":39,"./tabs":42,"./user":43}],41:[function(require,module,exports){
+'use strict';
+
+// var helper = require('./helper');
+
+var NOTIFICATION_DURATION = 5000;
+
+var notificationsEl;
+var startTimestamp;
+var rafID;
+
+function init() {
+    notificationsEl = document.getElementById('notifications');
+}
+
+function notify(msg, status) {
+    if (typeof notificationsEl === 'undefined') {
+        init();
+    }
+
+    status = status || 'default';
+
+    var notificationEl = document.createElement('li');
+    notificationEl.classList.add('notification');
+    notificationEl.classList.add('notification--' + status);
+    notificationEl.textContent = msg;
+
+    notificationsEl.appendChild(notificationEl);
+
+    setTimeout(function () {
+        notificationEl.classList.add('notification--show');
+    }, 50);
+
+    rafID = window.requestAnimationFrame(setNotificationInterval);
+
+    function setNotificationInterval(timestamp) {
+        if (!startTimestamp) {
+            startTimestamp = timestamp;
+        }
+
+        if (timestamp - startTimestamp >= NOTIFICATION_DURATION) {
+            notificationEl.style.background = 'red';
+            window.cancelAnimationFrame(rafID);
+            return;
+        }
+
+        rafID = window.requestAnimationFrame(setNotificationInterval);
+    }
+}
+
+module.exports = {
+    init: init,
+    notify: notify
+};
+
+},{}],42:[function(require,module,exports){
 'use strict';
 
 var helper = require('./helper');
@@ -24892,12 +24947,13 @@ module.exports = {
     init: init
 };
 
-},{"./helper":36,"lodash/throttle":30}],42:[function(require,module,exports){
+},{"./helper":36,"lodash/throttle":30}],43:[function(require,module,exports){
 'use strict';
 
 var Editor = require('./editor');
 var helper = require('./helper');
 var imgUploader = require('./img-uploader');
+var notifications = require('./notifications');
 var throttle = require('lodash/throttle');
 
 var userPanelEl;
@@ -24989,7 +25045,8 @@ var Edit = {
 
                 document.getElementById('hero-user-name').textContent = newName;
 
-                helper.setAlert(JSON.parse(response).response, 'alert--success');
+                // helper.setAlert(JSON.parse(response).response, 'alert--success');
+                notifications.notify('Testing', 'success');
             };
             var failure = function failure(response) {
                 _this.revertChanges();
@@ -25003,7 +25060,8 @@ var Edit = {
                         return previousMsg + currentMsg;
                     });
                 }
-                helper.setAlert(errorMsg, 'alert--danger');
+                // helper.setAlert(errorMsg, 'alert--danger');
+                notifications.notify('Testing', 'danger');
             };
             var always = function always() {
                 helper.enableButton(saveBtnEl);
@@ -25148,7 +25206,7 @@ module.exports = {
     edit: Edit
 };
 
-},{"./editor":35,"./helper":36,"./img-uploader":38,"lodash/throttle":30}],43:[function(require,module,exports){
+},{"./editor":35,"./helper":36,"./img-uploader":38,"./notifications":41,"lodash/throttle":30}],44:[function(require,module,exports){
 "use strict";
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
@@ -25356,7 +25414,7 @@ exports = undefined;
   return { aliases: ["js", "jsx"], k: { keyword: "in of if for while finally var new function do return void else break catch instanceof with throw case default try this switch continue typeof delete let yield const export super debugger as async await static import from as", literal: "true false null undefined NaN Infinity", built_in: "eval isFinite isNaN parseFloat parseInt decodeURI decodeURIComponent encodeURI encodeURIComponent escape unescape Object Function Boolean Error EvalError InternalError RangeError ReferenceError StopIteration SyntaxError TypeError URIError Number Math Date String RegExp Array Float32Array Float64Array Int16Array Int32Array Int8Array Uint16Array Uint32Array Uint8Array Uint8ClampedArray ArrayBuffer DataView JSON Intl arguments require module console window document Symbol Set Map WeakSet WeakMap Proxy Reflect Promise" }, c: [{ cN: "meta", r: 10, b: /^\s*['"]use (strict|asm)['"]/ }, { cN: "meta", b: /^#!/, e: /$/ }, e.ASM, e.QSM, { cN: "string", b: "`", e: "`", c: [e.BE, { cN: "subst", b: "\\$\\{", e: "\\}" }] }, e.CLCM, e.CBCM, { cN: "number", v: [{ b: "\\b(0[bB][01]+)" }, { b: "\\b(0[oO][0-7]+)" }, { b: e.CNR }], r: 0 }, { b: "(" + e.RSR + "|\\b(case|return|throw)\\b)\\s*", k: "return throw case", c: [e.CLCM, e.CBCM, e.RM, { b: /</, e: /(\/\w+|\w+\/)>/, sL: "xml", c: [{ b: /<\w+\s*\/>/, skip: !0 }, { b: /<\w+/, e: /(\/\w+|\w+\/)>/, skip: !0, c: ["self"] }] }], r: 0 }, { cN: "function", bK: "function", e: /\{/, eE: !0, c: [e.inherit(e.TM, { b: /[A-Za-z$_][0-9A-Za-z$_]*/ }), { cN: "params", b: /\(/, e: /\)/, eB: !0, eE: !0, c: [e.CLCM, e.CBCM] }], i: /\[|%/ }, { b: /\$[(.]/ }, e.METHOD_GUARD, { cN: "class", bK: "class", e: /[{;=]/, eE: !0, i: /[:"\[\]]/, c: [{ bK: "extends" }, e.UTM] }, { bK: "constructor", e: /\{/, eE: !0 }], i: /#(?!!)/ };
 });
 
-},{}],44:[function(require,module,exports){
+},{}],45:[function(require,module,exports){
 'use strict';
 
 /**

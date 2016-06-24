@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
+use Gate;
 use App\Http\Requests;
 use App\User;
 use App\Role;
@@ -19,6 +20,8 @@ class UserController extends Controller
      */
     public function index()
     {
+        auth_check('index', User::class);
+
         $users = User::all();
         $users->load('roles');
 
@@ -46,6 +49,8 @@ class UserController extends Controller
      */
     public function create()
     {
+        auth_check('store', User::class);
+
         return view('users.create');
     }
 
@@ -57,6 +62,8 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
+        auth_check('store', User::class, $request);
+
         if ($request->has('save')) {
             return $this->createNewUser($request);
         } elseif ($request->has('cancel')) {
@@ -72,6 +79,8 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
+        auth_check('index', $user);
+
         return view('users.show', [
             'user' => $user
         ]);
@@ -86,6 +95,8 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
+        auth_check('update', $user, $request);
+
         $this->validate($request, [
             'name' => 'required',
             'email'  => 'required|email|unique:users,email,' . $user->id
@@ -111,6 +122,8 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
+        auth_check('destroy', $user);
+
         $user->delete();
 
         flash('User deleted', 'success');
@@ -186,6 +199,8 @@ class UserController extends Controller
      */
     public function setAdminStatus(Request $request, User $user)
     {
+        auth_check('setAdminStatus', $user, $request);
+
         $status = '';
 
         if ($request->isSuperAdmin) {
@@ -216,6 +231,8 @@ class UserController extends Controller
      */
     public function upload(Request $request, $user_id)
     {
+        auth_check('update', User::class, $request);
+
         if ($user_id == 0) {
             $imageUploader = new ImageUploader($request->file('files')[0]);
             $response = $this->uploadToTmp($imageUploader);

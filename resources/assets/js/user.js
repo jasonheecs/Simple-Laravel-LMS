@@ -3,6 +3,7 @@
 var Editor = require('./editor');
 var helper = require('./helper');
 var imgUploader = require('./img-uploader');
+var notifications = require('./notifications');
 var throttle = require('lodash/throttle');
 
 var userPanelEl;
@@ -94,7 +95,8 @@ var Edit = {
 
                 document.getElementById('hero-user-name').textContent = newName;
 
-                helper.setAlert(JSON.parse(response).response, 'alert--success');
+                // helper.setAlert(JSON.parse(response).response, 'alert--success');
+                notifications.notify('Testing', 'success');
             };
             var failure = function(response) {
                 _this.revertChanges();
@@ -108,7 +110,8 @@ var Edit = {
                         return previousMsg + currentMsg;
                     });
                 }
-                helper.setAlert(errorMsg, 'alert--danger');
+                // helper.setAlert(errorMsg, 'alert--danger');
+                notifications.notify('Testing', 'danger');
             };
             var always = function() {
                 helper.enableButton(saveBtnEl);
