@@ -179,7 +179,7 @@ class UserController extends Controller
 
         flash('User created', 'success');
 
-        return redirect()->route('users.show', $user->id);
+        return redirect()->route('users.index');
     }
 
     private function cancelCreateNewUser(Request $request)

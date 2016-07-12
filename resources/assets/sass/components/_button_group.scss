@@ -1,5 +1,5 @@
 .button-group {
-  margin: 0;
+  margin: 10px 0 0;
 }
 
 .button-group:not(.hidden) {
@@ -10,7 +10,11 @@
   }
 
   .btn--md {
-    width: 110px;
+    width: 90px;
+
+    @include respond-to('small') {
+      width: 110px;
+    }
   }
 }
 

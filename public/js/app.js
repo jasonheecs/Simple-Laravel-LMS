@@ -24146,7 +24146,32 @@ module.exports = {
     init: init
 };
 
-},{"./editor":35,"./helper":36,"./img-uploader":38}],35:[function(require,module,exports){
+},{"./editor":36,"./helper":37,"./img-uploader":39}],35:[function(require,module,exports){
+'use strict';
+
+/**
+ * Object to represent custom events initialised (with IE polyfill)
+ * Refer to https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent/CustomEvent
+ */
+
+(function () {
+  if (typeof window.CustomEvent === "function") return false;
+
+  function CustomEvent(event, params) {
+    params = params || { bubbles: false, cancelable: false, detail: undefined };
+    var evt = document.createEvent('CustomEvent');
+    evt.initCustomEvent(event, params.bubbles, params.cancelable, params.detail);
+    return evt;
+  }
+
+  CustomEvent.prototype = window.Event.prototype;
+
+  window.CustomEvent = CustomEvent;
+})();
+
+module.exports = window.CustomEvent;
+
+},{}],36:[function(require,module,exports){
 'use strict';
 
 var MediumEditor = require('medium-editor');
@@ -24251,7 +24276,7 @@ Editor.prototype.subscribe = function (event, callback) {
 
 module.exports = Editor;
 
-},{"jquery":23,"medium-editor":33,"medium-editor-insert-plugin":32}],36:[function(require,module,exports){
+},{"jquery":23,"medium-editor":33,"medium-editor-insert-plugin":32}],37:[function(require,module,exports){
 'use strict';
 
 var Xhr = require('./xhr');
@@ -24434,6 +24459,44 @@ function getPropertyValue(property) {
     return property;
 }
 
+/**
+ * Determines which transition event to use to listen for css transition end event (i.e: transitionend vs webkitTransitionEnd)
+ * @return {String} The right transition end event (with or wihout vendor prefixes)
+ */
+function whichTransitionEvent() {
+    var t;
+    var el = document.createElement('fakeelement');
+    var transitions = {
+        'transition': 'transitionend',
+        'OTransition': 'oTransitionEnd',
+        'MozTransition': 'transitionend',
+        'WebkitTransition': 'webkitTransitionEnd'
+    };
+
+    for (t in transitions) {
+        if (el.style[t] !== undefined) {
+            return transitions[t];
+        }
+    }
+}
+
+/**
+ * Get the transform values of an element.
+ * Adapted from jQuery solution at http://stackoverflow.com/questions/7982053/get-translate3d-values-of-a-div
+ * @param  {Node} el - HTML Element Node
+ * @return {Array} - an array containing the [x,y,z,1] values of the transform
+ */
+function getTransform(el) {
+    var transform = window.getComputedStyle(el, null).getPropertyValue('-webkit-transform');
+    var results = transform.match(/matrix(?:(3d)\(-{0,1}\d+(?:, -{0,1}\d+)*(?:, (-{0,1}\d+))(?:, (-{0,1}\d+))(?:, (-{0,1}\d+)), -{0,1}\d+\)|\(-{0,1}\d+(?:, -{0,1}\d+)*(?:, (-{0,1}\d+))(?:, (-{0,1}\d+))\))/);
+
+    if (!results) return [0, 0, 0];
+    if (results[1] == '3d') return results.slice(2, 5);
+
+    results.push(0);
+    return results.slice(5, 8); // returns the [X,Y,Z,1] values
+}
+
 module.exports = {
     setAlert: setAlert,
     disableButton: disableButton,
@@ -24442,10 +24505,12 @@ module.exports = {
     sendAjaxRequest: sendAjaxRequest,
     serialize: serialize,
     getVendorPrefix: getVendorPrefix,
-    getPropertyValue: getPropertyValue
+    getPropertyValue: getPropertyValue,
+    whichTransitionEvent: whichTransitionEvent,
+    getTransform: getTransform
 };
 
-},{"./xhr":45}],37:[function(require,module,exports){
+},{"./xhr":46}],38:[function(require,module,exports){
 'use strict';
 
 /* globals hljs */
@@ -24465,7 +24530,7 @@ module.exports = {
     init: init
 };
 
-},{"highlight":44,"jquery":23}],38:[function(require,module,exports){
+},{"highlight":45,"jquery":23}],39:[function(require,module,exports){
 'use strict';
 
 /**
@@ -24534,7 +24599,7 @@ module.exports = {
     upload: upload
 };
 
-},{"jquery":23}],39:[function(require,module,exports){
+},{"jquery":23}],40:[function(require,module,exports){
 'use strict';
 
 var Editor = require('./editor');
@@ -24789,7 +24854,7 @@ module.exports = {
     init: init
 };
 
-},{"./editor":35,"./helper":36,"./highlighter":37}],40:[function(require,module,exports){
+},{"./editor":36,"./helper":37,"./highlighter":38}],41:[function(require,module,exports){
 'use strict';
 
 var course = require('./course');
@@ -24809,62 +24874,146 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
-},{"./course":34,"./lesson":39,"./tabs":42,"./user":43}],41:[function(require,module,exports){
+},{"./course":34,"./lesson":40,"./tabs":43,"./user":44}],42:[function(require,module,exports){
 'use strict';
 
-// var helper = require('./helper');
+/**
+ * Notifications module for display notifications to the user
+ */
 
-var NOTIFICATION_DURATION = 5000;
+var helper = require('./helper');
+var CustomEvent = require('./custom-event');
 
-var notificationsEl;
-var startTimestamp;
-var rafID;
+var NOTIFICATION_DURATION = 3500; // how long the notification should show on screen (in ms)
+var notifications; // Object to store all the notifications
+var notificationCls = 'notification'; // base css class of the notifications
 
-function init() {
-    notificationsEl = document.getElementById('notifications');
+function Notification(msg, status) {
+    this.element = document.createElement('li');
+    this.status = status || 'default';
+    this.msg = msg;
+    this.rafID = null;
+    this.exitTimestamp = null;
+    this.deleteStart = false;
+
+    // Sets a flag for the animation status of the notification element
+    this.element.addEventListener('notificationDeleteStart', function () {
+        this.deleteStart = true;
+    }.bind(this));
+
+    this.element.addEventListener(helper.whichTransitionEvent(), function () {
+        // if no flag is present, disable the animation transition and reset the transform matrix of the element.
+        if (!this.deleteStart) {
+            this.element.style[helper.getPropertyValue('transition')] = 'none';
+            this.element.style[helper.getPropertyValue('transform')] = '';
+            this.element.style[helper.getPropertyValue('transition')] = helper.getPropertyValue('transform') + '.35s';
+        }
+    }.bind(this));
 }
 
-function notify(msg, status) {
-    if (typeof notificationsEl === 'undefined') {
-        init();
-    }
+Notification.prototype.init = function () {
+    this.element.classList.add(notificationCls);
+    this.element.classList.add(notificationCls + '--' + this.status);
+    this.element.textContent = this.msg;
 
-    status = status || 'default';
-
-    var notificationEl = document.createElement('li');
-    notificationEl.classList.add('notification');
-    notificationEl.classList.add('notification--' + status);
-    notificationEl.textContent = msg;
-
-    notificationsEl.appendChild(notificationEl);
-
+    // set a delay before adding the 'show' class because of css transitions
     setTimeout(function () {
-        notificationEl.classList.add('notification--show');
-    }, 50);
+        this.element.classList.add(notificationCls + '--show');
+    }.bind(this), 50);
 
-    rafID = window.requestAnimationFrame(setNotificationInterval);
+    this.exit();
+};
 
-    function setNotificationInterval(timestamp) {
-        if (!startTimestamp) {
-            startTimestamp = timestamp;
+Notification.prototype.exit = function () {
+    this.rafID = window.requestAnimationFrame(setExitInterval);
+    var notificationEl = this;
+
+    function setExitInterval(timestamp) {
+        if (!notificationEl.exitTimestamp) {
+            notificationEl.exitTimestamp = timestamp;
         }
 
-        if (timestamp - startTimestamp >= NOTIFICATION_DURATION) {
-            notificationEl.style.background = 'red';
-            window.cancelAnimationFrame(rafID);
+        if (timestamp - notificationEl.exitTimestamp >= NOTIFICATION_DURATION) {
+            notificationEl.element.style[helper.getPropertyValue('transform')] = '';
+            notificationEl.element.classList.remove(notificationCls + '--show');
+            window.cancelAnimationFrame(notificationEl.rafID);
+
+            // dispatch custom event for notification exit animation
+            notificationEl.element.dispatchEvent(new CustomEvent('notificationDeleteStart', {
+                bubbles: true,
+                cancelable: false,
+                detail: {
+                    notificationEl: notificationEl.element
+                }
+            }));
+
             return;
         }
 
-        rafID = window.requestAnimationFrame(setNotificationInterval);
+        notificationEl.rafID = window.requestAnimationFrame(setExitInterval);
     }
+};
+
+Notification.prototype.delete = function () {
+    // delete notification object when css transition is complete
+    var transitionEvent = helper.whichTransitionEvent();
+    this.element.addEventListener(transitionEvent, function () {
+        if (this.deleteStart) {
+            this.element.parentNode.removeChild(this.element);
+        }
+    }.bind(this));
+};
+
+function init() {
+    notifications = {};
+    notifications.element = document.getElementById('notifications');
+    notifications.element.addEventListener('notificationDeleteStart', function (evt) {
+        var deletedNotification = evt.detail.notificationEl;
+
+        notifications.notificationsList.forEach(function (notification, index) {
+            // Get current transform matrix applied to element so we can modify it.
+            var currentTransform = helper.getTransform(notification.element);
+            var newTransform;
+
+            if (notification.element === deletedNotification) {
+                // move notification to be deleted offscreen before deleting it
+                newTransform = 'translate3d(' + '101%,' + '0px,' + currentTransform[2] + 'px)';
+                notification.delete();
+            } else {
+                // apply animation transforms to remaining notifications
+                var newTransformY = -evt.detail.notificationEl.clientHeight;
+                newTransform = 'translate3d(' + currentTransform[0] + 'px,' + newTransformY + 'px,' + currentTransform[2] + 'px)';
+            }
+
+            notification.element.style[helper.getPropertyValue('transform')] = newTransform;
+        });
+    });
+
+    notifications.notificationsList = [];
 }
+
+function notify(msg, status) {
+    if (typeof notifications === 'undefined') {
+        init();
+    }
+
+    // create notification element
+    var notification = new Notification(msg, status);
+    notification.init();
+
+    notifications.notificationsList.push(notification);
+    notifications.element.appendChild(notification.element);
+}
+
+//expose notify method to global window object to allow Blade to flash session messages
+window.notify = notify;
 
 module.exports = {
     init: init,
     notify: notify
 };
 
-},{}],42:[function(require,module,exports){
+},{"./custom-event":35,"./helper":37}],43:[function(require,module,exports){
 'use strict';
 
 var helper = require('./helper');
@@ -24947,8 +25096,13 @@ module.exports = {
     init: init
 };
 
-},{"./helper":36,"lodash/throttle":30}],43:[function(require,module,exports){
+},{"./helper":37,"lodash/throttle":30}],44:[function(require,module,exports){
 'use strict';
+
+/**
+ * Module used for user profile page, to edit user details or delete user record.
+ * Also governs the changing of user statuses (i.e. admin, super admin, etc.)
+ */
 
 var Editor = require('./editor');
 var helper = require('./helper');
@@ -24956,21 +25110,21 @@ var imgUploader = require('./img-uploader');
 var notifications = require('./notifications');
 var throttle = require('lodash/throttle');
 
-var userPanelEl;
-var nameEditor;
-var emailEditor;
-var companyEditor;
-var avatarUploadEl;
+var userPanelEl; // user panel DOM element
+var nameEditor; // editor for user's name
+var emailEditor; // editor for user's email
+var companyEditor; // editor for user's company
+var avatarUploadEl; // DOM element / button that triggers user avatar upload
 
-var userActionsGrpEl;
-var contentActionsGrpEl;
+var userActionsGrpEl; // button group DOM element that contains buttons for editing / deleting user
+var contentActionsGrpEl; // button group DOM element that contains buttons for saving / cancelling editors' changes
 
-var nameEl;
-var emailEl;
-var companyEl;
-var initialName;
-var initialEmail;
-var initialCompany;
+var nameEl; // user name DOM element
+var emailEl; // user email DOM element
+var companyEl; // user company DOM element
+var initialName; // initial name (before any changes are saved)
+var initialEmail; // initial email (before any changes are saved)
+var initialCompany; // initial company (before any changes are saved)
 
 var Edit = {
     init: function init() {
@@ -25030,47 +25184,59 @@ var Edit = {
         });
 
         function saveChangesListener(saveBtnEl) {
-            helper.disableButton(saveBtnEl);
-
             var newName = nameEditor.getContent()[nameEl.id].value;
             var newEmail = emailEditor.getContent()[emailEl.id].value;
             var newCompany = companyEditor.getContent()[companyEl.id].value;
-            var updateData = { name: newName, email: newEmail, company: newCompany };
 
-            // Send ajax request to update user
-            var success = function success(response) {
-                initialName = newName;
-                initialEmail = newEmail;
-                initialCompany = newCompany;
+            console.log(profileIsUnchanged);
 
-                document.getElementById('hero-user-name').textContent = newName;
+            // Only send AJAX request to update profile if there are changes made to the profile
+            if (!profileIsUnchanged()) {
+                helper.disableButton(saveBtnEl);
+                var updateData = { name: newName, email: newEmail, company: newCompany };
 
-                // helper.setAlert(JSON.parse(response).response, 'alert--success');
-                notifications.notify('Testing', 'success');
-            };
-            var failure = function failure(response) {
-                _this.revertChanges();
+                // Send ajax request to update user
+                var success = function success(response) {
+                    initialName = newName;
+                    initialEmail = newEmail;
+                    initialCompany = newCompany;
 
-                //display errors to alert element
-                var errors = JSON.parse(response);
-                var errorMsg = '';
+                    document.getElementById('hero-user-name').textContent = newName;
 
-                for (var error in errors) {
-                    errorMsg = errors[error].reduce(function (previousMsg, currentMsg) {
-                        return previousMsg + currentMsg;
-                    });
-                }
-                // helper.setAlert(errorMsg, 'alert--danger');
-                notifications.notify('Testing', 'danger');
-            };
-            var always = function always() {
-                helper.enableButton(saveBtnEl);
-            };
-            helper.sendAjaxRequest('PATCH', '/users/' + document.getElementById('user-id').value, success, failure, always, JSON.stringify(updateData));
+                    notifications.notify(JSON.parse(response).response, 'success');
+                };
+                var failure = function failure(response) {
+                    _this.revertChanges();
+
+                    //display errors to alert element
+                    var errors = JSON.parse(response);
+                    var errorMsg = '';
+
+                    for (var error in errors) {
+                        errorMsg = errors[error].reduce(function (previousMsg, currentMsg) {
+                            return previousMsg + currentMsg;
+                        });
+                    }
+
+                    notifications.notify(errorMsg, 'danger');
+                };
+                var always = function always() {
+                    helper.enableButton(saveBtnEl);
+                };
+                helper.sendAjaxRequest('PATCH', '/users/' + document.getElementById('user-id').value, success, failure, always, JSON.stringify(updateData));
+            }
 
             _this.switchButtonGroup();
             _this.destroyEditors();
             avatarUploadEl.classList.add('hidden');
+
+            /**
+             * Check if profile data has been updated
+             * @return {Boolean}
+             */
+            function profileIsUnchanged() {
+                return newName === initialName && newEmail === initialEmail && newCompany === initialCompany;
+            }
         }
 
         function deleteUserListener(evt) {
@@ -25090,7 +25256,7 @@ var Edit = {
 
             // Send ajax request to update user admin status
             var success = function success(response) {
-                helper.setAlert(JSON.parse(response).response, 'alert--success');
+                notifications.notify(JSON.parse(response).response, 'success');
             };
             var failure = function failure(response) {
                 //display errors to alert element
@@ -25102,7 +25268,7 @@ var Edit = {
                         return previousMsg + currentMsg;
                     });
                 }
-                helper.setAlert(errorMsg, 'alert--danger');
+                notifications.notify(errorMsg, 'danger');
             };
             var always = function always() {};
 
@@ -25180,6 +25346,10 @@ var Create = {
     }
 };
 
+/**
+ * Initialise the image uploader for the user avatar element
+ * @param  {String} uploadUrl - Route for handling the avatar image upload
+ */
 function initAvatarUpload(uploadUrl) {
     var avatarEl = document.getElementById('user-avatar-img');
     var heroEl = document.querySelector('.hero');
@@ -25206,7 +25376,7 @@ module.exports = {
     edit: Edit
 };
 
-},{"./editor":35,"./helper":36,"./img-uploader":38,"./notifications":41,"lodash/throttle":30}],44:[function(require,module,exports){
+},{"./editor":36,"./helper":37,"./img-uploader":39,"./notifications":42,"lodash/throttle":30}],45:[function(require,module,exports){
 "use strict";
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
@@ -25414,7 +25584,7 @@ exports = undefined;
   return { aliases: ["js", "jsx"], k: { keyword: "in of if for while finally var new function do return void else break catch instanceof with throw case default try this switch continue typeof delete let yield const export super debugger as async await static import from as", literal: "true false null undefined NaN Infinity", built_in: "eval isFinite isNaN parseFloat parseInt decodeURI decodeURIComponent encodeURI encodeURIComponent escape unescape Object Function Boolean Error EvalError InternalError RangeError ReferenceError StopIteration SyntaxError TypeError URIError Number Math Date String RegExp Array Float32Array Float64Array Int16Array Int32Array Int8Array Uint16Array Uint32Array Uint8Array Uint8ClampedArray ArrayBuffer DataView JSON Intl arguments require module console window document Symbol Set Map WeakSet WeakMap Proxy Reflect Promise" }, c: [{ cN: "meta", r: 10, b: /^\s*['"]use (strict|asm)['"]/ }, { cN: "meta", b: /^#!/, e: /$/ }, e.ASM, e.QSM, { cN: "string", b: "`", e: "`", c: [e.BE, { cN: "subst", b: "\\$\\{", e: "\\}" }] }, e.CLCM, e.CBCM, { cN: "number", v: [{ b: "\\b(0[bB][01]+)" }, { b: "\\b(0[oO][0-7]+)" }, { b: e.CNR }], r: 0 }, { b: "(" + e.RSR + "|\\b(case|return|throw)\\b)\\s*", k: "return throw case", c: [e.CLCM, e.CBCM, e.RM, { b: /</, e: /(\/\w+|\w+\/)>/, sL: "xml", c: [{ b: /<\w+\s*\/>/, skip: !0 }, { b: /<\w+/, e: /(\/\w+|\w+\/)>/, skip: !0, c: ["self"] }] }], r: 0 }, { cN: "function", bK: "function", e: /\{/, eE: !0, c: [e.inherit(e.TM, { b: /[A-Za-z$_][0-9A-Za-z$_]*/ }), { cN: "params", b: /\(/, e: /\)/, eB: !0, eE: !0, c: [e.CLCM, e.CBCM] }], i: /\[|%/ }, { b: /\$[(.]/ }, e.METHOD_GUARD, { cN: "class", bK: "class", e: /[{;=]/, eE: !0, i: /[:"\[\]]/, c: [{ bK: "extends" }, e.UTM] }, { bK: "constructor", e: /\{/, eE: !0 }], i: /#(?!!)/ };
 });
 
-},{}],45:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 'use strict';
 
 /**
@@ -25465,7 +25635,7 @@ Xhr.prototype.open = function (method, path, jsonPayload, setCSRF) {
 Xhr.prototype.onLoad = function (success, failure, always) {
     var xhr = this.xhr;
     xhr.addEventListener('load', function (evt) {
-        if (xhr.readyState === 4 && xhr.status === 200) {
+        if (xhr.readyState === 4 && xhr.status >= 200 && xhr.status < 300) {
             success.call(this, xhr.responseText);
         } else {
             failure.call(this, xhr.responseText);
@@ -25495,6 +25665,6 @@ Xhr.prototype.getXMLHttpRequest = function () {
 
 module.exports = Xhr;
 
-},{}]},{},[40]);
+},{}]},{},[41]);
 
 //# sourceMappingURL=app.js.map

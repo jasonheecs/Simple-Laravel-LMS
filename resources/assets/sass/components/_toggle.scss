@@ -53,7 +53,8 @@ $toggle-padding: 2px;
       border-radius: 100%;
       //scss-lint:disable ColorVariable
       box-shadow: 0 3px 5px rgba(0, 0, 0, .35);
-      transition: transform .4s;
+      transform: translate3d(0, 0, 0);
+      transition: transform .4s; // Chrome dev bug?
       width: ($toggle-width / 2) - $toggle-padding;
     }
   }

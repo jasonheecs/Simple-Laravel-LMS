@@ -1,8 +1,12 @@
 .panel {
   @extend %clearfix;
   display: block;
-  padding: 10px 20px;
+  padding: 5px 10px;
   position: relative;
+
+  @include respond-to('small') {
+    padding: 10px 20px;
+  }
 
   @include respond-to('medium') {
     padding: 20px 40px;

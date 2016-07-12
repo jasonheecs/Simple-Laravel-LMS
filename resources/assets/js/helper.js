@@ -182,6 +182,44 @@ function getPropertyValue(property) {
     return property;
 }
 
+/**
+ * Determines which transition event to use to listen for css transition end event (i.e: transitionend vs webkitTransitionEnd)
+ * @return {String} The right transition end event (with or wihout vendor prefixes)
+ */
+function whichTransitionEvent(){
+    var t;
+    var el = document.createElement('fakeelement');
+    var transitions = {
+      'transition':'transitionend',
+      'OTransition':'oTransitionEnd',
+      'MozTransition':'transitionend',
+      'WebkitTransition':'webkitTransitionEnd'
+    };
+
+    for(t in transitions){
+        if( el.style[t] !== undefined ){
+            return transitions[t];
+        }
+    }
+}
+
+/**
+ * Get the transform values of an element.
+ * Adapted from jQuery solution at http://stackoverflow.com/questions/7982053/get-translate3d-values-of-a-div
+ * @param  {Node} el - HTML Element Node
+ * @return {Array} - an array containing the [x,y,z,1] values of the transform
+ */
+function getTransform(el) {
+    var transform = window.getComputedStyle(el, null).getPropertyValue('-webkit-transform');
+    var results = transform.match(/matrix(?:(3d)\(-{0,1}\d+(?:, -{0,1}\d+)*(?:, (-{0,1}\d+))(?:, (-{0,1}\d+))(?:, (-{0,1}\d+)), -{0,1}\d+\)|\(-{0,1}\d+(?:, -{0,1}\d+)*(?:, (-{0,1}\d+))(?:, (-{0,1}\d+))\))/);
+
+    if(!results) return [0, 0, 0];
+    if(results[1] == '3d') return results.slice(2,5);
+
+    results.push(0);
+    return results.slice(5, 8); // returns the [X,Y,Z,1] values
+}
+
 module.exports = {
     setAlert: setAlert,
     disableButton: disableButton,
@@ -190,5 +228,7 @@ module.exports = {
     sendAjaxRequest: sendAjaxRequest,
     serialize: serialize,
     getVendorPrefix: getVendorPrefix,
-    getPropertyValue: getPropertyValue
+    getPropertyValue: getPropertyValue,
+    whichTransitionEvent: whichTransitionEvent,
+    getTransform: getTransform
 };

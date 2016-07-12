@@ -1,26 +1,31 @@
 'use strict';
 
+/**
+ * Module used for user profile page, to edit user details or delete user record.
+ * Also governs the changing of user statuses (i.e. admin, super admin, etc.)
+ */
+
 var Editor = require('./editor');
 var helper = require('./helper');
 var imgUploader = require('./img-uploader');
 var notifications = require('./notifications');
 var throttle = require('lodash/throttle');
 
-var userPanelEl;
-var nameEditor;
-var emailEditor;
-var companyEditor;
-var avatarUploadEl;
+var userPanelEl;  // user panel DOM element
+var nameEditor; // editor for user's name
+var emailEditor; // editor for user's email
+var companyEditor; // editor for user's company
+var avatarUploadEl; // DOM element / button that triggers user avatar upload
 
-var userActionsGrpEl;
-var contentActionsGrpEl;
+var userActionsGrpEl; // button group DOM element that contains buttons for editing / deleting user
+var contentActionsGrpEl; // button group DOM element that contains buttons for saving / cancelling editors' changes
 
-var nameEl;
-var emailEl;
-var companyEl;
-var initialName;
-var initialEmail;
-var initialCompany;
+var nameEl; // user name DOM element
+var emailEl; // user email DOM element
+var companyEl; // user company DOM element
+var initialName; // initial name (before any changes are saved)
+var initialEmail; // initial email (before any changes are saved)
+var initialCompany; // initial company (before any changes are saved)
 
 var Edit = {
     init: function() {
@@ -80,47 +85,59 @@ var Edit = {
         });
 
         function saveChangesListener(saveBtnEl) {
-            helper.disableButton(saveBtnEl);
-
             var newName = nameEditor.getContent()[nameEl.id].value;
             var newEmail = emailEditor.getContent()[emailEl.id].value;
             var newCompany = companyEditor.getContent()[companyEl.id].value;
-            var updateData = {name: newName, email: newEmail, company: newCompany};
 
-            // Send ajax request to update user
-            var success = function(response) {
-                initialName = newName;
-                initialEmail = newEmail;
-                initialCompany = newCompany;
+            console.log(profileIsUnchanged);
 
-                document.getElementById('hero-user-name').textContent = newName;
+            // Only send AJAX request to update profile if there are changes made to the profile
+            if (!profileIsUnchanged()) {
+                helper.disableButton(saveBtnEl);
+                var updateData = {name: newName, email: newEmail, company: newCompany};
 
-                // helper.setAlert(JSON.parse(response).response, 'alert--success');
-                notifications.notify('Testing', 'success');
-            };
-            var failure = function(response) {
-                _this.revertChanges();
+                // Send ajax request to update user
+                var success = function(response) {
+                    initialName = newName;
+                    initialEmail = newEmail;
+                    initialCompany = newCompany;
 
-                //display errors to alert element
-                var errors = JSON.parse(response);
-                var errorMsg = '';
+                    document.getElementById('hero-user-name').textContent = newName;
 
-                for (var error in errors) {
-                    errorMsg = errors[error].reduce(function(previousMsg, currentMsg) {
-                        return previousMsg + currentMsg;
-                    });
-                }
-                // helper.setAlert(errorMsg, 'alert--danger');
-                notifications.notify('Testing', 'danger');
-            };
-            var always = function() {
-                helper.enableButton(saveBtnEl);
-            };
-            helper.sendAjaxRequest('PATCH', '/users/'+ document.getElementById('user-id').value, success, failure, always, JSON.stringify(updateData));
+                    notifications.notify(JSON.parse(response).response, 'success');
+                };
+                var failure = function(response) {
+                    _this.revertChanges();
+
+                    //display errors to alert element
+                    var errors = JSON.parse(response);
+                    var errorMsg = '';
+
+                    for (var error in errors) {
+                        errorMsg = errors[error].reduce(function(previousMsg, currentMsg) {
+                            return previousMsg + currentMsg;
+                        });
+                    }
+
+                    notifications.notify(errorMsg, 'danger');
+                };
+                var always = function() {
+                    helper.enableButton(saveBtnEl);
+                };
+                helper.sendAjaxRequest('PATCH', '/users/'+ document.getElementById('user-id').value, success, failure, always, JSON.stringify(updateData));
+            }
 
             _this.switchButtonGroup();
             _this.destroyEditors();
             avatarUploadEl.classList.add('hidden');
+
+            /**
+             * Check if profile data has been updated
+             * @return {Boolean}
+             */
+            function profileIsUnchanged() {
+                return (newName === initialName && newEmail === initialEmail && newCompany === initialCompany);
+            }
         }
 
         function deleteUserListener(evt) {
@@ -141,7 +158,7 @@ var Edit = {
 
             // Send ajax request to update user admin status
             var success = function(response) {
-                helper.setAlert(JSON.parse(response).response, 'alert--success');
+                notifications.notify(JSON.parse(response).response, 'success');
             };
             var failure = function(response) {
                 //display errors to alert element
@@ -153,7 +170,7 @@ var Edit = {
                         return previousMsg + currentMsg;
                     });
                 }
-                helper.setAlert(errorMsg, 'alert--danger');
+                notifications.notify(errorMsg, 'danger');
             };
             var always = function() {};
 
@@ -232,6 +249,10 @@ var Create = {
     }
 };
 
+/**
+ * Initialise the image uploader for the user avatar element
+ * @param  {String} uploadUrl - Route for handling the avatar image upload
+ */
 function initAvatarUpload(uploadUrl) {
     var avatarEl = document.getElementById('user-avatar-img');
     var heroEl = document.querySelector('.hero');

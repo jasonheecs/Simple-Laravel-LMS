@@ -33,7 +33,7 @@
                 <input type="hidden" id="user-avatar" name="avatar" value="">
 
                 <div>
-                    <div class="panel__divider flex flex--space-between flex--bottom"">
+                    <div class="panel__divider flex flex--space-between flex--bottom flex--wrap">
                         <h2 class="panel__title panel__title--small margin--bottom-none flex__item--1">Personal Details</h2>
                         <div id="content-actions-grp" class="button-group">
                             <button id="save-changes-btn" class="btn btn--primary btn--md" type="submit" name="save" value="save"><i class="icon icon--save"></i> Save</button>

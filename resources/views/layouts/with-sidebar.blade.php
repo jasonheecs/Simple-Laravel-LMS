@@ -11,8 +11,7 @@
         @yield('hero')
 
         <div class="container padding--remove">
-            <div class="">
-                <!-- <div id="alert" class="alert hidden"></div> -->
+            <div>
                 <ul id="notifications" class="notifications"></ul>
 
                 @yield('content')

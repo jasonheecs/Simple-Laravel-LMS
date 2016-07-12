@@ -48,7 +48,7 @@ Xhr.prototype.open = function(method, path, jsonPayload, setCSRF) {
 Xhr.prototype.onLoad = function(success, failure, always) {
     var xhr = this.xhr;
     xhr.addEventListener('load', function(evt){
-        if (xhr.readyState === 4 && xhr.status === 200) {
+        if (xhr.readyState === 4 && (xhr.status >= 200 && xhr.status < 300)) {
             success.call(this, xhr.responseText);
         } else {
             failure.call(this, xhr.responseText);
