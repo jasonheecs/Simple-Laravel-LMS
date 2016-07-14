@@ -71,7 +71,7 @@ class UserPolicy
      * @param  \App\User $user    [description]
      * @return  boolean
      */
-    public function before(User $user)
+    public function before(User $user, $ability)
     {
         if ($user->is('superadmin')) {
             return true;

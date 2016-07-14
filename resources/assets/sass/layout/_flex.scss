@@ -20,6 +20,10 @@
   @extend %flex--space-between;
 }
 
+.flex--end {
+  @extend %flex--end;
+}
+
 .flex--top {
   @extend %flex--top;
 }

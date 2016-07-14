@@ -7,8 +7,8 @@
  */
 function flash($message, $level = 'info')
 {
-    session()->flash('flash_message', $message);
-    session()->flash('flash_message_level', $level);
+    session()->put('flash_message', $message);
+    session()->put('flash_message_level', $level);
 }
 
 /**
@@ -22,15 +22,38 @@ function generate_random_str($no_of_chars) {
 
 /**
  * Checks if the authenticated user can perform an ability via the Gate facade
+ * TODO: Allow multiple abilities to be checked via Gate
  * @param  string $ability  ability (e.g. show, update, destroy)
  * @param  \Illuminate\Database\Eloquent\Model $model
  */
-function auth_check($ability, $model, $request = null) {
-    if (Gate::denies($ability, $model)) {
-        if ($request && $request->ajax()) {
-            return response()->json(['response' => 'Unauthorized access'], 401);
-        } else {
-            abort(401);
+function auth_check($ability, $model, $request = null, $message = 'You do not have permission to access that page.') {
+    // if (Gate::denies($ability, $model)) {
+    //     if ($request && $request->ajax()) {
+    //         return response()->json(['response' => 'Unauthorized access'], 401);
+    //     } else {
+    //         // abort(401);
+    //         if (strlen($message)) {
+    //             flash($message, 'danger');
+    //         }
+    //     }
+    // }
+    if (\Gate::denies($ability, $model)) {
+        flash('Unauthorized', 'danger');
+        return redirect()->action('CoursesController@index');
+    }
+}
+
+/**
+ * Checks if the authenticated user can perform one of the abilities listed
+ * @param  array $abilities  list of abilities (e.g. show, update, destroy)
+ * @return boolean
+ */
+function canAny($abilities, $model) {
+    foreach ($abilities as $ability) {
+        if (\Gate::allows($ability, $model)) {
+            return true;
         }
     }
+
+    return false;
 }

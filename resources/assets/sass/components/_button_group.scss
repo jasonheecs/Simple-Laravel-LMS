@@ -21,12 +21,3 @@
 .button-group--right {
   text-align: right;
 }
-
-.admin-actions-group {
-  border-top: 1px solid shade($color-white, 12%);
-  padding-top: 60px;
-
-  &.hidden {
-    border-top: 0;
-  }
-}

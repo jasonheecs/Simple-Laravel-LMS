@@ -108,14 +108,6 @@ class User extends Authenticatable
         return $this->is('superadmin') || $this->is('admin');
     }
 
-    /**
-     * Check if user can create / edit users
-     */
-    public function canManageUsers()
-    {
-        return $this->is('superadmin');
-    }
-
     public function addRole(Role $role)
     {
         $this->roles()->attach($role->id);

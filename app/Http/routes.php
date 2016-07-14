@@ -20,15 +20,27 @@ Route::get('/', function () {
 Route::get('/home', ['as' => 'home', 'uses' => 'HomeController@index']);
 
 Route::group(['middleware' => 'auth'], function () {
-    Route::get('/courses', ['as' => 'courses', 'uses' => 'CoursesController@index']);
-    Route::post('/courses', 'CoursesController@store');
-    Route::get('/courses/create', 'CoursesController@create');
-    Route::get('/courses/{course}', ['as' => 'course', 'uses' => 'CoursesController@show']);
-    Route::patch('/courses/{course}', 'CoursesController@update');
+    // hack to avoid flash messages being cached by browser.
+    // without using ajax, the flash message will display when user presses back button
+    // TODO: find a more elegant solution
+    Route::get('/flash', function() {
+        echo json_encode(['message' => session()->pull('flash_message'), 'message_level' => session()->pull('flash_message_level')]);
+    });
+
+    // Route::get('/courses', ['as' => 'courses', 'uses' => 'CoursesController@index']);
+    // Route::post('/courses', 'CoursesController@store');
+    // Route::get('/courses/create', 'CoursesController@create');
+    // Route::get('/courses/{course}', ['as' => 'course', 'uses' => 'CoursesController@show']);
+    // Route::patch('/courses/{course}', 'CoursesController@update');
     Route::patch('/courses/{course}/lecturers', 'CoursesController@updateLecturers');
     Route::patch('/courses/{course}/students', 'CoursesController@updateStudents');
     Route::any('/courses/{course_id}/upload', 'CoursesController@upload');
-    Route::delete('/courses/{course}', 'CoursesController@destroy');
+    // Route::delete('/courses/{course}', 'CoursesController@destroy');
+
+    Route::resource('courses', 'CoursesController', [
+        'parameters' => 'singular',
+        'except' => ['edit']
+    ]);
 
     // Route::resource('courses', 'CoursesController', ['names' => [
     //     'show' => 'course'

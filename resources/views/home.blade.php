@@ -1,5 +1,7 @@
 @extends('layouts.with-sidebar')
 
+@section('pageName', 'js-home-page')
+
 @section('hero')
     @include('shared.hero', [
                             'hero_image' => 'img/bg/home.jpg',
@@ -9,33 +11,35 @@
 @stop
 
 @section('content')
-@if (count($instructing))
-    <div class="container">
-        <div class="items-grid items-grid--3 items-grid--first">
-            <div class="panel items-grid-panel">
-                <h1 class="items-grid__heading">Courses you are instructing</h1>
+<div class="container">
+    @if (count($instructing))
+        <div class="panel panel--secondary">
+            <h2 class="panel__title panel__title--small panel__divider">Courses you are Instructing</h2>
+            <div class="grid grid--width-1-1 grid--width-medium-1-2 grid--width-large-1-3 grid--small grid--match">
                 @foreach ($instructing as $lecturer)
                     @foreach ($lecturer->courses as $course)
-                      @include('shared.card-grid-item')
+                        <div>
+                            @include('shared.card-grid-item')
+                        </div>
                     @endforeach
                 @endforeach
             </div>
         </div>
-    </div>
-@endif
+    @endif
 
-@if (count($studying))
-    <div class="container">
-        <div class="items-grid items-grid--3">
-            <div class="panel items-grid-panel">
-                <h1 class="items-grid__heading">Courses you are Studying</h1>
+    @if (count($studying))
+        <div class="panel panel--secondary">
+            <h2 class="panel__title panel__title--small panel__divider">Courses you are Studying</h2>
+            <div class="grid grid--width-1-1 grid--width-medium-1-2 grid--width-large-1-3 grid--small grid--match">
                 @foreach ($studying as $student)
                     @foreach ($student->courses as $course)
-                       @include('shared.card-grid-item')
+                        <div>
+                           @include('shared.card-grid-item')
+                       </div>
                     @endforeach
                 @endforeach
             </div>
         </div>
-    </div>
-@endif
+    @endif
+</div>
 @endsection

@@ -3,7 +3,11 @@
 @else
     <div class="card">
 @endif
+    @can('show', $course)
     <a href="{{ url('/courses', $course->id) }}">
+    @else
+    <a href="javascript:void(0)" onclick="window.notify('You do not have permission to access this page', 'danger');">
+    @endcan
         @if (isset($course->image))
             <figure class="card-figure">
                 <img src={{ $course->image }} />

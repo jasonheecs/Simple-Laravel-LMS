@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Blade;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -13,7 +14,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        // check for multiple Auth Policy abilities for current user
+        Blade::directive('canAny', function($expression) {
+            return "<?php if(canAny{$expression}): ?>";
+        });
     }
 
     /**

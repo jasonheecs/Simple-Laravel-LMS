@@ -1,5 +1,13 @@
 @extends('layouts.with-sidebar')
 
+@section('pageName', 'js-create-course-page')
+
+@section('hero')
+    @include('shared.hero', [
+        'sub_template' => 'courses.hero-sub'
+    ])
+@stop
+
 @section('content')
 <div class="panel panel--default">
     <form method="POST" action="{{ url('/courses') }}">

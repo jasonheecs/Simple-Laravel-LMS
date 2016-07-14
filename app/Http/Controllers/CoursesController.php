@@ -6,16 +6,10 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\Course;
+use Gate;
 
 class CoursesController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('create.course', ['only' => ['create', 'store']]);
-        $this->middleware('view.course', ['except' => ['index', 'create', 'store']]);
-        $this->middleware('edit.course', ['except' => ['index', 'show', 'create', 'store']]);
-    }
-
     /**
      * Show all courses
      */
@@ -28,6 +22,10 @@ class CoursesController extends Controller
 
     public function create()
     {
+        if (Gate::denies('store', Course::class)) {
+            return parent::unauthorizedResponse(redirect()->action('CoursesController@index'));
+        }
+
         return view('courses.create');
     }
 
@@ -37,6 +35,10 @@ class CoursesController extends Controller
      */
     public function show(Course $course)
     {
+        if (Gate::denies('show', $course)) {
+            return parent::unauthorizedResponse(redirect()->action('CoursesController@index'));
+        }
+
         $course->load('lessons');
 
         return view('courses.show', [
@@ -51,6 +53,10 @@ class CoursesController extends Controller
      */
     public function store(Request $request)
     {
+        if (Gate::denies('store', Course::class, $request)) {
+            return parent::unauthorizedResponse(redirect()->action('CoursesController@index'));
+        }
+
         $this->validate($request, [
             'title' => 'required'
         ]);
@@ -61,11 +67,15 @@ class CoursesController extends Controller
 
         flash('Course added', 'success');
 
-        return redirect()->route('courses');
+        return redirect()->route('courses.index');
     }
 
     public function update(Request $request, Course $course)
     {
+        if (Gate::denies('update', $course, $request)) {
+            return parent::unauthorizedResponse(redirect()->back());
+        }
+
         $this->validate($request, [
             'title' => 'required'
         ]);
@@ -87,6 +97,10 @@ class CoursesController extends Controller
      */
     public function updateLecturers(Request $request, Course $course)
     {
+        if (Gate::denies('update', $course, $request)) {
+            return parent::unauthorizedResponse(redirect()->back());
+        }
+
         if ($request->ajax()) {
             $existingLecturers = $course->getLecturers();
 
@@ -118,6 +132,10 @@ class CoursesController extends Controller
      */
     public function updateStudents(Request $request, Course $course)
     {
+        if (Gate::denies('update', $course, $request)) {
+            return parent::unauthorizedResponse(redirect()->back());
+        }
+
         if ($request->ajax()) {
             $existingStudents = $course->getStudents();
 
@@ -144,13 +162,23 @@ class CoursesController extends Controller
 
     public function destroy(Request $request, Course $course)
     {
+        if (Gate::denies('destroy', $course, $request)) {
+            return parent::unauthorizedResponse(redirect()->back());
+        }
+
         $course->delete();
 
-        return redirect()->route('home');
+        flash('Course deleted', 'success');
+
+        return redirect()->action('CoursesController@index');
     }
 
     public function upload(Request $request, $course_id)
     {
+        if (Gate::denies('update', Course::find($course_id), $request)) {
+            return parent::unauthorizedResponse(redirect()->back());
+        }
+        
         $file = $request->file('files')[0];
 
         if ($file->isValid()) {

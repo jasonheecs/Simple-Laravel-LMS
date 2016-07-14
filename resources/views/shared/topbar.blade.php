@@ -19,13 +19,13 @@
                             @include('svg.settings')Settings
                         </a>
                     </li>
-                    @if (Auth::user()->canManageUsers())
+                    @can('index', Auth::user())
                         <li>
                             <a class="topbar-nav__link" href="{{ url('/users') }}">
                                 @include('svg.users')Users
                             </a>
                         </li>
-                    @endif
+                    @endcan
                 </ul>
             </nav>
         </div>

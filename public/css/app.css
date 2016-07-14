@@ -1,4 +1,4 @@
-.flex, .grid, .grid--match > *, .topbar-nav__list, .items-grid-panel, .tabs, .lesson-panel, .login__wrapper {
+.flex, .grid, .grid--match > *, .topbar-nav__list, .tabs, .lesson-panel, .login__wrapper {
   display: -ms-flexbox;
   display: flex; }
 
@@ -9,6 +9,10 @@
 .flex--space-between {
   -ms-flex-pack: justify;
   justify-content: space-between; }
+
+.flex--end {
+  -ms-flex-pack: end;
+  justify-content: flex-end; }
 
 .flex--top {
   -ms-flex-align: start;
@@ -30,7 +34,7 @@
   -ms-flex: none;
   flex: none; }
 
-.topbar, .items-grid__heading {
+.topbar {
   -ms-flex: 1 100%;
   flex: 1 100%; }
 
@@ -1289,12 +1293,6 @@ small {
 .button-group--right {
   text-align: right; }
 
-.admin-actions-group {
-  border-top: 1px solid #d4d4d4;
-  padding-top: 60px; }
-  .admin-actions-group.hidden {
-    border-top: 0; }
-
 .card {
   background: #f8f8f8;
   box-shadow: 0 3px 7px 0 rgba(0, 0, 0, 0.12), 0 2px 5px 0 rgba(0, 0, 0, 0.15); }
@@ -1464,32 +1462,8 @@ label {
   background: url("../img/icons/create_avatar.svg") no-repeat;
   vertical-align: middle; }
 
-.items-grid {
-  position: relative;
-  width: 100%;
-  z-index: 1; }
-
-.items-grid--first {
-  background: #f1f1f1;
-  margin-top: -6vh; }
-
-.items-grid--3 .grid-item {
-  width: 100%; }
-  @media (min-width: 768px) {
-    .items-grid--3 .grid-item {
-      width: 50%; } }
-  @media (min-width: 992px) {
-    .items-grid--3 .grid-item {
-      width: 33.33%; } }
-
-.grid-item {
-  margin-top: 25px; }
-
-.items-grid-panel {
-  background: none;
-  -ms-flex-wrap: wrap;
-  flex-wrap: wrap;
-  margin-top: -25px; }
+.icon--create-course::before {
+  background: url("../img/icons/create_course.svg") no-repeat; }
 
 .lesson-content h2 {
   font-size: 28px;
@@ -1592,6 +1566,9 @@ label {
 .panel--default {
   background: #f8f8f8;
   box-shadow: 0 3px 7px 0 rgba(0, 0, 0, 0.12), 0 2px 5px 0 rgba(0, 0, 0, 0.15); }
+
+.panel--secondary {
+  background: #f1f1f1; }
 
 .panel__title {
   font-size: 36px;
@@ -1817,6 +1794,10 @@ label {
 
 .link--muted {
   color: #a2a2a2; }
+
+.courses__header svg {
+  margin-right: 10px;
+  vertical-align: bottom; }
 
 .img-upload-btn {
   display: inline-block;

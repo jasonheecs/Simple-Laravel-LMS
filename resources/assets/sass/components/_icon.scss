@@ -52,3 +52,9 @@ $icons-dir: $img-dir + 'icons/';
     vertical-align: middle;
   }
 }
+
+.icon--create-course {
+  &::before {
+    background: url($icons-dir + 'create_course.svg') no-repeat;
+  }
+}

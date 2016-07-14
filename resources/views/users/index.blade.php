@@ -15,7 +15,7 @@
     <div id="users-panel" class="panel panel--default">
         <div class="users__header flex flex--space-between flex--middle">
             <div>@include('svg.user'){{ count($users) }} Users</div>
-            @if (Auth::user()->canManageUsers())
+            @can('store', Auth::user())
                 <ul id="user-admin-actions" class="list list--inline button-group button-group--right">
                     <li>
                         <form method="GET" action="{{ url('/users/create') }}">
@@ -23,7 +23,7 @@
                         </form>
                     </li>
                 </ul>
-            @endif
+            @endcan
         </div>
 
         <div class="padding--bottom-lg">
