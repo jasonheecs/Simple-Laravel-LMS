@@ -7,7 +7,7 @@
                 if (xhr.responseText) {
                     response = JSON.parse(xhr.responseText);
                 }
-                if (response.message.length){
+                if (response.message && response.message.length){
                     response = JSON.parse(xhr.responseText);
                     window.notify(response.message, response.message_level);
                 }

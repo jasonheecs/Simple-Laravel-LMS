@@ -26,6 +26,12 @@ class Course extends Model
         return $this->lessons()->save($lesson);
     }
 
+    public function setImage($imgFile)
+    {
+        $this->image = $imgFile;
+        $this->save();
+    }
+
     public function getLecturers()
     {
         return $this->getUsersCollection($this->lecturers);

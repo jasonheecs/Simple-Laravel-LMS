@@ -3,8 +3,9 @@
 var Editor = require('./editor');
 var helper = require('./helper');
 var imgUploader = require('./img-uploader');
-var titleEditor; //editor for the title
+var notifications = require('./notifications');
 
+var titleEditor; //editor for the title
 var coursePanelEl; //wrapper element for the course title
 var titleEl; //course title element
 var lecturersEl; //element containing list of lecturers
@@ -22,7 +23,7 @@ function init() {
         initialTitle = titleEl.innerHTML;
         imgUploadBtn = document.getElementById('img-upload-btn');
         attachEventListeners();
-        initCourseImgUpload();
+        initCourseImgUpload('/courses/'+ document.getElementById('course-id').value +'/upload/');
     }
 }
 
@@ -184,20 +185,42 @@ function toggleCheckboxlists() {
     }
 }
 
-function initCourseImgUpload() {
+function initCourseImgUpload(uploadUrl) {
     var heroEl = document.querySelector('.hero');
     var start = function() {
         heroEl.classList.add('uploading');
     };
-    var done = function(e, data, imgUrl) {
+    var done = function(e, data, imgUrl, imgFile) {
         heroEl.style.backgroundImage = 'url("'+ imgUrl + '")';
         heroEl.classList.remove('uploading');
+
+        console.log(data);
+
+        // populate hidden image field value during course creation
+        var hiddenField = document.getElementById('course-img');
+        if (hiddenField) {
+            hiddenField.value = imgFile.url;
+        }
+
+        notifications.notify('Course image updated', 'success');
     };
 
     imgUploader.init(document.getElementById('course-img-upload'), imgUploadBtn);
-    imgUploader.upload('/courses/'+ document.getElementById('course-id').value +'/upload/', start, done);
+    imgUploader.upload(uploadUrl, start, done);
 }
 
+var Create = {
+    init: function() {
+        imgUploadBtn = document.getElementById('img-upload-btn');
+
+        if (imgUploadBtn) {
+            imgUploadBtn.classList.remove('hidden');
+            initCourseImgUpload('/courses/0/upload/');
+        }
+    }
+};
+
 module.exports = {
-    init: init
+    init: init,
+    create: Create
 };

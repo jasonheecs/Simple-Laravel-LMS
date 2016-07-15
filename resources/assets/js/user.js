@@ -269,6 +269,8 @@ function initAvatarUpload(uploadUrl) {
             hiddenField.value = imgFile.url;
         }
 
+        notifications.notify('User avatar updated', 'success');
+
     };
 
     imgUploader.init(document.getElementById('user-img-upload'), avatarUploadEl);

@@ -27,7 +27,7 @@ class ImageUploader
      * @param  integer $height      height to resize the image to If 0, use original height
      * @param  boolean $crop_image  crop image to specified width and height instead of resizing it
      * @param  boolean $force_png   force image to be saved as png. If not, image extension will be based on MIME type
-     * @return string/boolean       if image is valid, return filename of saved image
+     * @return string | boolean       if image is valid, return filename of saved image
      *                              if image is not valid, return false;
      */
     public function upload($fileName, $destination, $width = 0, $height = 0, $crop_image = false, $force_png = false)
@@ -115,8 +115,12 @@ class ImageUploader
         if ($force_png) {
             return $filename . '.png';
         } else {
-            if ($this->file && $this->file instanceof \Illuminate\Http\UploadedFile) {
-                return $filename . '.' . $this->file->guessExtension();
+            if ($this->file) {
+                if ($this->file instanceof \Illuminate\Http\UploadedFile) {
+                    return $filename . '.' . $this->file->guessExtension();
+                } else {
+                    return $filename . '.jpg';
+                }
             }
         }
 

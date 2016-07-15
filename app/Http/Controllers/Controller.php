@@ -12,7 +12,14 @@ class Controller extends BaseController
 {
     use AuthorizesRequests, AuthorizesResources, DispatchesJobs, ValidatesRequests;
 
-    protected function unauthorizedResponse($redirect, $message = 'You do not have permission to access this page', $request = null) {
+    /**
+     * Generates the right unauthorized response / redirect based on the request type (ajax or not)
+     * @param  \Illuminate\Http\RedirectResponse $redirect - redirect action
+     * @param  \Illuminate\Http\Request $request - optional request, default is null
+     * @param  string $message - message to be flashed to status
+     * @return \Illuminate\Http\RedirectResponse  redirect action
+     */
+    protected function unauthorizedResponse($redirect, $request = null, $message = 'You do not have permission to access this page') {
         if ($request && $request->ajax()) {
             return response()->json(['response' => $message], 401);
         } else {

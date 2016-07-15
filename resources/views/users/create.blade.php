@@ -37,7 +37,7 @@
                         <h2 class="panel__title panel__title--small margin--bottom-none flex__item--1">Personal Details</h2>
                         <div id="content-actions-grp" class="button-group">
                             <button id="save-changes-btn" class="btn btn--primary btn--md" type="submit" name="save" value="save"><i class="icon icon--save"></i> Save</button>
-                            <button id="cancel-changes-btn" class="btn btn--outline btn--md" type="submit" name="cancel" value="cancel" formnovalidate><i class="icon icon--cancel"></i> Cancel</a>
+                            <button id="cancel-changes-btn" class="btn btn--outline btn--md" type="submit" name="cancel" value="cancel" formnovalidate><i class="icon icon--cancel"></i> Cancel</button>
                         </div>
                     </div>
                     <div>

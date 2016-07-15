@@ -14,9 +14,21 @@ class UserPolicy
      *
      * @return boolean
      */
-    public function index(User $current_user)
+    public function indexAny(User $current_user)
     {
         return $current_user->is('admin');
+    }
+
+    /**
+     * Determine if the given user can be seen by the current user.
+     *
+     * @param  \App\User  $current_user
+     * @param  \App\User  $user
+     * @return boolean
+     */
+    public function show(User $current_user, User $user)
+    {
+        return $current_user->id == $user->id;
     }
 
     /**
@@ -25,7 +37,7 @@ class UserPolicy
      * @param  \App\User  $user
      * @return boolean
      */
-    public function store(User $current_user)
+    public function createAny(User $current_user)
     {
         return $current_user->is('admin');
     }

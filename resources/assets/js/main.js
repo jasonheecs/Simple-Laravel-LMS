@@ -8,9 +8,17 @@ document.addEventListener('DOMContentLoaded', function() {
     lesson.init();
     tabs.init();
 
-    if (document.getElementById('js-user-page')) {
-        user.edit.init();
-    } else if (document.getElementById('js-create-user-page')) {
-        user.create.init();
+    switch(document.body.id) {
+        case 'js-create-course-page':
+            course.create.init();
+            break;
+            
+        case 'js-user-page':
+            user.edit.init();
+            break;
+
+        case 'js-create-user-page':
+            user.create.init();
+            break;
     }
 });

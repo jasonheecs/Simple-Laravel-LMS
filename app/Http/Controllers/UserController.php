@@ -20,7 +20,16 @@ class UserController extends Controller
      */
     public function index()
     {
-        auth_check('index', User::class);
+        if (Gate::denies('index', User::class)) {
+
+          if($this->previousUrlIsFlashMsg()) {
+            $redirectAction = redirect()->route('home');
+          } else {
+            $redirectAction = redirect()->back();
+          }
+
+          return parent::unauthorizedResponse($redirectAction);
+        }
 
         $users = User::all();
         $users->load('roles');
@@ -28,9 +37,7 @@ class UserController extends Controller
         // generate file path to thumbnail version of avatars
         $users = $users->each(function ($user) {
             if ($user->avatar) {
-                $path_parts = pathinfo($user->avatar);
-                $user->avatar = $path_parts['dirname'] . '/' .$path_parts['filename'] .
-                                config('constants.thumbnail_suffix') . '.' . $path_parts['extension'];
+                $user->avatar = generateThumbnailImagePath($user->avatar);
             }
         });
 
@@ -49,7 +56,16 @@ class UserController extends Controller
      */
     public function create()
     {
-        auth_check('store', User::class);
+        if (Gate::denies('create', User::class)) {
+
+          if($this->previousUrlIsFlashMsg()) {
+            $redirectAction = redirect()->route('home');
+          } else {
+            $redirectAction = redirect()->back();
+          }
+
+          return parent::unauthorizedResponse($redirectAction);
+        }
 
         return view('users.create');
     }
@@ -62,7 +78,9 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        auth_check('store', User::class, $request);
+        if (Gate::denies('create', User::class)) {
+            return parent::unauthorizedResponse(redirect()->back(), $request);
+        }
 
         if ($request->has('save')) {
             return $this->createNewUser($request);
@@ -79,7 +97,16 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
-        auth_check('index', $user);
+        if (Gate::denies('show', $user)) {
+
+          if (Gate::denies('index', User::class)) {
+            $redirectAction = redirect()->route('home');
+          } else {
+            $redirectAction = redirect()->action('UserController@index');
+          }
+
+          return parent::unauthorizedResponse($redirectAction);
+        }
 
         return view('users.show', [
             'user' => $user
@@ -95,7 +122,9 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
-        auth_check('update', $user, $request);
+        if (Gate::denies('update', $user)) {
+            return parent::unauthorizedResponse(redirect()->back(), $request);
+        }
 
         $this->validate($request, [
             'name' => 'required',
@@ -122,7 +151,9 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        auth_check('destroy', $user);
+        if (Gate::denies('delete', $user)) {
+            return parent::unauthorizedResponse(redirect()->back());
+        }
 
         $user->delete();
 
@@ -199,7 +230,9 @@ class UserController extends Controller
      */
     public function setAdminStatus(Request $request, User $user)
     {
-        auth_check('setAdminStatus', $user, $request);
+       if (Gate::denies('setAdminStatus', $user)) {
+            return parent::unauthorizedResponse(redirect()->back(), $request);
+        }
 
         $status = '';
 
@@ -231,12 +264,20 @@ class UserController extends Controller
      */
     public function upload(Request $request, $user_id)
     {
-        auth_check('update', User::class, $request);
+        $tmp_user_id = 0;
 
-        if ($user_id == 0) {
+        if ($user_id == $tmp_user_id) { // temporary user model
+            if (Gate::denies('update', User::class)) {
+                return parent::unauthorizedResponse(redirect()->back(), $request);
+            }
+
             $imageUploader = new ImageUploader($request->file('files')[0]);
             $response = $this->uploadToTmp($imageUploader);
         } else {
+            if (Gate::denies('update', User::find($user_id))) {
+                return parent::unauthorizedResponse(redirect()->back(), $request);
+            }
+
             $avatarUploader = new AvatarUploader($request->file('files')[0]);
             $filename = 'user_' . $user_id;
             $uploadedFile = $avatarUploader->upload(
@@ -332,5 +373,21 @@ class UserController extends Controller
         }
 
         return false;
+    }
+
+    /**
+     * Workaround to check if the previous url is the ajax url used for flashing status messages
+     * If it is, maybe not redirect user back to it if user does not have the right permissions?
+     * @return boolean
+     */
+    private function previousUrlIsFlashMsg()
+    {
+      $flashPath = 'flash';
+      $previousUrl = url()->previous();
+
+      // get the path based on last slash position
+      $path = getSubstrAfterLastSlash($previousUrl);
+
+      return substr($path, 0, strlen($flashPath)) == $flashPath;
     }
 }
