@@ -15,7 +15,6 @@ document.addEventListener('DOMContentLoaded', function() {
             
         case 'js-user-page':
             user.edit.init();
-            user.edit2.init();
             break;
 
         case 'js-create-user-page':

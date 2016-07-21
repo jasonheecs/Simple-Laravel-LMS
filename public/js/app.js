@@ -14173,9 +14173,9 @@ module.exports = toNumber;
                 throw new Error("medium-editor-insert-plugin runs only in a browser.")
             }
 
-            // if (jQuery === undefined) {
-            //     jQuery = require('jquery');
-            // }
+            if (jQuery === undefined) {
+                jQuery = require('jquery');
+            }
             window.jQuery = jQuery;
 
             Handlebars = require('handlebars/runtime');
@@ -16393,7 +16393,7 @@ this["MediumInsert"]["Templates"]["src/js/templates/images-toolbar.hbs"] = Handl
 
 }));
 
-},{"blueimp-file-upload":1,"handlebars/runtime":21,"jquery-sortable":22,"medium-editor":33}],33:[function(require,module,exports){
+},{"blueimp-file-upload":1,"handlebars/runtime":21,"jquery":23,"jquery-sortable":22,"medium-editor":33}],33:[function(require,module,exports){
 /*global self, document, DOMException */
 
 /*! @source http://purl.eligrey.com/github/classList.js/blob/master/classList.js */
@@ -24195,31 +24195,35 @@ module.exports = window.CustomEvent;
 },{}],36:[function(require,module,exports){
 'use strict';
 
+/**
+ * Base class for edit objects to extend from (i.e: user.edit, course.edit, lesson.edit). 
+ */
+
 var Editor = require('./editor');
 var helper = require('./helper');
 var notifications = require('./notifications');
 var helper = require('./helper');
 
-var panelEl;
-var initialBtnGrp;
-var hiddenBtnGrp;
+var panelEl; // panel DOM element that contains the main HTML content for the page
+var initialBtnGrp; // button group that is visible initially
+var hiddenBtnGrp; // button group that is only visible when edit is clicked
 
-var editors;
-var editorConfigs;
-var editorInitialValues;
+var editors; // array of Editor objects
+var editorConfigs; // array of editor configurations {'element': <HTML element>, 'options': <Editor options>, 'initialFocus': <boolean value to set if this editor is to be focused in edit mode, 'saveFieldName': key value for this field for sending ajax update request }
+var editorInitialValues; // array of initial values for the editors. Used for reverting changes.
 
-var editBtn;
-var deleteBtn;
-var saveChangesBtn;
-var cancelChangesBtn;
+var editBtn; // The edit DOM button element
+var deleteBtn; // The delete DOM button element
+var saveChangesBtn; // The save changes DOM button element
+var cancelChangesBtn; // The cancel changes DOM button element
 
-var saveAjaxPath;
-var saveSuccessCallback;
-var saveFailureCallback;
-var saveAlwaysCallback;
+var saveAjaxPath; // Ajax path for updating values / saving changes
+var saveSuccessCallback; // callback function on save success
+var saveFailureCallback; // callback function on save failure
+var saveAlwaysCallback; // callback function after saving
 
 /**
- * Fluent interface for initialising EditableObjects
+ * Fluent interface for initialising EditableObject
  */
 var EditableObjectConstruct = function EditableObjectConstruct() {
     this.setInitialBtnGrp = function (initialBtnGrp) {
@@ -24309,7 +24313,7 @@ function attachEventListeners() {
             if (editBtn && evt.target === editBtn) {
                 editListener();
             } else if (deleteBtn && evt.target === deleteBtn) {
-                deleteListener();
+                deleteListener(evt);
             } else if (saveChangesBtn && evt.target === saveChangesBtn) {
                 saveChangesListener();
             } else if (cancelChangesBtn && evt.target === cancelChangesBtn) {
@@ -24324,7 +24328,7 @@ function attachEventListeners() {
         switchFocus();
     }
 
-    function deleteListener() {
+    function deleteListener(evt) {
         var check = window.confirm('Are you sure?');
 
         if (!check) evt.preventDefault();
@@ -24333,43 +24337,45 @@ function attachEventListeners() {
     }
 
     function saveChangesListener() {
-        if (valuesUpdated) {
-            // helper.disableButton(saveChangesBtn);
+        if (valuesUpdated()) {
+            helper.disableButton(saveChangesBtn);
 
-            // // Send ajax request to update model
-            // var success = function(response) {
-            //     if (saveSuccessCallback) {
-            //         saveSuccessCallback.call();
-            //     }
+            // Send ajax request to update model
+            var success = function success(response) {
+                if (saveSuccessCallback) {
+                    saveSuccessCallback.call();
+                }
 
-            //     notifications.notify(JSON.parse(response).response, 'success');
-            // };
-            // var failure = function(response) {
-            //     if (saveFailureCallback) {
-            //         saveFailureCallback.call();
-            //     }
-            //     revertChanges();
+                editorInitialValues = [];
+                setInitialValues();
+                notifications.notify(JSON.parse(response).response, 'success');
+            };
+            var failure = function failure(response) {
+                if (saveFailureCallback) {
+                    saveFailureCallback.call();
+                }
 
-            //     //display errors to alert element
-            //     var errors = JSON.parse(response);
-            //     var errorMsg = '';
+                revertChanges();
 
-            //     for (var error in errors) {
-            //         errorMsg = errors[error].reduce(function(previousMsg, currentMsg) {
-            //             return previousMsg + currentMsg;
-            //         });
-            //     }
+                //display errors to alert element
+                var errors = JSON.parse(response);
+                var errorMsg = '';
 
-            //     notifications.notify(errorMsg, 'danger');
-            // };
-            // var always = function() {
-            //     if (saveAlwaysCallback) {
-            //         saveAlwaysCallback.call();
-            //     }
-            //     helper.enableButton(saveChangesBtn);
-            // };
-            // helper.sendAjaxRequest('PATCH', saveAjaxPath, success, failure, always, JSON.stringify(saveData));
-            console.log(getSaveData());
+                for (var error in errors) {
+                    errorMsg = errors[error].reduce(function (previousMsg, currentMsg) {
+                        return previousMsg + currentMsg;
+                    });
+                }
+
+                notifications.notify(errorMsg, 'danger');
+            };
+            var always = function always() {
+                if (saveAlwaysCallback) {
+                    saveAlwaysCallback.call();
+                }
+                helper.enableButton(saveChangesBtn);
+            };
+            helper.sendAjaxRequest('PATCH', saveAjaxPath, success, failure, always, JSON.stringify(getSaveData()));
         }
 
         switchButtonGroup();
@@ -24387,6 +24393,10 @@ function attachEventListeners() {
             });
         }
 
+        /**
+         * Get current editor values and return them in a format that is required for updating the values via ajax.
+         * @return {Object}
+         */
         function getSaveData() {
             var data = {};
             editorConfigs.forEach(function (editorConfig) {
@@ -24435,6 +24445,9 @@ function destroyEditors() {
     editors = [];
 }
 
+/**
+ * Set the focusable element of the browser to one of the editors
+ */
 function switchFocus() {
     var focusedEditor = editors.find(function (editor) {
         return editor.editableElement === editorConfigs.find(function (editorConfig) {
@@ -25161,7 +25174,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
         case 'js-user-page':
             user.edit.init();
-            user.edit2.init();
             break;
 
         case 'js-create-user-page':
@@ -25400,30 +25412,19 @@ module.exports = {
  * Also governs the changing of user statuses (i.e. admin, super admin, etc.)
  */
 
-var Editor = require('./editor');
 var helper = require('./helper');
 var imgUploader = require('./img-uploader');
 var notifications = require('./notifications');
 var throttle = require('lodash/throttle');
-var EditableObj = require('./editable-object');
+var EditableObj = require('./editable-object'); // base class for Edit object to extend from
 
 var userPanelEl; // user panel DOM element
-var nameEditor; // editor for user's name
-var emailEditor; // editor for user's email
-var companyEditor; // editor for user's company
 var avatarUploadEl; // DOM element / button that triggers user avatar upload
 
 var userActionsGrpEl; // button group DOM element that contains buttons for editing / deleting user
 var contentActionsGrpEl; // button group DOM element that contains buttons for saving / cancelling editors' changes
 
-var nameEl; // user name DOM element
-var emailEl; // user email DOM element
-var companyEl; // user company DOM element
-var initialName; // initial name (before any changes are saved)
-var initialEmail; // initial email (before any changes are saved)
-var initialCompany; // initial company (before any changes are saved)
-
-var Edit2 = Object.create(EditableObj, {
+var Edit = Object.create(EditableObj, {
     init: {
         value: function value() {
             userPanelEl = document.getElementById('user-panel');
@@ -25432,109 +25433,79 @@ var Edit2 = Object.create(EditableObj, {
                 userActionsGrpEl = document.getElementById('user-actions-grp');
                 contentActionsGrpEl = document.getElementById('content-actions-grp');
 
-                nameEl = document.getElementById('name-editor');
-                emailEl = document.getElementById('email-editor');
-                companyEl = document.getElementById('company-editor');
+                this.nameEl = document.getElementById('name-editor'); // user name DOM element
+                this.emailEl = document.getElementById('email-editor'); // user email DOM element
+                this.companyEl = document.getElementById('company-editor'); // user company DOM element
                 var editorOptions = {
                     toolbar: false,
                     disableReturn: true,
                     disableExtraSpaces: true
                 };
 
-                var editBtnEl = document.getElementById('edit-profile-btn');
-                var deleteBtnEl = document.getElementById('delete-profile-btn');
-                var saveChangesBtnEl = document.getElementById('save-changes-btn');
-                var cancelChangesBtnEl = document.getElementById('cancel-changes-btn');
+                this.editBtnEl = document.getElementById('edit-profile-btn');
+                this.deleteBtnEl = document.getElementById('delete-profile-btn');
+                this.saveChangesBtnEl = document.getElementById('save-changes-btn');
+                this.cancelChangesBtnEl = document.getElementById('cancel-changes-btn');
 
+                avatarUploadEl = document.getElementById('img-upload-btn');
+                initAvatarUpload('/users/' + document.getElementById('user-id').value + '/upload/');
+
+                // use fluent pattern construct to initialise base EditableObject class
                 var EditableObjectConstruct = EditableObj.EditableObjectConstruct;
-                EditableObjectConstruct.setInitialBtnGrp(userActionsGrpEl).setHiddenBtnGrp(contentActionsGrpEl).setEditors([{ 'element': nameEl, 'options': editorOptions, 'initialFocus': true, 'saveFieldName': 'name' }, { 'element': emailEl, 'options': editorOptions, 'saveFieldName': 'email' }, { 'element': companyEl, 'options': editorOptions, 'saveFieldName': 'company' }]).setEditBtn(editBtnEl).setDeleteBtn(deleteBtnEl).setSaveChangesBtn(saveChangesBtnEl).setCancelChangesBtn(cancelChangesBtnEl);
+                EditableObjectConstruct.setInitialBtnGrp(userActionsGrpEl).setHiddenBtnGrp(contentActionsGrpEl).setEditors([{ 'element': this.nameEl, 'options': editorOptions, 'initialFocus': true, 'saveFieldName': 'name' }, { 'element': this.emailEl, 'options': editorOptions, 'saveFieldName': 'email' }, { 'element': this.companyEl, 'options': editorOptions, 'saveFieldName': 'company' }]).setEditBtn(this.editBtnEl).setDeleteBtn(this.deleteBtnEl).setSaveChangesBtn(this.saveChangesBtnEl).setCancelChangesBtn(this.cancelChangesBtnEl).setSaveAjaxPath('/users/' + document.getElementById('user-id').value).setSaveSuccessCallback(this.saveSuccess);
 
-                EditableObj.init(userPanelEl, EditableObjectConstruct);
+                EditableObj.init(userPanelEl, EditableObjectConstruct); // init parent class
+                this.attachEventListeners();
             }
         }
-    }
-});
-
-var Edit = {
-    init: function init() {
-        userPanelEl = document.getElementById('user-panel');
-
-        if (userPanelEl) {
-            userActionsGrpEl = document.getElementById('user-actions-grp');
-            contentActionsGrpEl = document.getElementById('content-actions-grp');
-            nameEl = document.getElementById('name-editor');
-            emailEl = document.getElementById('email-editor');
-            companyEl = document.getElementById('company-editor');
-            avatarUploadEl = document.getElementById('img-upload-btn');
-            initialName = nameEl.innerHTML;
-            initialEmail = emailEl.innerHTML;
-            initialCompany = companyEl.innerHTML;
-
-            initAvatarUpload('/users/' + document.getElementById('user-id').value + '/upload/');
-            this.attachEventListeners();
+    },
+    saveSuccess: {
+        configurable: false,
+        get: function get() {
+            var callback = function () {
+                document.getElementById('hero-user-name').textContent = this.nameEl.textContent;
+            }.bind(this);
+            return callback;
         }
     },
-
-    switchButtonGroup: function switchButtonGroup() {
-        // userActionsGrpEl.classList.toggle('hidden');
-        // contentActionsGrpEl.classList.toggle('hidden');
-    },
-
-    attachEventListeners: function attachEventListeners() {
-        var _this = this;
-        userPanelEl.addEventListener('click', function (evt) {
-            if (evt.target) {
-                if (evt.target.id === 'edit-profile-btn') {
-                    // this.initEditors();
-                    // nameEditor.setFocus();
-                    // this.switchButtonGroup();
-                    avatarUploadEl.classList.remove('hidden');
-                } else if (evt.target.id === 'delete-profile-btn') {
-                    // deleteUserListener(evt);
-                } else if (evt.target.id === 'save-changes-btn') {
-                        // saveChangesListener(evt.target);
-                    } else if (evt.target.id === 'cancel-changes-btn') {
-                            // this.revertChanges();
-                            // this.switchButtonGroup();
-                            // this.destroyEditors();
-                            avatarUploadEl.classList.add('hidden');
-                        }
-            }
-        }.bind(this));
-
-        userPanelEl.addEventListener('change', function (evt) {
-            if (evt.target) {
-                if (evt.target.id === 'admin-checkbox') {
-                    toggleAdminListener();
-                } else if (evt.target.id === 'super-admin-checkbox') {
-                    toggleAdminListener(true);
+    attachEventListeners: {
+        value: function value() {
+            userPanelEl.addEventListener('click', function (evt) {
+                if (evt.target) {
+                    if (evt.target === this.editBtnEl) {
+                        avatarUploadEl.classList.remove('hidden');
+                    } else if (evt.target === this.cancelChangesBtnEl || evt.target === this.saveChangesBtnEl) {
+                        avatarUploadEl.classList.add('hidden');
+                    }
                 }
-            }
-        });
+            }.bind(this));
 
-        function saveChangesListener(saveBtnEl) {
-            var newName = nameEditor.getContent()[nameEl.id].value;
-            var newEmail = emailEditor.getContent()[emailEl.id].value;
-            var newCompany = companyEditor.getContent()[companyEl.id].value;
+            userPanelEl.addEventListener('change', function (evt) {
+                if (evt.target) {
+                    if (evt.target.id === 'admin-checkbox') {
+                        toggleAdminListener();
+                    } else if (evt.target.id === 'super-admin-checkbox') {
+                        toggleAdminListener(true);
+                    }
+                }
+            }.bind(this));
 
-            // Only send AJAX request to update profile if there are changes made to the profile
-            if (!profileIsUnchanged()) {
-                helper.disableButton(saveBtnEl);
-                var updateData = { name: newName, email: newEmail, company: newCompany };
+            /**
+             * Sends ajax request to toggle user to be admin / super admin
+             * @param  {Boolean} isSuperAdmin - optional flag to determine if ajax request is to toggle for superadmin state. Default value is false.
+             */
+            function toggleAdminListener(isSuperAdmin) {
+                var updateData = { isSuperAdmin: false };
 
-                // Send ajax request to update user
+                if (isSuperAdmin) {
+                    updateData.isSuperAdmin = true;
+                }
+
+                // Send ajax request to update user admin status
                 var success = function success(response) {
-                    initialName = newName;
-                    initialEmail = newEmail;
-                    initialCompany = newCompany;
-
-                    document.getElementById('hero-user-name').textContent = newName;
-
                     notifications.notify(JSON.parse(response).response, 'success');
                 };
                 var failure = function failure(response) {
-                    _this.revertChanges();
-
                     //display errors to alert element
                     var errors = JSON.parse(response);
                     var errorMsg = '';
@@ -25544,95 +25515,15 @@ var Edit = {
                             return previousMsg + currentMsg;
                         });
                     }
-
                     notifications.notify(errorMsg, 'danger');
                 };
-                var always = function always() {
-                    helper.enableButton(saveBtnEl);
-                };
-                helper.sendAjaxRequest('PATCH', '/users/' + document.getElementById('user-id').value, success, failure, always, JSON.stringify(updateData));
-            }
+                var always = function always() {};
 
-            _this.switchButtonGroup();
-            _this.destroyEditors();
-            avatarUploadEl.classList.add('hidden');
-
-            /**
-             * Check if profile data has been updated
-             * @return {Boolean}
-             */
-            function profileIsUnchanged() {
-                return newName === initialName && newEmail === initialEmail && newCompany === initialCompany;
+                helper.sendAjaxRequest('PATCH', '/users/' + document.getElementById('user-id').value + '/setadmin', success, failure, always, JSON.stringify(updateData));
             }
         }
-
-        function deleteUserListener(evt) {
-            var check = window.confirm('Are you sure?');
-
-            if (!check) evt.preventDefault();
-
-            return check;
-        }
-
-        function toggleAdminListener(isSuperAdmin) {
-            var updateData = { isSuperAdmin: false };
-
-            if (isSuperAdmin) {
-                updateData.isSuperAdmin = true;
-            }
-
-            // Send ajax request to update user admin status
-            var success = function success(response) {
-                notifications.notify(JSON.parse(response).response, 'success');
-            };
-            var failure = function failure(response) {
-                //display errors to alert element
-                var errors = JSON.parse(response);
-                var errorMsg = '';
-
-                for (var error in errors) {
-                    errorMsg = errors[error].reduce(function (previousMsg, currentMsg) {
-                        return previousMsg + currentMsg;
-                    });
-                }
-                notifications.notify(errorMsg, 'danger');
-            };
-            var always = function always() {};
-
-            helper.sendAjaxRequest('PATCH', '/users/' + document.getElementById('user-id').value + '/setadmin', success, failure, always, JSON.stringify(updateData));
-        }
-    },
-
-    initEditors: function initEditors() {
-        nameEditor = new Editor();
-        emailEditor = new Editor();
-        companyEditor = new Editor();
-        var editorOptions = {
-            toolbar: false,
-            disableReturn: true,
-            disableExtraSpaces: true
-        };
-
-        nameEditor.init(nameEl, editorOptions);
-        emailEditor.init(emailEl, editorOptions);
-        companyEditor.init(companyEl, editorOptions);
-    },
-
-    destroyEditors: function destroyEditors() {
-        nameEditor.destroy();
-        emailEditor.destroy();
-        companyEditor.destroy();
-    },
-
-    /**
-     * Revert changes made when 'Cancel' button is clicked
-     */
-    revertChanges: function revertChanges() {
-        nameEl.innerHTML = initialName;
-        emailEl.innerHTML = initialEmail;
-        companyEl.innerHTML = initialCompany;
     }
-};
+});
 
 var Create = {
     init: function init() {
@@ -25702,11 +25593,10 @@ function initAvatarUpload(uploadUrl) {
 
 module.exports = {
     create: Create,
-    edit: Edit,
-    edit2: Edit2
+    edit: Edit
 };
 
-},{"./editable-object":36,"./editor":37,"./helper":38,"./img-uploader":40,"./notifications":43,"lodash/throttle":30}],46:[function(require,module,exports){
+},{"./editable-object":36,"./helper":38,"./img-uploader":40,"./notifications":43,"lodash/throttle":30}],46:[function(require,module,exports){
 "use strict";
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
