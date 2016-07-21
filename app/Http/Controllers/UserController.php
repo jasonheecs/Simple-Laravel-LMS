@@ -11,7 +11,7 @@ use App\Role;
 use App\Uploaders\ImageUploader;
 use App\Uploaders\AvatarUploader;
 
-class UserController extends Controller
+class UserController extends Controller implements ControllerImageUploaderInterface
 {
     /**
      * Display a listing of Users.
@@ -155,6 +155,9 @@ class UserController extends Controller
             return parent::unauthorizedResponse(redirect()->back());
         }
 
+        if ($user->avatar) {
+          $user->deleteAvatar();
+        }
         $user->delete();
 
         flash('User deleted', 'success');
@@ -188,8 +191,8 @@ class UserController extends Controller
                 $uploadedFile = $avatarUploader->upload(
                     $filename,
                     public_path(config('constants.upload_dir.users')),
-                    150,
-                    150,
+                    AvatarUploader::IMAGE_SIZE,
+                    AvatarUploader::IMAGE_SIZE,
                     false,
                     true
                 );
@@ -309,14 +312,14 @@ class UserController extends Controller
      * @param  \App\Uploaders\ImageUploader $imageUploader
      * @return array          Response Array containing the directory path of the uploaded file
      */
-    private function uploadToTmp($imageUploader)
+    public function uploadToTmp($imageUploader)
     {
         $filename = time().'-'.'user_' . generate_random_str(20);
         $uploadedFile = $imageUploader->upload(
             $filename,
             public_path(config('constants.upload_dir.tmp')),
-            150,
-            150,
+            AvatarUploader::IMAGE_SIZE,
+            AvatarUploader::IMAGE_SIZE,
             true
         );
 

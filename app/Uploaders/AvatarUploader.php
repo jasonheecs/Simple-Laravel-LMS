@@ -9,6 +9,7 @@ use Intervention\Image\ImageManagerStatic as Image;
 class AvatarUploader extends ImageUploader
 {
     const THUMBNAIL_SIZE = 28;
+    const IMAGE_SIZE = 150;
 
      /**
      * Uploads an image file
@@ -21,7 +22,7 @@ class AvatarUploader extends ImageUploader
      * @return string/boolean       if image is valid, return filename of saved image
      *                              if image is not valid, return false;
      */
-    public function upload($fileName, $destination, $width = 0, $height = 0, $crop_image = false, $force_png = false)
+    public function upload($fileName, $destination, $width = self::IMAGE_SIZE, $height = self::IMAGE_SIZE, $crop_image = false, $force_png = false)
     {
         $uploadedFile = parent::upload($fileName, $destination, $width, $height, $crop_image, $force_png);
 

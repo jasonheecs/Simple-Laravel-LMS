@@ -72,6 +72,22 @@ class Course extends Model
         $student->delete();
     }
 
+    public function deleteImage()
+    {
+        if ($this->image) {
+            $imageFile = public_path(config('constants.upload_dir.courses')) . getSubstrAfterLastSlash($this->image);
+            $imageThumb = generateThumbnailImagePath($imageFile);
+
+            if (\File::exists($imageFile)) {
+                \File::delete($imageFile);
+            }
+
+            if (\File::exists($imageThumb)) {
+                \File::delete($imageThumb);
+            }
+        }
+    }
+
     /**
      * Helper function to get a collection of User models (Lecturers/Students)
      * @param  [Model] $collection - Collection of models with user_id attribute

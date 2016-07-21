@@ -100,14 +100,6 @@ class User extends Authenticatable
         return $this->is('superadmin') || $this->is('admin') || $this->isLecturerIn($course);
     }
 
-    /**
-     * Check if user can create a course
-     */
-    public function canCreateCourse()
-    {
-        return $this->is('superadmin') || $this->is('admin');
-    }
-
     public function addRole(Role $role)
     {
         $this->roles()->attach($role->id);
@@ -131,5 +123,21 @@ class User extends Authenticatable
     {
         $this->avatar = $avatarFile;
         $this->save();
+    }
+
+    public function deleteAvatar()
+    {
+        if ($this->avatar) {
+            $avatarFile = public_path(config('constants.upload_dir.users')) . getSubstrAfterLastSlash($this->avatar);
+            $avatarThumb = generateThumbnailImagePath($avatarFile);
+
+            if (\File::exists($avatarFile)) {
+                \File::delete($avatarFile);
+            }
+
+            if (\File::exists($avatarThumb)) {
+                \File::delete($avatarThumb);
+            }
+        }
     }
 }

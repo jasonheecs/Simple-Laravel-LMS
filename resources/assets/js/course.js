@@ -194,8 +194,6 @@ function initCourseImgUpload(uploadUrl) {
         heroEl.style.backgroundImage = 'url("'+ imgUrl + '")';
         heroEl.classList.remove('uploading');
 
-        console.log(data);
-
         // populate hidden image field value during course creation
         var hiddenField = document.getElementById('course-img');
         if (hiddenField) {

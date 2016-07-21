@@ -10,7 +10,7 @@ use App\Uploaders\ImageUploader;
 use App\Uploaders\CourseImageUploader;
 use Gate;
 
-class CoursesController extends Controller
+class CoursesController extends Controller implements ControllerImageUploaderInterface
 {
     /**
      * Show all courses
@@ -173,6 +173,10 @@ class CoursesController extends Controller
             return parent::unauthorizedResponse(redirect()->back(), $request);
         }
 
+        if($course->image) {
+            $course->deleteImage();
+        }
+
         $course->delete();
 
         flash('Course deleted', 'success');
@@ -199,9 +203,7 @@ class CoursesController extends Controller
 
                 $uploadedFile = $courseImgUploader->upload(
                     $filename,
-                    public_path(config('constants.upload_dir.courses')),
-                    1500,
-                    550
+                    public_path(config('constants.upload_dir.courses'))
                 );
 
                 $course->setImage(url(config('constants.upload_dir.courses'). $uploadedFile));
@@ -277,14 +279,14 @@ class CoursesController extends Controller
      * @param  \App\Uploaders\ImageUploader $imageUploader
      * @return array          Response Array containing the directory path of the uploaded file
      */
-    private function uploadToTmp($imageUploader)
+    public function uploadToTmp($imageUploader)
     {
         $filename = time().'-'.'course_' . generate_random_str(20);
         $uploadedFile = $imageUploader->upload(
             $filename,
             public_path(config('constants.upload_dir.tmp')),
-            1500,
-            550
+            CourseImageUploader::IMAGE_WIDTH,
+            CourseImageUploader::IMAGE_HEIGHT
         );
 
         if ($uploadedFile) {

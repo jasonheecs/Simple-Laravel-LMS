@@ -61,7 +61,7 @@
     </div>
 </div>
 
-@if (Auth::user()->canCreateCourse())
+@can ('update', $course)
     <div id="lecturers-list" class="panel panel--default hidden">
         <h1 class="panel__heading">Set the following users to be Lecturers in this course</h1>
         <ul class="list">
@@ -79,7 +79,7 @@
             </form>
         </ul>
     </div>
-@endif
+@endcan
 
 @if (Auth::user()->canEdit($course))
     <div id="students-list" class="panel panel--default hidden">

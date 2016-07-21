@@ -10,6 +10,8 @@ class CourseImageUploader extends ImageUploader
 {
     const THUMBNAIL_WIDTH = 678;
     const THUMBNAIL_HEIGHT = 253;
+    const IMAGE_WIDTH = 1500;
+    const IMAGE_HEIGHT = 550;
 
      /**
      * Uploads an image file
@@ -22,7 +24,7 @@ class CourseImageUploader extends ImageUploader
      * @return string/boolean       if image is valid, return filename of saved image
      *                              if image is not valid, return false;
      */
-    public function upload($fileName, $destination, $width = 0, $height = 0, $crop_image = false, $force_png = false)
+    public function upload($fileName, $destination, $width = self::IMAGE_WIDTH, $height = self::IMAGE_HEIGHT, $crop_image = false, $force_png = false)
     {
         $uploadedFile = parent::upload($fileName, $destination, $width, $height, $crop_image, $force_png);
 

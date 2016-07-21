@@ -24138,8 +24138,6 @@ function initCourseImgUpload(uploadUrl) {
         heroEl.style.backgroundImage = 'url("' + imgUrl + '")';
         heroEl.classList.remove('uploading');
 
-        console.log(data);
-
         // populate hidden image field value during course creation
         var hiddenField = document.getElementById('course-img');
         if (hiddenField) {
@@ -24169,7 +24167,7 @@ module.exports = {
     create: Create
 };
 
-},{"./editor":36,"./helper":37,"./img-uploader":39,"./notifications":42}],35:[function(require,module,exports){
+},{"./editor":37,"./helper":38,"./img-uploader":40,"./notifications":43}],35:[function(require,module,exports){
 'use strict';
 
 /**
@@ -24195,6 +24193,272 @@ module.exports = {
 module.exports = window.CustomEvent;
 
 },{}],36:[function(require,module,exports){
+'use strict';
+
+var Editor = require('./editor');
+var helper = require('./helper');
+var notifications = require('./notifications');
+var helper = require('./helper');
+
+var panelEl;
+var initialBtnGrp;
+var hiddenBtnGrp;
+
+var editors;
+var editorConfigs;
+var editorInitialValues;
+
+var editBtn;
+var deleteBtn;
+var saveChangesBtn;
+var cancelChangesBtn;
+
+var saveAjaxPath;
+var saveSuccessCallback;
+var saveFailureCallback;
+var saveAlwaysCallback;
+
+/**
+ * Fluent interface for initialising EditableObjects
+ */
+var EditableObjectConstruct = function EditableObjectConstruct() {
+    this.setInitialBtnGrp = function (initialBtnGrp) {
+        this.initialBtnGrp = initialBtnGrp;
+        return this;
+    };
+
+    this.setHiddenBtnGrp = function (hiddenBtnGrp) {
+        this.hiddenBtnGrp = hiddenBtnGrp;
+        return this;
+    };
+
+    this.setEditors = function (editorConfigs) {
+        this.editorConfigs = editorConfigs;
+        return this;
+    };
+
+    this.setEditBtn = function (editBtn) {
+        this.editBtn = editBtn;
+        return this;
+    };
+
+    this.setDeleteBtn = function (deleteBtn) {
+        this.deleteBtn = deleteBtn;
+        return this;
+    };
+
+    this.setSaveChangesBtn = function (saveChangesBtn) {
+        this.saveChangesBtn = saveChangesBtn;
+        return this;
+    };
+
+    this.setCancelChangesBtn = function (cancelChangesBtn) {
+        this.cancelChangesBtn = cancelChangesBtn;
+        return this;
+    };
+
+    this.setSaveAjaxPath = function (ajaxPath) {
+        this.saveAjaxPath = ajaxPath;
+        return this;
+    };
+
+    this.setSaveSuccessCallback = function (callback) {
+        this.saveSuccessCallback = callback;
+        return this;
+    };
+
+    this.setSaveFailureCallback = function (callback) {
+        this.saveFailureCallback = callback;
+        return this;
+    };
+
+    this.setSaveAlwaysCallback = function (callback) {
+        this.saveAlwaysCallback = callback;
+        return this;
+    };
+};
+
+function init(_panelEl, _editableObjectConstruct) {
+    panelEl = _panelEl;
+
+    if (panelEl) {
+        initialBtnGrp = _editableObjectConstruct.initialBtnGrp;
+        hiddenBtnGrp = _editableObjectConstruct.hiddenBtnGrp;
+        editBtn = _editableObjectConstruct.editBtn;
+        deleteBtn = _editableObjectConstruct.deleteBtn;
+        saveChangesBtn = _editableObjectConstruct.saveChangesBtn;
+        cancelChangesBtn = _editableObjectConstruct.cancelChangesBtn;
+        editorConfigs = _editableObjectConstruct.editorConfigs;
+
+        saveAjaxPath = _editableObjectConstruct.saveAjaxPath;
+        saveSuccessCallback = _editableObjectConstruct.saveSuccessCallback;
+        saveFailureCallback = _editableObjectConstruct.saveFailureCallback;
+        saveAlwaysCallback = _editableObjectConstruct.saveAlwaysCallback;
+
+        editors = [];
+        editorInitialValues = [];
+
+        setInitialValues();
+        attachEventListeners();
+    }
+}
+
+function attachEventListeners() {
+    panelEl.addEventListener('click', function (evt) {
+        if (evt.target) {
+            if (editBtn && evt.target === editBtn) {
+                editListener();
+            } else if (deleteBtn && evt.target === deleteBtn) {
+                deleteListener();
+            } else if (saveChangesBtn && evt.target === saveChangesBtn) {
+                saveChangesListener();
+            } else if (cancelChangesBtn && evt.target === cancelChangesBtn) {
+                cancelChangesListener();
+            }
+        }
+    });
+
+    function editListener() {
+        switchButtonGroup();
+        initEditors();
+        switchFocus();
+    }
+
+    function deleteListener() {
+        var check = window.confirm('Are you sure?');
+
+        if (!check) evt.preventDefault();
+
+        return check;
+    }
+
+    function saveChangesListener() {
+        if (valuesUpdated) {
+            // helper.disableButton(saveChangesBtn);
+
+            // // Send ajax request to update model
+            // var success = function(response) {
+            //     if (saveSuccessCallback) {
+            //         saveSuccessCallback.call();
+            //     }
+
+            //     notifications.notify(JSON.parse(response).response, 'success');
+            // };
+            // var failure = function(response) {
+            //     if (saveFailureCallback) {
+            //         saveFailureCallback.call();
+            //     }
+            //     revertChanges();
+
+            //     //display errors to alert element
+            //     var errors = JSON.parse(response);
+            //     var errorMsg = '';
+
+            //     for (var error in errors) {
+            //         errorMsg = errors[error].reduce(function(previousMsg, currentMsg) {
+            //             return previousMsg + currentMsg;
+            //         });
+            //     }
+
+            //     notifications.notify(errorMsg, 'danger');
+            // };
+            // var always = function() {
+            //     if (saveAlwaysCallback) {
+            //         saveAlwaysCallback.call();
+            //     }
+            //     helper.enableButton(saveChangesBtn);
+            // };
+            // helper.sendAjaxRequest('PATCH', saveAjaxPath, success, failure, always, JSON.stringify(saveData));
+            console.log(getSaveData());
+        }
+
+        switchButtonGroup();
+        destroyEditors();
+
+        /**
+         * Check if editor values have been updated by user
+         * @return {Boolean}
+         */
+        function valuesUpdated() {
+            return editors.some(function (editor) {
+                return editor.getContent()[editor.editableElement.id].value !== editorInitialValues.find(function (initialValue) {
+                    return initialValue.element === editor.editableElement;
+                }).value;
+            });
+        }
+
+        function getSaveData() {
+            var data = {};
+            editorConfigs.forEach(function (editorConfig) {
+                // find the corresponding editor in editors array for this editorConfig
+                var editor = editors.find(function (editor) {
+                    return editor.editableElement === editorConfig.element;
+                });
+
+                data[editorConfig.saveFieldName] = editor.getContent()[editorConfig.element.id].value;
+            });
+
+            return data;
+        }
+    }
+
+    function cancelChangesListener() {
+        switchButtonGroup();
+        destroyEditors();
+        revertChanges();
+    }
+}
+
+function switchButtonGroup() {
+    initialBtnGrp.classList.toggle('hidden');
+    hiddenBtnGrp.classList.toggle('hidden');
+}
+
+function setInitialValues() {
+    editorConfigs.forEach(function (editorConfig) {
+        editorInitialValues.push({ 'element': editorConfig.element, 'value': editorConfig.element.innerHTML });
+    });
+}
+
+function initEditors() {
+    editorConfigs.forEach(function (editorConfig) {
+        var editor = new Editor();
+        editor.init(editorConfig.element, editorConfig.options);
+        editors.push(editor);
+    });
+}
+
+function destroyEditors() {
+    editors.forEach(function (editor) {
+        editor.destroy();
+    });
+    editors = [];
+}
+
+function switchFocus() {
+    var focusedEditor = editors.find(function (editor) {
+        return editor.editableElement === editorConfigs.find(function (editorConfig) {
+            return editorConfig.initialFocus;
+        }).element;
+    });
+
+    if (focusedEditor) {
+        focusedEditor.setFocus();
+    }
+}
+
+function revertChanges() {
+    editorInitialValues.forEach(function (initialValue) {
+        initialValue.element.innerHTML = initialValue.value;
+    });
+}
+
+module.exports = {
+    init: init,
+    EditableObjectConstruct: new EditableObjectConstruct()
+};
+
+},{"./editor":37,"./helper":38,"./notifications":43}],37:[function(require,module,exports){
 'use strict';
 
 var MediumEditor = require('medium-editor');
@@ -24299,7 +24563,7 @@ Editor.prototype.subscribe = function (event, callback) {
 
 module.exports = Editor;
 
-},{"jquery":23,"medium-editor":33,"medium-editor-insert-plugin":32}],37:[function(require,module,exports){
+},{"jquery":23,"medium-editor":33,"medium-editor-insert-plugin":32}],38:[function(require,module,exports){
 'use strict';
 
 var Xhr = require('./xhr');
@@ -24533,7 +24797,7 @@ module.exports = {
     getTransform: getTransform
 };
 
-},{"./xhr":46}],38:[function(require,module,exports){
+},{"./xhr":47}],39:[function(require,module,exports){
 'use strict';
 
 /* globals hljs */
@@ -24553,7 +24817,7 @@ module.exports = {
     init: init
 };
 
-},{"highlight":45,"jquery":23}],39:[function(require,module,exports){
+},{"highlight":46,"jquery":23}],40:[function(require,module,exports){
 'use strict';
 
 /**
@@ -24622,7 +24886,7 @@ module.exports = {
     upload: upload
 };
 
-},{"jquery":23}],40:[function(require,module,exports){
+},{"jquery":23}],41:[function(require,module,exports){
 'use strict';
 
 var Editor = require('./editor');
@@ -24877,7 +25141,7 @@ module.exports = {
     init: init
 };
 
-},{"./editor":36,"./helper":37,"./highlighter":38}],41:[function(require,module,exports){
+},{"./editor":37,"./helper":38,"./highlighter":39}],42:[function(require,module,exports){
 'use strict';
 
 var course = require('./course');
@@ -24897,6 +25161,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         case 'js-user-page':
             user.edit.init();
+            user.edit2.init();
             break;
 
         case 'js-create-user-page':
@@ -24905,7 +25170,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
-},{"./course":34,"./lesson":40,"./tabs":43,"./user":44}],42:[function(require,module,exports){
+},{"./course":34,"./lesson":41,"./tabs":44,"./user":45}],43:[function(require,module,exports){
 'use strict';
 
 /**
@@ -25044,7 +25309,7 @@ module.exports = {
     notify: notify
 };
 
-},{"./custom-event":35,"./helper":37}],43:[function(require,module,exports){
+},{"./custom-event":35,"./helper":38}],44:[function(require,module,exports){
 'use strict';
 
 var helper = require('./helper');
@@ -25127,7 +25392,7 @@ module.exports = {
     init: init
 };
 
-},{"./helper":37,"lodash/throttle":30}],44:[function(require,module,exports){
+},{"./helper":38,"lodash/throttle":30}],45:[function(require,module,exports){
 'use strict';
 
 /**
@@ -25140,6 +25405,7 @@ var helper = require('./helper');
 var imgUploader = require('./img-uploader');
 var notifications = require('./notifications');
 var throttle = require('lodash/throttle');
+var EditableObj = require('./editable-object');
 
 var userPanelEl; // user panel DOM element
 var nameEditor; // editor for user's name
@@ -25157,6 +25423,38 @@ var initialName; // initial name (before any changes are saved)
 var initialEmail; // initial email (before any changes are saved)
 var initialCompany; // initial company (before any changes are saved)
 
+var Edit2 = Object.create(EditableObj, {
+    init: {
+        value: function value() {
+            userPanelEl = document.getElementById('user-panel');
+
+            if (userPanelEl) {
+                userActionsGrpEl = document.getElementById('user-actions-grp');
+                contentActionsGrpEl = document.getElementById('content-actions-grp');
+
+                nameEl = document.getElementById('name-editor');
+                emailEl = document.getElementById('email-editor');
+                companyEl = document.getElementById('company-editor');
+                var editorOptions = {
+                    toolbar: false,
+                    disableReturn: true,
+                    disableExtraSpaces: true
+                };
+
+                var editBtnEl = document.getElementById('edit-profile-btn');
+                var deleteBtnEl = document.getElementById('delete-profile-btn');
+                var saveChangesBtnEl = document.getElementById('save-changes-btn');
+                var cancelChangesBtnEl = document.getElementById('cancel-changes-btn');
+
+                var EditableObjectConstruct = EditableObj.EditableObjectConstruct;
+                EditableObjectConstruct.setInitialBtnGrp(userActionsGrpEl).setHiddenBtnGrp(contentActionsGrpEl).setEditors([{ 'element': nameEl, 'options': editorOptions, 'initialFocus': true, 'saveFieldName': 'name' }, { 'element': emailEl, 'options': editorOptions, 'saveFieldName': 'email' }, { 'element': companyEl, 'options': editorOptions, 'saveFieldName': 'company' }]).setEditBtn(editBtnEl).setDeleteBtn(deleteBtnEl).setSaveChangesBtn(saveChangesBtnEl).setCancelChangesBtn(cancelChangesBtnEl);
+
+                EditableObj.init(userPanelEl, EditableObjectConstruct);
+            }
+        }
+    }
+});
+
 var Edit = {
     init: function init() {
         userPanelEl = document.getElementById('user-panel');
@@ -25173,34 +25471,34 @@ var Edit = {
             initialCompany = companyEl.innerHTML;
 
             initAvatarUpload('/users/' + document.getElementById('user-id').value + '/upload/');
-            this.attachEventListener();
+            this.attachEventListeners();
         }
     },
 
     switchButtonGroup: function switchButtonGroup() {
-        userActionsGrpEl.classList.toggle('hidden');
-        contentActionsGrpEl.classList.toggle('hidden');
+        // userActionsGrpEl.classList.toggle('hidden');
+        // contentActionsGrpEl.classList.toggle('hidden');
     },
 
-    attachEventListener: function attachEventListener() {
+    attachEventListeners: function attachEventListeners() {
         var _this = this;
         userPanelEl.addEventListener('click', function (evt) {
             if (evt.target) {
                 if (evt.target.id === 'edit-profile-btn') {
-                    this.initEditors();
-                    nameEditor.setFocus();
-                    this.switchButtonGroup();
+                    // this.initEditors();
+                    // nameEditor.setFocus();
+                    // this.switchButtonGroup();
                     avatarUploadEl.classList.remove('hidden');
                 } else if (evt.target.id === 'delete-profile-btn') {
-                    deleteUserListener(evt);
+                    // deleteUserListener(evt);
                 } else if (evt.target.id === 'save-changes-btn') {
-                    saveChangesListener(evt.target);
-                } else if (evt.target.id === 'cancel-changes-btn') {
-                    this.revertChanges();
-                    this.switchButtonGroup();
-                    this.destroyEditors();
-                    avatarUploadEl.classList.add('hidden');
-                }
+                        // saveChangesListener(evt.target);
+                    } else if (evt.target.id === 'cancel-changes-btn') {
+                            // this.revertChanges();
+                            // this.switchButtonGroup();
+                            // this.destroyEditors();
+                            avatarUploadEl.classList.add('hidden');
+                        }
             }
         }.bind(this));
 
@@ -25218,8 +25516,6 @@ var Edit = {
             var newName = nameEditor.getContent()[nameEl.id].value;
             var newEmail = emailEditor.getContent()[emailEl.id].value;
             var newCompany = companyEditor.getContent()[companyEl.id].value;
-
-            console.log(profileIsUnchanged);
 
             // Only send AJAX request to update profile if there are changes made to the profile
             if (!profileIsUnchanged()) {
@@ -25406,10 +25702,11 @@ function initAvatarUpload(uploadUrl) {
 
 module.exports = {
     create: Create,
-    edit: Edit
+    edit: Edit,
+    edit2: Edit2
 };
 
-},{"./editor":36,"./helper":37,"./img-uploader":39,"./notifications":42,"lodash/throttle":30}],45:[function(require,module,exports){
+},{"./editable-object":36,"./editor":37,"./helper":38,"./img-uploader":40,"./notifications":43,"lodash/throttle":30}],46:[function(require,module,exports){
 "use strict";
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
@@ -25617,7 +25914,7 @@ exports = undefined;
   return { aliases: ["js", "jsx"], k: { keyword: "in of if for while finally var new function do return void else break catch instanceof with throw case default try this switch continue typeof delete let yield const export super debugger as async await static import from as", literal: "true false null undefined NaN Infinity", built_in: "eval isFinite isNaN parseFloat parseInt decodeURI decodeURIComponent encodeURI encodeURIComponent escape unescape Object Function Boolean Error EvalError InternalError RangeError ReferenceError StopIteration SyntaxError TypeError URIError Number Math Date String RegExp Array Float32Array Float64Array Int16Array Int32Array Int8Array Uint16Array Uint32Array Uint8Array Uint8ClampedArray ArrayBuffer DataView JSON Intl arguments require module console window document Symbol Set Map WeakSet WeakMap Proxy Reflect Promise" }, c: [{ cN: "meta", r: 10, b: /^\s*['"]use (strict|asm)['"]/ }, { cN: "meta", b: /^#!/, e: /$/ }, e.ASM, e.QSM, { cN: "string", b: "`", e: "`", c: [e.BE, { cN: "subst", b: "\\$\\{", e: "\\}" }] }, e.CLCM, e.CBCM, { cN: "number", v: [{ b: "\\b(0[bB][01]+)" }, { b: "\\b(0[oO][0-7]+)" }, { b: e.CNR }], r: 0 }, { b: "(" + e.RSR + "|\\b(case|return|throw)\\b)\\s*", k: "return throw case", c: [e.CLCM, e.CBCM, e.RM, { b: /</, e: /(\/\w+|\w+\/)>/, sL: "xml", c: [{ b: /<\w+\s*\/>/, skip: !0 }, { b: /<\w+/, e: /(\/\w+|\w+\/)>/, skip: !0, c: ["self"] }] }], r: 0 }, { cN: "function", bK: "function", e: /\{/, eE: !0, c: [e.inherit(e.TM, { b: /[A-Za-z$_][0-9A-Za-z$_]*/ }), { cN: "params", b: /\(/, e: /\)/, eB: !0, eE: !0, c: [e.CLCM, e.CBCM] }], i: /\[|%/ }, { b: /\$[(.]/ }, e.METHOD_GUARD, { cN: "class", bK: "class", e: /[{;=]/, eE: !0, i: /[:"\[\]]/, c: [{ bK: "extends" }, e.UTM] }, { bK: "constructor", e: /\{/, eE: !0 }], i: /#(?!!)/ };
 });
 
-},{}],46:[function(require,module,exports){
+},{}],47:[function(require,module,exports){
 'use strict';
 
 /**
@@ -25698,6 +25995,6 @@ Xhr.prototype.getXMLHttpRequest = function () {
 
 module.exports = Xhr;
 
-},{}]},{},[41]);
+},{}]},{},[42]);
 
 //# sourceMappingURL=app.js.map
