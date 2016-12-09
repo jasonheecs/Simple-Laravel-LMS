@@ -38,11 +38,6 @@
                 {!! csrf_field() !!}
             </form>
         </div>
-        <div class="login-footer">
-            <a href="{{ url('/password/reset') }}" class="login-footer__link">
-                Forgot your password?
-            </a>
-        </div>
     </div>
 </div>
 @endsection
