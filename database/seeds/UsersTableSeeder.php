@@ -29,10 +29,10 @@ class UsersTableSeeder extends Seeder
 
         // superadmin
         $user = factory(User::class, 1)->create([
-          'name' => 'Jason Hee',
-          'email' => 'jason@jason.com',
+          'name' => 'Demo Admin',
+          'email' => 'admin@admin.com',
           'password' => bcrypt('password'),
-          'avatar' => 'http://api.adorable.io/avatars/150/Jason'
+          'avatar' => 'http://api.adorable.io/avatars/150/Admin'
         ]);
         $user->addRole(App\Role::getAdminRole());
         $user->addRole(App\Role::getSuperAdminRole());

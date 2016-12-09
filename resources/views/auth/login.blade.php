@@ -4,7 +4,8 @@
 <div class="login">
     <div id="login-box" class="login-box">
         <div class="login__container">
-            <img src="{{ asset('img/efusion-logo.png') }}" alt="Efusion Technology" />
+            {{-- <img src="{{ asset('img/logo.png') }}" /> --}}
+            <h1>Demo</h1>
             <h1 class="login__site-name">Learning Management System</h1>
             <form class="login-form" role="form" method="POST" action="{{ url('/login') }}">
                 <div class="{{ $errors->has('email') ? ' has-error' : '' }}">
