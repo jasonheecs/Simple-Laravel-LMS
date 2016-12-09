@@ -7,4 +7,5 @@ Homestead.json
 .DS_STORE
 /src
 .vagrant
-/public/uploads
+/public/uploads/*
+!/public/uploads/.gitkeep
