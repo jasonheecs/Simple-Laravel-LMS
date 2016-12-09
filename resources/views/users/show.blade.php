@@ -46,7 +46,7 @@
                 <div class="user__personal-details panel__divider flex flex--space-between flex--bottom">
                     <h2 class="panel__title panel__title--small margin--bottom-none flex__item--1">Personal Details</h2>
                     <div id="user-actions-grp" class="user__button-grp button-group">
-                        <a id="edit-profile-btn" class="btn btn--primary btn--md" data-switch-btns><i class="icon icon--edit"></i> Edit</a>
+                        <a id="edit-profile-btn" class="btn btn--primary btn--md"><i class="icon icon--edit"></i> Edit</a>
                         <form method="POST" class="form--inline" action="{{ url('/users', $user->id) }}">
                             {{ method_field('DELETE') }}
                             <button id="delete-profile-btn" class="btn btn--outline btn--md" type="submit"><i class="icon icon--delete"></i> Delete</button>
@@ -54,8 +54,8 @@
                         </form>
                     </div>
                     <div id="content-actions-grp" class="user__button-grp button-group hidden">
-                        <a id="save-changes-btn" class="btn btn--primary btn--md" data-switch-btns><i class="icon icon--save"></i> Save</a>
-                        <a id="cancel-changes-btn" class="btn btn--outline btn--md" data-switch-btns><i class="icon icon--cancel"></i> Cancel</a>
+                        <a id="save-changes-btn" class="btn btn--primary btn--md"><i class="icon icon--save"></i> Save</a>
+                        <a id="cancel-changes-btn" class="btn btn--outline btn--md"><i class="icon icon--cancel"></i> Cancel</a>
                     </div>
                 </div>
                 <div>

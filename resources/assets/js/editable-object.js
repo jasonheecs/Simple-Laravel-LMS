@@ -1,28 +1,34 @@
+'use strict';
+
+/**
+ * Base class for edit objects to extend from (i.e: user.edit, course.edit, lesson.edit). 
+ */
+
 var Editor = require('./editor');
 var helper = require('./helper');
 var notifications = require('./notifications');
 var helper = require('./helper');
 
-var panelEl;
-var initialBtnGrp;
-var hiddenBtnGrp;
+var panelEl; // panel DOM element that contains the main HTML content for the page
+var initialBtnGrp; // button group that is visible initially
+var hiddenBtnGrp; // button group that is only visible when edit is clicked
 
-var editors;
-var editorConfigs;
-var editorInitialValues;
+var editors; // array of Editor objects
+var editorConfigs; // array of editor configurations {'element': <HTML element>, 'options': <Editor options>, 'initialFocus': <boolean value to set if this editor is to be focused in edit mode, 'saveFieldName': key value for this field for sending ajax update request }
+var editorInitialValues;// array of initial values for the editors. Used for reverting changes.
 
-var editBtn;
-var deleteBtn;
-var saveChangesBtn;
-var cancelChangesBtn;
+var editBtn; // The edit DOM button element
+var deleteBtn; // The delete DOM button element
+var saveChangesBtn; // The save changes DOM button element
+var cancelChangesBtn; // The cancel changes DOM button element
 
-var saveAjaxPath;
-var saveSuccessCallback;
-var saveFailureCallback;
-var saveAlwaysCallback;
+var saveAjaxPath; // Ajax path for updating values / saving changes
+var saveSuccessCallback; // callback function on save success
+var saveFailureCallback; // callback function on save failure
+var saveAlwaysCallback; // callback function after saving
 
 /**
- * Fluent interface for initialising EditableObjects
+ * Fluent interface for initialising EditableObject
  */
 var EditableObjectConstruct = function() {
     this.setInitialBtnGrp = function(initialBtnGrp) {
@@ -112,7 +118,7 @@ function attachEventListeners() {
             if (editBtn && evt.target === editBtn) {
                 editListener();
             } else if (deleteBtn && evt.target === deleteBtn) {
-                deleteListener();
+                deleteListener(evt);
             } else if (saveChangesBtn && evt.target === saveChangesBtn) {
                 saveChangesListener();
             } else if (cancelChangesBtn && evt.target === cancelChangesBtn) {
@@ -127,7 +133,7 @@ function attachEventListeners() {
         switchFocus();
     }
 
-    function deleteListener() {
+    function deleteListener(evt) {
         var check = window.confirm('Are you sure?');
 
         if (!check)
@@ -137,43 +143,45 @@ function attachEventListeners() {
     }
 
     function saveChangesListener() {
-        if (valuesUpdated) {
-            // helper.disableButton(saveChangesBtn);
+        if (valuesUpdated()) {
+            helper.disableButton(saveChangesBtn);
 
-            // // Send ajax request to update model
-            // var success = function(response) {
-            //     if (saveSuccessCallback) {
-            //         saveSuccessCallback.call();
-            //     }
+            // Send ajax request to update model
+            var success = function(response) {
+                if (saveSuccessCallback) {
+                    saveSuccessCallback.call();
+                }
 
-            //     notifications.notify(JSON.parse(response).response, 'success');
-            // };
-            // var failure = function(response) {
-            //     if (saveFailureCallback) {
-            //         saveFailureCallback.call();
-            //     }
-            //     revertChanges();
+                editorInitialValues = [];
+                setInitialValues();
+                notifications.notify(JSON.parse(response).response, 'success');
+            };
+            var failure = function(response) {
+                if (saveFailureCallback) {
+                    saveFailureCallback.call();
+                }
 
-            //     //display errors to alert element
-            //     var errors = JSON.parse(response);
-            //     var errorMsg = '';
+                revertChanges();
 
-            //     for (var error in errors) {
-            //         errorMsg = errors[error].reduce(function(previousMsg, currentMsg) {
-            //             return previousMsg + currentMsg;
-            //         });
-            //     }
+                //display errors to alert element
+                var errors = JSON.parse(response);
+                var errorMsg = '';
 
-            //     notifications.notify(errorMsg, 'danger');
-            // };
-            // var always = function() {
-            //     if (saveAlwaysCallback) {
-            //         saveAlwaysCallback.call();
-            //     }
-            //     helper.enableButton(saveChangesBtn);
-            // };
-            // helper.sendAjaxRequest('PATCH', saveAjaxPath, success, failure, always, JSON.stringify(saveData));
-            console.log(getSaveData());
+                for (var error in errors) {
+                    errorMsg = errors[error].reduce(function(previousMsg, currentMsg) {
+                        return previousMsg + currentMsg;
+                    });
+                }
+
+                notifications.notify(errorMsg, 'danger');
+            };
+            var always = function() {
+                if (saveAlwaysCallback) {
+                    saveAlwaysCallback.call();
+                }
+                helper.enableButton(saveChangesBtn);
+            };
+            helper.sendAjaxRequest('PATCH', saveAjaxPath, success, failure, always, JSON.stringify(getSaveData()));
         }
 
         switchButtonGroup();
@@ -192,6 +200,10 @@ function attachEventListeners() {
             });
         }
 
+        /**
+         * Get current editor values and return them in a format that is required for updating the values via ajax.
+         * @return {Object}
+         */
         function getSaveData() {
             var data = {};
             editorConfigs.forEach(function(editorConfig) {
@@ -240,6 +252,9 @@ function destroyEditors() {
     editors = [];
 }
 
+/**
+ * Set the focusable element of the browser to one of the editors
+ */
 function switchFocus() {
     var focusedEditor = editors.find(function(editor) {
        return editor.editableElement === editorConfigs.find(function(editorConfig) {

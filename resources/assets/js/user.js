@@ -5,30 +5,20 @@
  * Also governs the changing of user statuses (i.e. admin, super admin, etc.)
  */
 
-var Editor = require('./editor');
 var helper = require('./helper');
 var imgUploader = require('./img-uploader');
 var notifications = require('./notifications');
 var throttle = require('lodash/throttle');
-var EditableObj = require('./editable-object');
+var EditableObj = require('./editable-object'); // base class for Edit object to extend from
 
 var userPanelEl;  // user panel DOM element
-var nameEditor; // editor for user's name
-var emailEditor; // editor for user's email
-var companyEditor; // editor for user's company
 var avatarUploadEl; // DOM element / button that triggers user avatar upload
 
 var userActionsGrpEl; // button group DOM element that contains buttons for editing / deleting user
 var contentActionsGrpEl; // button group DOM element that contains buttons for saving / cancelling editors' changes
 
-var nameEl; // user name DOM element
-var emailEl; // user email DOM element
-var companyEl; // user company DOM element
-var initialName; // initial name (before any changes are saved)
-var initialEmail; // initial email (before any changes are saved)
-var initialCompany; // initial company (before any changes are saved)
 
-var Edit2 = Object.create(EditableObj, {
+var Edit = Object.create(EditableObj, {
     init: {
         value: function() {
             userPanelEl = document.getElementById('user-panel');
@@ -37,120 +27,92 @@ var Edit2 = Object.create(EditableObj, {
                 userActionsGrpEl = document.getElementById('user-actions-grp');
                 contentActionsGrpEl = document.getElementById('content-actions-grp');
 
-                nameEl = document.getElementById('name-editor');
-                emailEl = document.getElementById('email-editor');
-                companyEl = document.getElementById('company-editor');
+                this.nameEl = document.getElementById('name-editor'); // user name DOM element
+                this.emailEl = document.getElementById('email-editor'); // user email DOM element
+                this.companyEl = document.getElementById('company-editor'); // user company DOM element
                 var editorOptions = {
                     toolbar:false,
                     disableReturn: true,
                     disableExtraSpaces: true
                 };
 
-                var editBtnEl = document.getElementById('edit-profile-btn');
-                var deleteBtnEl = document.getElementById('delete-profile-btn');
-                var saveChangesBtnEl = document.getElementById('save-changes-btn');
-                var cancelChangesBtnEl = document.getElementById('cancel-changes-btn');
+                this.editBtnEl = document.getElementById('edit-profile-btn');
+                this.deleteBtnEl = document.getElementById('delete-profile-btn');
+                this.saveChangesBtnEl = document.getElementById('save-changes-btn');
+                this.cancelChangesBtnEl = document.getElementById('cancel-changes-btn');
 
+                avatarUploadEl = document.getElementById('img-upload-btn');
+                initAvatarUpload('/users/'+ document.getElementById('user-id').value +'/upload/');
+
+                // use fluent pattern construct to initialise base EditableObject class
                 var EditableObjectConstruct = EditableObj.EditableObjectConstruct;
                 EditableObjectConstruct
                     .setInitialBtnGrp(userActionsGrpEl)
                     .setHiddenBtnGrp(contentActionsGrpEl)
                     .setEditors([
-                                {'element': nameEl, 'options': editorOptions, 'initialFocus': true, 'saveFieldName': 'name'},
-                                {'element': emailEl, 'options': editorOptions, 'saveFieldName': 'email'},
-                                {'element': companyEl, 'options': editorOptions, 'saveFieldName': 'company'}
+                                {'element': this.nameEl, 'options': editorOptions, 'initialFocus': true, 'saveFieldName': 'name'},
+                                {'element': this.emailEl, 'options': editorOptions, 'saveFieldName': 'email'},
+                                {'element': this.companyEl, 'options': editorOptions, 'saveFieldName': 'company'}
                                 ])
-                    .setEditBtn(editBtnEl)
-                    .setDeleteBtn(deleteBtnEl)
-                    .setSaveChangesBtn(saveChangesBtnEl)
-                    .setCancelChangesBtn(cancelChangesBtnEl);
+                    .setEditBtn(this.editBtnEl)
+                    .setDeleteBtn(this.deleteBtnEl)
+                    .setSaveChangesBtn(this.saveChangesBtnEl)
+                    .setCancelChangesBtn(this.cancelChangesBtnEl)
+                    .setSaveAjaxPath('/users/'+ document.getElementById('user-id').value)
+                    .setSaveSuccessCallback(this.saveSuccess);
 
-                EditableObj.init(userPanelEl, EditableObjectConstruct);
+                EditableObj.init(userPanelEl, EditableObjectConstruct); // init parent class
+                this.attachEventListeners();
             }
         }
-    }
-});
-
-var Edit = {
-    init: function() {
-        userPanelEl = document.getElementById('user-panel');
-
-        if (userPanelEl) {
-            userActionsGrpEl = document.getElementById('user-actions-grp');
-            contentActionsGrpEl = document.getElementById('content-actions-grp');
-            nameEl = document.getElementById('name-editor');
-            emailEl = document.getElementById('email-editor');
-            companyEl = document.getElementById('company-editor');
-            avatarUploadEl = document.getElementById('img-upload-btn');
-            initialName = nameEl.innerHTML;
-            initialEmail = emailEl.innerHTML;
-            initialCompany = companyEl.innerHTML;
-
-            initAvatarUpload('/users/'+ document.getElementById('user-id').value +'/upload/');
-            this.attachEventListeners();
+    },
+    saveSuccess: {
+        configurable: false,
+        get: function() {
+            var callback = function() {
+                document.getElementById('hero-user-name').textContent = this.nameEl.textContent;
+            }.bind(this);
+            return callback;
         }
     },
-
-    switchButtonGroup: function() {
-        // userActionsGrpEl.classList.toggle('hidden');
-        // contentActionsGrpEl.classList.toggle('hidden');
-    },
-
-    attachEventListeners: function() {
-        var _this = this;
-        userPanelEl.addEventListener('click', function(evt) {
-            if (evt.target) {
-                if (evt.target.id === 'edit-profile-btn') {
-                    // this.initEditors();
-                    // nameEditor.setFocus();
-                    // this.switchButtonGroup();
-                    avatarUploadEl.classList.remove('hidden');
-                } else if(evt.target.id === 'delete-profile-btn') {
-                    // deleteUserListener(evt);
-                } else if(evt.target.id === 'save-changes-btn') {
-                    // saveChangesListener(evt.target);
-                } else if(evt.target.id === 'cancel-changes-btn') {
-                    // this.revertChanges();
-                    // this.switchButtonGroup();
-                    // this.destroyEditors();
-                    avatarUploadEl.classList.add('hidden');
+    attachEventListeners: {
+        value: function() {
+            userPanelEl.addEventListener('click', function(evt) {
+                if (evt.target) {
+                    if (evt.target === this.editBtnEl) {
+                        avatarUploadEl.classList.remove('hidden');
+                    } else if (evt.target === this.cancelChangesBtnEl || evt.target === this.saveChangesBtnEl) {
+                        avatarUploadEl.classList.add('hidden');
+                    }
                 }
-            }
-        }.bind(this));
+            }.bind(this));
 
-        userPanelEl.addEventListener('change', function(evt) {
-            if (evt.target) {
-                if (evt.target.id === 'admin-checkbox') {
-                    toggleAdminListener();
-                } else if (evt.target.id === 'super-admin-checkbox') {
-                    toggleAdminListener(true);
+            userPanelEl.addEventListener('change', function(evt) {
+                if (evt.target) {
+                    if (evt.target.id === 'admin-checkbox') {
+                        toggleAdminListener();
+                    } else if (evt.target.id === 'super-admin-checkbox') {
+                        toggleAdminListener(true);
+                    }
                 }
-            }
-        });
+            }.bind(this));
 
-        function saveChangesListener(saveBtnEl) {
-            var newName = nameEditor.getContent()[nameEl.id].value;
-            var newEmail = emailEditor.getContent()[emailEl.id].value;
-            var newCompany = companyEditor.getContent()[companyEl.id].value;
+            /**
+             * Sends ajax request to toggle user to be admin / super admin
+             * @param  {Boolean} isSuperAdmin - optional flag to determine if ajax request is to toggle for superadmin state. Default value is false.
+             */
+            function toggleAdminListener(isSuperAdmin) {
+                var updateData = {isSuperAdmin: false};
 
-            // Only send AJAX request to update profile if there are changes made to the profile
-            if (!profileIsUnchanged()) {
-                helper.disableButton(saveBtnEl);
-                var updateData = {name: newName, email: newEmail, company: newCompany};
+                if (isSuperAdmin) {
+                    updateData.isSuperAdmin = true;
+                }
 
-                // Send ajax request to update user
+                // Send ajax request to update user admin status
                 var success = function(response) {
-                    initialName = newName;
-                    initialEmail = newEmail;
-                    initialCompany = newCompany;
-
-                    document.getElementById('hero-user-name').textContent = newName;
-
                     notifications.notify(JSON.parse(response).response, 'success');
                 };
                 var failure = function(response) {
-                    _this.revertChanges();
-
                     //display errors to alert element
                     var errors = JSON.parse(response);
                     var errorMsg = '';
@@ -160,96 +122,15 @@ var Edit = {
                             return previousMsg + currentMsg;
                         });
                     }
-
                     notifications.notify(errorMsg, 'danger');
                 };
-                var always = function() {
-                    helper.enableButton(saveBtnEl);
-                };
-                helper.sendAjaxRequest('PATCH', '/users/'+ document.getElementById('user-id').value, success, failure, always, JSON.stringify(updateData));
-            }
+                var always = function() {};
 
-            _this.switchButtonGroup();
-            _this.destroyEditors();
-            avatarUploadEl.classList.add('hidden');
-
-            /**
-             * Check if profile data has been updated
-             * @return {Boolean}
-             */
-            function profileIsUnchanged() {
-                return (newName === initialName && newEmail === initialEmail && newCompany === initialCompany);
+                helper.sendAjaxRequest('PATCH', '/users/'+ document.getElementById('user-id').value + '/setadmin', success, failure, always, JSON.stringify(updateData));
             }
         }
-
-        function deleteUserListener(evt) {
-            var check = window.confirm('Are you sure?');
-
-            if (!check)
-                evt.preventDefault();
-
-            return check;
-        }
-
-        function toggleAdminListener(isSuperAdmin) {
-            var updateData = {isSuperAdmin: false};
-
-            if (isSuperAdmin) {
-                updateData.isSuperAdmin = true;
-            }
-
-            // Send ajax request to update user admin status
-            var success = function(response) {
-                notifications.notify(JSON.parse(response).response, 'success');
-            };
-            var failure = function(response) {
-                //display errors to alert element
-                var errors = JSON.parse(response);
-                var errorMsg = '';
-
-                for (var error in errors) {
-                    errorMsg = errors[error].reduce(function(previousMsg, currentMsg) {
-                        return previousMsg + currentMsg;
-                    });
-                }
-                notifications.notify(errorMsg, 'danger');
-            };
-            var always = function() {};
-
-            helper.sendAjaxRequest('PATCH', '/users/'+ document.getElementById('user-id').value + '/setadmin', success, failure, always, JSON.stringify(updateData));
-        }
-    },
-
-    initEditors: function() {
-        nameEditor = new Editor();
-        emailEditor = new Editor();
-        companyEditor = new Editor();
-        var editorOptions = {
-            toolbar:false,
-            disableReturn: true,
-            disableExtraSpaces: true
-        };
-        
-        nameEditor.init(nameEl, editorOptions);
-        emailEditor.init(emailEl, editorOptions);
-        companyEditor.init(companyEl, editorOptions);
-    },
-
-    destroyEditors: function() {
-        nameEditor.destroy();
-        emailEditor.destroy();
-        companyEditor.destroy();
-    },
-
-    /**
-     * Revert changes made when 'Cancel' button is clicked
-     */
-    revertChanges: function() {
-        nameEl.innerHTML = initialName;
-        emailEl.innerHTML = initialEmail;
-        companyEl.innerHTML = initialCompany;
     }
-};
+});
 
 var Create = {
     init: function() {
@@ -312,7 +193,6 @@ function initAvatarUpload(uploadUrl) {
         }
 
         notifications.notify('User avatar updated', 'success');
-
     };
 
     imgUploader.init(document.getElementById('user-img-upload'), avatarUploadEl);
@@ -321,6 +201,5 @@ function initAvatarUpload(uploadUrl) {
 
 module.exports = {
     create: Create,
-    edit: Edit,
-    edit2: Edit2
+    edit: Edit
 };

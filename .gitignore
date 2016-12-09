@@ -7,3 +7,4 @@ Homestead.json
 .DS_STORE
 /src
 .vagrant
+/public/uploads

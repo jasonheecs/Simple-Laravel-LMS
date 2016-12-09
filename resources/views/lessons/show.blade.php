@@ -55,9 +55,6 @@
                     <a href="{{ url('/courses', $lesson->course->id) }}" class="lesson-nav lesson-nav--back">
                         Back to all lessons
                     </a>
-                    <a href="" class="lesson-nav lesson-nav--next">
-                        Next Lesson
-                    </a>
                 </div>
 
                 @if (Auth::user()->canEdit($lesson->course))

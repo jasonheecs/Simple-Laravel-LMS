@@ -4,6 +4,7 @@
   @extend %flex--middle;
   background: $color-primary;
   min-height: 100vh;
+  max-width: none;
 }
 
 .login__container {

@@ -15,11 +15,11 @@ class LessonsController extends Controller
         'body'  => 'required'
     ];
 
-    public function __construct()
-    {
-        $this->middleware('view.course');
-        $this->middleware('edit.course', ['except' => 'show']);
-    }
+    // public function __construct()
+    // {
+    //     $this->middleware('view.course');
+    //     $this->middleware('edit.course', ['except' => 'show']);
+    // }
 
     public function create(Request $request)
     {
@@ -85,7 +85,7 @@ class LessonsController extends Controller
 
         flash('Lesson deleted', 'success');
 
-        return redirect()->route('course', [$lesson->course]);
+        return redirect()->route('courses.show', [$lesson->course]);
     }
 
     /**
@@ -118,7 +118,7 @@ class LessonsController extends Controller
 
         \File::delete(url($file));
 
-        var_dump($file);
+        // var_dump($file);
 
         if (!\File::exists($file)) {
             return json_encode(['response' => 'Image deleted']);
