@@ -25,8 +25,8 @@
 
     <!-- JavaScripts -->
     <script src="{{ asset('js/app.js') }}"></script>
+    {{-- <script src="{{ elixir('js/app.js') }}"></script> --}}
     <script src="//cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.12.5/js/jquery.fileupload-process.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.12.5/js/jquery.fileupload-validate.js"></script>
-    {{-- <script src="{{ elixir('js/app.js') }}"></script> --}}
 </body>
 </html>
