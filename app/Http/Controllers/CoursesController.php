@@ -18,11 +18,11 @@ class CoursesController extends Controller implements ControllerImageUploaderInt
     public function index()
     {
         $courses = Course::all();
-        $courses = $courses->each(function ($course) {
-            if ($course->image) {
-                $course->image = generateThumbnailImagePath($course->image);
-            }
-        });
+        // $courses = $courses->each(function ($course) {
+        //     if ($course->image) {
+        //         $course->image = generateThumbnailImagePath($course->image);
+        //     }
+        // });
 
         return view('courses.index', [
             'courses' => $courses
